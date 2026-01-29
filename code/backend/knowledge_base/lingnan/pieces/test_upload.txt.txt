@@ -1,0 +1,3 @@
+--- Segment 1 ---
+This is a test file content for RAGnition. It contains some policy information about Lingnan University. Lingnan University is a liberal arts university in Hong Kong. Students must attend classes.
+

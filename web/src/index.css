@@ -1,0 +1,148 @@
+:root {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  
+  --bs-body-bg: #f7f7f8;
+  --chat-bubble-user: #2c3e50;
+  --chat-bubble-ai: #ffffff;
+  --primary-color: #0d6efd;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bs-body-bg);
+  color: #333;
+}
+
+/* 覆盖 Bootstrap 的默认滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
+
+/* 聊天页面特定样式 */
+.chat-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.message-bubble {
+  padding: 1rem 1.25rem;
+  border-radius: 1rem;
+  position: relative;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.message-bubble.user {
+  background-color: var(--chat-bubble-user);
+  color: white;
+  border-bottom-right-radius: 0.25rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.message-bubble.assistant {
+  background-color: var(--chat-bubble-ai);
+  color: #1a202c;
+  border-bottom-left-radius: 0.25rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border: 1px solid #e2e8f0;
+}
+
+.input-area-wrapper {
+  background: linear-gradient(180deg, rgba(247,247,248,0) 0%, rgba(247,247,248,1) 20%);
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.modern-input-group {
+  background: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  border: 1px solid #e2e8f0;
+  padding: 0.5rem;
+  transition: box-shadow 0.2s;
+}
+
+.modern-input-group:focus-within {
+  box-shadow: 0 0 20px rgba(0,0,0,0.15);
+  border-color: #cbd5e0;
+}
+
+.modern-textarea {
+  border: none !important;
+  box-shadow: none !important;
+  resize: none;
+  background: transparent;
+  padding: 0.75rem 1rem;
+}
+
+.modern-textarea:focus {
+  background: transparent;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.avatar.user {
+  background-color: #553c9a;
+  color: white;
+}
+
+.avatar.ai {
+  background-color: #10b981;
+  color: white;
+}
+
+/* Markdown 样式优化 */
+.markdown-body p {
+  margin-bottom: 0.75rem;
+}
+
+.markdown-body p:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body pre {
+  background-color: #f1f5f9;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 0.75rem 0;
+  overflow-x: auto;
+}
+
+.markdown-body code {
+  background-color: rgba(175, 184, 193, 0.2);
+  padding: 0.2em 0.4em;
+  border-radius: 6px;
+  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+  font-size: 85%;
+}
+
+.markdown-body pre code {
+  background-color: transparent;
+  padding: 0;
+}
