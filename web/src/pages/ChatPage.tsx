@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Container, Form, Button, Spinner } from 'react-bootstrap';
-import { streamAnswer } from '../services/api';
+import { streamAnswer, type Reference } from '../services/api';
 import ReactMarkdown from 'react-markdown';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
-  references?: any[];
+  references?: Reference[];
 }
 
 const ChatPage: React.FC = () => {
@@ -111,7 +111,7 @@ const ChatPage: React.FC = () => {
               <option value="lingnan">📚 Lingnan</option>
               <option value="base_DS">📊 Data Science</option>
             </Form.Select>
-            <Form.Select size="sm" value={language} onChange={(e) => setLanguage(e.target.value as any)} style={{ width: '110px', border: 'none', background: '#f8f9fa' }}>
+            <Form.Select size="sm" value={language} onChange={(e) => setLanguage(e.target.value as 'en' | 'zh-cn' | 'zh-tw')} style={{ width: '110px', border: 'none', background: '#f8f9fa' }}>
               <option value="zh-cn">🇨🇳 简体中文</option>
               <option value="en">🇺🇸 English</option>
               <option value="zh-tw">🇭🇰 繁体中文</option>
@@ -152,7 +152,7 @@ const ChatPage: React.FC = () => {
                   <div className="mt-3 pt-2 border-top small" style={{ borderColor: 'rgba(0,0,0,0.1)' }}>
                     <div className="fw-bold mb-1 text-muted" style={{ fontSize: '0.8rem' }}>📚 参考来源:</div>
                     <ul className="mb-0 ps-3 text-muted">
-                      {msg.references.map((ref: any, rIdx: number) => (
+                      {msg.references.map((ref, rIdx) => (
                         <li key={rIdx}>
                           {ref.file_name} <span className="badge bg-light text-dark border ms-1">{ref.similarity?.toFixed(2)}</span>
                         </li>

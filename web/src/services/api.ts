@@ -11,6 +11,11 @@ const client = axios.create({
   },
 });
 
+export interface Reference {
+  file_name: string;
+  similarity: number;
+}
+
 // SSE 流式问答接口
 export function streamAnswer(params: {
   session_id: string;
@@ -20,9 +25,9 @@ export function streamAnswer(params: {
   language: 'en' | 'zh-cn' | 'zh-tw';
   base: string;
   onToken: (token: string) => void;
-  onReferences: (refs: any[]) => void;
+  onReferences: (refs: Reference[]) => void;
   onDone: () => void;
-  onError?: (err: any) => void;
+  onError?: (err: unknown) => void;
 }) {
   const query = new URLSearchParams({
     session_id: params.session_id,
