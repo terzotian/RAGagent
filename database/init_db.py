@@ -28,7 +28,7 @@ def execute_sql_file(filename):
                     print(f"Error executing statement: {e}")
 
 if __name__ == "__main__":
-    sql_file = "database/create.sql"
+    sql_file = "create.sql"
     if os.path.exists(sql_file):
         execute_sql_file(sql_file)
         print("Database initialized successfully.")
