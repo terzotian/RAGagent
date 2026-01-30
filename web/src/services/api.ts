@@ -105,9 +105,12 @@ export const fileApi = {
     return res.data;
   },
 
-  // 获取预览地址（实际上返回的是文件系统路径，前端可做展示或提示）
+  // 获取预览文件内容（返回 Blob）
   preview: async (base: string, file_name: string) => {
-    const res = await client.get<string>('/files/preview', { params: { base, file_name } });
-    return res.data;
+    const res = await client.get('/files/preview', {
+      params: { base, file_name },
+      responseType: 'blob',
+    });
+    return res.data; // Blob
   },
 };

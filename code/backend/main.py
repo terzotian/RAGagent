@@ -14,7 +14,7 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from fastapi import FastAPI, HTTPException, status, Depends, UploadFile, File, Form, Query
-from fastapi.responses import StreamingResponse, HTMLResponse, PlainTextResponse
+from fastapi.responses import StreamingResponse, HTMLResponse, PlainTextResponse, FileResponse
 from pydantic import BaseModel, Field
 from typing import List, Dict
 from datetime import datetime, timezone
@@ -301,7 +301,9 @@ async def preview_file(
         base: str = Query(...)
 ):
     file_path = policy_file(base=base, filename=unquote(file_name))
-    return file_path
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="File not found")
+    return FileResponse(file_path)
 
 
 @app.delete("/api/v1/files")
