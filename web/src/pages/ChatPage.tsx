@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Container, Form, Button, Spinner } from 'react-bootstrap';
-import { streamAnswer, type Reference } from '../services/api';
+import { Container, Form, Button, Spinner, Image } from 'react-bootstrap';
+import { streamAnswer, getAvatarUrl, type Reference, type User } from '../services/api';
 import ReactMarkdown from 'react-markdown';
 
 interface Message {
@@ -9,7 +9,11 @@ interface Message {
   references?: Reference[];
 }
 
-const ChatPage: React.FC = () => {
+interface ChatPageProps {
+  user?: User | null;
+}
+
+const ChatPage: React.FC<ChatPageProps> = ({ user }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -163,7 +167,16 @@ const ChatPage: React.FC = () => {
               </div>
 
               {msg.role === 'user' && (
-                <div className="avatar user ms-3 shadow-sm">Me</div>
+                <div className="avatar user ms-3 shadow-sm p-0 overflow-hidden d-flex align-items-center justify-content-center">
+                  {user && user.avatar_path ? (
+                     <Image 
+                       src={getAvatarUrl(user.avatar_path)} 
+                       style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                     />
+                  ) : (
+                    user ? user.nickname.charAt(0).toUpperCase() : 'Me'
+                  )}
+                </div>
               )}
 
             </div>

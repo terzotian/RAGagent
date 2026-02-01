@@ -1,14 +1,9 @@
 import axios from 'axios';
 
-// 配置基础 API 路径，Vite 代理会转发 /api/v1 到后端
-const API_BASE = '/api/v1';
+const API_BASE_URL = '/api/v1';
 
-// 通用 HTTP 客户端
 const client = axios.create({
-  baseURL: API_BASE,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  baseURL: API_BASE_URL,
 });
 
 export interface Reference {
@@ -16,66 +11,20 @@ export interface Reference {
   similarity: number;
 }
 
-// SSE 流式问答接口
-export function streamAnswer(params: {
-  session_id: string;
-  question_id: string;
-  previous_questions: string[];
-  current_question: string;
-  language: 'en' | 'zh-cn' | 'zh-tw';
-  base: string;
-  onToken: (token: string) => void;
-  onReferences: (refs: Reference[]) => void;
-  onDone: () => void;
-  onError?: (err: unknown) => void;
-}) {
-  const query = new URLSearchParams({
-    session_id: params.session_id,
-    question_id: params.question_id,
-    previous_questions: JSON.stringify(params.previous_questions),
-    current_question: params.current_question,
-    language: params.language,
-    base: params.base,
-  });
-
-  const url = `${API_BASE}/questions/stream?${query.toString()}`;
-  console.log('Connecting SSE:', url);
-
-  const es = new EventSource(url);
-
-  es.onmessage = (ev) => {
-    try {
-      if (ev.data === '[DONE]') {
-        es.close();
-        params.onDone();
-        return;
-      }
-
-      const data = JSON.parse(ev.data);
-      if (data.token) {
-        params.onToken(data.token);
-      }
-      if (data.references) {
-        params.onReferences(data.references);
-      }
-    } catch (e) {
-      console.error('SSE parse error:', e);
-    }
-  };
-
-  es.onerror = (err) => {
-    console.error('SSE Error:', err);
-    es.close();
-    if (params.onError) params.onError(err);
-    else params.onDone(); // 默认当做结束处理，防止 UI 卡死
-  };
-
-  return () => {
-    es.close();
-  };
+export interface User {
+  user_id: number;
+  account: string;
+  nickname: string;
+  gender: string;
+  identity: string;
+  avatar_path?: string;
 }
 
-// 文件相关接口
+export const getAvatarUrl = (filename?: string) => {
+  if (!filename) return '';
+  return `${API_BASE_URL}/avatars/${filename}`;
+};
+
 export interface FileItem {
   file_name: string;
   file_description: string;
@@ -86,36 +35,110 @@ export interface FileItem {
 }
 
 export const fileApi = {
-  // 获取文件列表
   list: async (base: string) => {
-    const res = await client.get<{ files: FileItem[] }>('/files/list', { params: { base } });
+    const res = await client.get('/files/list', { params: { base } });
     return res.data.files;
   },
 
-  // 上传文件
   upload: async (base: string, file: File) => {
-    const fd = new FormData();
-    fd.append('base', base);
-    fd.append('file', file);
-    // 上传文件时 Content-Type 设为 multipart/form-data
-    const res = await client.post('/files', fd, {
+    const formData = new FormData();
+    formData.append('base', base);
+    formData.append('file', file);
+    const res = await client.post('/files', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     return res.data;
   },
 
-  // 删除文件
-  delete: async (base: string, file_name: string) => {
-    const res = await client.delete('/files', { params: { base, file_name } });
+  delete: async (base: string, fileName: string) => {
+    const res = await client.delete('/files', {
+      params: { base, file_name: fileName }
+    });
     return res.data;
   },
 
-  // 获取预览文件内容（返回 Blob）
   preview: async (base: string, file_name: string) => {
     const res = await client.get('/files/preview', {
       params: { base, file_name },
-      responseType: 'blob',
+      responseType: 'blob'
     });
-    return res.data; // Blob
+    return res.data;
+  }
+};
+
+export const api = {
+  // Auth methods
+  register: async (data: any) => {
+    const res = await client.post('/auth/register', data);
+    return res.data;
   },
+
+  login: async (data: any) => {
+    const res = await client.post('/auth/login', data);
+    return res.data;
+  },
+
+  updateProfile: async (userId: number, data: any) => {
+    const res = await client.put(`/users/${userId}`, data);
+    return res.data;
+  },
+
+  updatePassword: async (userId: number, data: any) => {
+    const res = await client.put(`/users/${userId}/password`, data);
+    return res.data;
+  },
+
+  uploadAvatar: async (userId: number, file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await client.post(`/users/${userId}/avatar`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return res.data;
+  }
+};
+
+export const streamAnswer = (params: {
+  session_id: string;
+  question_id: string;
+  previous_questions: string[];
+  current_question: string;
+  language: string;
+  base: string;
+  onToken: (token: string) => void;
+  onReferences: (refs: Reference[]) => void;
+  onDone: () => void;
+  onError: () => void;
+}) => {
+  const url = `${API_BASE_URL}/questions/stream?session_id=${params.session_id}&question_id=${params.question_id}&previous_questions=${encodeURIComponent(JSON.stringify(params.previous_questions))}&current_question=${encodeURIComponent(params.current_question)}&language=${params.language}&base=${params.base}`;
+  
+  const eventSource = new EventSource(url);
+
+  eventSource.onmessage = (event) => {
+    if (event.data === '[DONE]') {
+      eventSource.close();
+      params.onDone();
+      return;
+    }
+
+    try {
+      const data = JSON.parse(event.data);
+      if (data.token) {
+        params.onToken(data.token);
+      } else if (data.references) {
+        params.onReferences(data.references);
+      }
+    } catch (e) {
+      console.error('Error parsing event data:', e);
+    }
+  };
+
+  eventSource.onerror = () => {
+    eventSource.close();
+    params.onError();
+  };
+
+  return () => {
+    eventSource.close();
+  };
 };

@@ -22,9 +22,12 @@ from fastapi.responses import StreamingResponse
 
 from backend.model.doc_analysis import split
 from backend.model.rag_stream import stream_answer
-from sqlalchemy import create_engine, Column, String, Text, Integer, TIMESTAMP, func, LargeBinary, text, orm, Index
+from sqlalchemy import create_engine, Column, String, Text, Integer, TIMESTAMP, func, LargeBinary, text, orm, Index, Enum as SQLEnum
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.dialects.mysql import JSON
+from passlib.context import CryptContext
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 from backend.model.ques_assemble import generate_search_query
 from backend.model.doc_search import search_documents, load_segments_from_folder
@@ -80,6 +83,18 @@ class DBFile(Base):
     )
 
 
+class DBUser(Base):
+    __tablename__ = "users"
+    user_id = Column(Integer, primary_key=True, autoincrement=True)
+    account = Column(String(50), unique=True, nullable=False)
+    password_hash = Column(String(255), nullable=False)
+    nickname = Column(String(50), nullable=False)
+    gender = Column(String(10), nullable=False)
+    identity = Column(String(20), nullable=False)
+    avatar_path = Column(String(255), nullable=True)
+    created_at = Column(TIMESTAMP, server_default=func.now())
+
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -128,6 +143,194 @@ class FeedbackRequest(BaseModel):
 class FeedbackResponse(BaseModel):
     session_id: str
     question_id: str
+
+
+import re
+from pydantic import BaseModel, Field, validator
+
+class UserRegister(BaseModel):
+    account: str = Field(..., description="Phone number (digits only)")
+    password: str = Field(..., description="6-digit password")
+    nickname: str = Field(..., description="Nickname (English or Chinese)")
+    gender: str
+    identity: str
+
+    @validator('account')
+    def validate_account(cls, v):
+        if not re.match(r'^\d{11}$', v):
+            raise ValueError('Account must be an 11-digit phone number')
+        return v
+
+    @validator('password')
+    def validate_password(cls, v):
+        if not re.match(r'^\d{6}$', v):
+            raise ValueError('Password must be exactly 6 digits')
+        return v
+
+    @validator('nickname')
+    def validate_nickname(cls, v):
+        if not re.match(r'^[\u4e00-\u9fa5a-zA-Z]+$', v):
+            raise ValueError('Nickname must contain only English or Chinese characters')
+        return v
+
+
+class UserLogin(BaseModel):
+    account: str
+    password: str
+
+
+class UserUpdate(BaseModel):
+    nickname: str = Field(..., description="Nickname")
+    gender: str
+    identity: str
+
+    @validator('nickname')
+    def validate_nickname(cls, v):
+        if not re.match(r'^[\u4e00-\u9fa5a-zA-Z]+$', v):
+            raise ValueError('Nickname must contain only English or Chinese characters')
+        return v
+
+class PasswordUpdate(BaseModel):
+    old_password: str
+    new_password: str = Field(..., description="6-digit password")
+
+    @validator('new_password')
+    def validate_password(cls, v):
+        if not re.match(r'^\d{6}$', v):
+            raise ValueError('Password must be exactly 6 digits')
+        return v
+
+@app.get("/api/v1/users/{user_id}")
+async def get_user_profile(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(DBUser).filter(DBUser.user_id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {
+        "user_id": user.user_id,
+        "account": user.account,
+        "nickname": user.nickname,
+        "gender": user.gender,
+        "identity": user.identity,
+        "avatar_path": user.avatar_path
+    }
+
+@app.put("/api/v1/users/{user_id}")
+async def update_profile(user_id: int, update_data: UserUpdate, db: Session = Depends(get_db)):
+    user = db.query(DBUser).filter(DBUser.user_id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user.nickname = update_data.nickname
+    user.gender = update_data.gender
+    user.identity = update_data.identity
+    db.commit()
+    db.refresh(user)
+    return {
+        "message": "Profile updated",
+        "user": {
+            "user_id": user.user_id,
+            "account": user.account,
+            "nickname": user.nickname,
+            "gender": user.gender,
+            "identity": user.identity,
+            "avatar_path": user.avatar_path
+        }
+    }
+
+@app.put("/api/v1/users/{user_id}/password")
+async def update_password(user_id: int, password_data: PasswordUpdate, db: Session = Depends(get_db)):
+    user = db.query(DBUser).filter(DBUser.user_id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if not pwd_context.verify(password_data.old_password, user.password_hash):
+        raise HTTPException(status_code=400, detail="Incorrect old password")
+    
+    user.password_hash = pwd_context.hash(password_data.new_password)
+    db.commit()
+    return {"message": "Password updated successfully"}
+
+@app.post("/api/v1/users/{user_id}/avatar")
+async def upload_avatar(user_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
+    user = db.query(DBUser).filter(DBUser.user_id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Create avatars directory
+    avatars_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "avatars")
+    os.makedirs(avatars_dir, exist_ok=True)
+    
+    # Save file
+    file_ext = os.path.splitext(file.filename)[1]
+    filename = f"user_{user_id}_{int(datetime.now().timestamp())}{file_ext}"
+    file_path = os.path.join(avatars_dir, filename)
+    
+    content = await file.read()
+    with open(file_path, "wb") as f:
+        f.write(content)
+    
+    # Delete old avatar if exists
+    if user.avatar_path:
+        old_path = os.path.join(avatars_dir, os.path.basename(user.avatar_path))
+        if os.path.exists(old_path):
+            try:
+                os.remove(old_path)
+            except:
+                pass
+
+    # Store relative path or full URL. Storing relative filename is safer.
+    # We will serve it via a static endpoint.
+    user.avatar_path = filename
+    db.commit()
+    
+    return {"message": "Avatar uploaded", "avatar_path": filename}
+
+@app.get("/api/v1/avatars/{filename}")
+async def get_avatar(filename: str):
+    avatars_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "avatars")
+    file_path = os.path.join(avatars_dir, filename)
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="Avatar not found")
+    return FileResponse(file_path)
+
+@app.post("/api/v1/auth/register")
+async def register(user: UserRegister, db: Session = Depends(get_db)):
+    # Check if user exists
+    existing_user = db.query(DBUser).filter(DBUser.account == user.account).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Account already exists")
+    
+    hashed_password = pwd_context.hash(user.password)
+    new_user = DBUser(
+        account=user.account,
+        password_hash=hashed_password,
+        nickname=user.nickname,
+        gender=user.gender,
+        identity=user.identity
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return {"message": "User registered successfully", "user_id": new_user.user_id}
+
+
+@app.post("/api/v1/auth/login")
+async def login(user: UserLogin, db: Session = Depends(get_db)):
+    db_user = db.query(DBUser).filter(DBUser.account == user.account).first()
+    if not db_user or not pwd_context.verify(user.password, db_user.password_hash):
+        raise HTTPException(status_code=401, detail="Invalid account or password")
+    
+    return {
+        "message": "Login successful",
+        "user": {
+            "user_id": db_user.user_id,
+            "account": db_user.account,
+            "nickname": db_user.nickname,
+            "gender": db_user.gender,
+            "identity": db_user.identity,
+            "avatar_path": db_user.avatar_path
+        }
+    }
 
 
 # @app.post("/api/v1/questions", response_model=QuestionResponse)
