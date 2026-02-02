@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = '/api/v1';
+const API_BASE_URL = 'http://localhost:8000/api/v1'; // Use direct backend URL to bypass Vite proxy
 
 const client = axios.create({
   baseURL: API_BASE_URL,
@@ -95,50 +95,105 @@ export const api = {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     return res.data;
+  },
+
+  getUserSessions: async (userId: number) => {
+    const res = await client.get(`/users/${userId}/sessions`);
+    return res.data;
+  },
+
+  getSessionMessages: async (sessionId: string) => {
+    const res = await client.get(`/sessions/${sessionId}/messages`);
+    return res.data;
   }
 };
 
-export const streamAnswer = (params: {
-  session_id: string;
-  question_id: string;
-  previous_questions: string[];
-  current_question: string;
-  language: string;
-  base: string;
-  onToken: (token: string) => void;
-  onReferences: (refs: Reference[]) => void;
-  onDone: () => void;
-  onError: () => void;
+export const streamAnswer = async (params: {
+    session_id: string;
+    question_id: string;
+    previous_questions: string[];
+    current_question: string;
+    language: string;
+    base: string;
+    user_id?: number;
+    onToken: (token: string) => void;
+    onReferences: (refs: Reference[]) => void;
+    onDone: () => void;
+    onError: () => void;
 }) => {
-  const url = `${API_BASE_URL}/questions/stream?session_id=${params.session_id}&question_id=${params.question_id}&previous_questions=${encodeURIComponent(JSON.stringify(params.previous_questions))}&current_question=${encodeURIComponent(params.current_question)}&language=${params.language}&base=${params.base}`;
-  
-  const eventSource = new EventSource(url);
-
-  eventSource.onmessage = (event) => {
-    if (event.data === '[DONE]') {
-      eventSource.close();
-      params.onDone();
-      return;
+    let url = `${API_BASE_URL}/questions/stream?session_id=${params.session_id}&question_id=${params.question_id}&previous_questions=${encodeURIComponent(JSON.stringify(params.previous_questions))}&current_question=${encodeURIComponent(params.current_question)}&language=${params.language}&base=${params.base}`;
+    
+    if (params.user_id) {
+        url += `&user_id=${params.user_id}`;
     }
+
+    const controller = new AbortController();
+    const signal = controller.signal;
 
     try {
-      const data = JSON.parse(event.data);
-      if (data.token) {
-        params.onToken(data.token);
-      } else if (data.references) {
-        params.onReferences(data.references);
-      }
-    } catch (e) {
-      console.error('Error parsing event data:', e);
+        const response = await fetch(url, {
+            signal,
+            headers: {
+                'Accept': 'text/event-stream',
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        if (!response.body) {
+            throw new Error('Response body is null');
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) {
+                break;
+            }
+
+            const chunk = decoder.decode(value, { stream: true });
+            buffer += chunk;
+            const lines = buffer.split('\n\n');
+            buffer = lines.pop() || ''; // Keep the incomplete part
+
+            for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                    const dataStr = line.slice(6);
+                    
+                    if (dataStr === '[DONE]') {
+                        params.onDone();
+                        return controller; // Return controller but we are done
+                    }
+
+                    try {
+                        const data = JSON.parse(dataStr);
+                        if (data.token) {
+                            params.onToken(data.token);
+                        } else if (data.references) {
+                            params.onReferences(data.references);
+                        } else if (data.error) {
+                            console.error('Stream error from server:', data.error);
+                            params.onError();
+                        }
+                    } catch (e) {
+                        console.error('Error parsing event data:', e);
+                    }
+                }
+            }
+        }
+    } catch (error: any) {
+        if (error.name === 'AbortError') {
+            console.log('Stream aborted by user');
+        } else {
+            console.error('Stream failed:', error);
+            params.onError();
+        }
     }
-  };
 
-  eventSource.onerror = () => {
-    eventSource.close();
-    params.onError();
-  };
-
-  return () => {
-    eventSource.close();
-  };
+    return controller;
 };

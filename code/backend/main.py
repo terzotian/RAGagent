@@ -45,6 +45,8 @@ Base = orm.declarative_base()
 class DBSession(Base):
     __tablename__ = "sessions"
     session_id = Column(String(28), primary_key=True)
+    user_id = Column(Integer, nullable=True)
+    title = Column(String(255), nullable=True)
     created_at = Column(TIMESTAMP, server_default=func.now())
     last_activity = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
 
@@ -374,26 +376,119 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
 
 
 @app.get("/api/v1/questions/stream")
-async def stream_question(session_id, question_id, previous_questions, current_question: str, language="en",
-                          base="lingnan"):
+async def stream_question(session_id: str, question_id: str, previous_questions: str, current_question: str, language: str = "en",
+                          base: str = "lingnan", user_id: int = Query(None)):
     previous_questions_list = json.loads(previous_questions)
 
     # 检索向量
-    search_query, assembled_question, generate_time = await generate_search_query(current_question,
-                                                                                  previous_questions_list)
+    try:
+        search_query, assembled_question, generate_time = await generate_search_query(current_question,
+                                                                                      previous_questions_list)
+    except Exception as e:
+        print(f"Error generating search query: {e}")
+        # Fallback if query generation fails
+        search_query = current_question
+        assembled_question = current_question
+        generate_time = 0.0
 
     # 参考文献
-    references, search_time = await search_documents(search_query,
-                                                     load_segments_from_folder(input_folder=piece_dir(base=base)))
+    try:
+        references, search_time = await search_documents(search_query,
+                                                         load_segments_from_folder(input_folder=piece_dir(base=base)))
+        # Map 'source' to 'file_name' for frontend compatibility
+        for ref in references:
+            if 'source' in ref:
+                ref['file_name'] = ref['source']
+    except Exception as e:
+        print(f"Error searching documents: {e}")
+        references = []
+        search_time = 0.0
 
     # 生成流式回答
     async def event_generator():
-        async for token in stream_answer(assembled_question, generate_time, references, search_time,
-                                         target_language=language):
-            yield f"data: {json.dumps({'token': token})}\n\n"
+        print(f"DEBUG: Starting event_generator for session {session_id}")
+        full_answer = ""
+        try:
+            print("DEBUG: Calling stream_answer")
+            async for token in stream_answer(assembled_question, generate_time, references, search_time,
+                                             target_language=language):
+                print(f"DEBUG: Received token: {token[:20]}..." if token else "DEBUG: Received empty token")
+                if token:  # Ensure token is not empty
+                    full_answer += token
+                    yield f"data: {json.dumps({'token': token})}\n\n"
+        except Exception as e:
+            print(f"Error during stream generation: {e}")
+            import traceback
+            traceback.print_exc()
+            yield f"data: {json.dumps({'error': str(e)})}\n\n"
+            # Don't return here, try to save partial answer if possible or just log
 
+        print("DEBUG: Stream finished, sending references")
         # 发送引用文献消息，字段名为 references
         yield f"data: {json.dumps({'references': references})}\n\n"
+
+        # Save to DB
+        print(f"DEBUG: Saving to DB. Session: {session_id}, User: {user_id}", flush=True)
+        try:
+            with SessionLocal() as db:
+                # 1. Update/Create Session
+                db_session = db.query(DBSession).filter(DBSession.session_id == session_id).first()
+                if not db_session:
+                    # Check history limit (max 10) for this user
+                    if user_id:
+                        try:
+                            current_count = db.query(DBSession).filter(DBSession.user_id == user_id).count()
+                            if current_count >= 10:
+                                # Delete oldest session(s)
+                                num_to_delete = current_count - 9 # e.g., if 10, delete 1 to make room (result 9+1=10)
+                                print(f"DEBUG: User {user_id} has {current_count} sessions. Deleting {num_to_delete} oldest.", flush=True)
+                                
+                                oldest_sessions = db.query(DBSession).filter(DBSession.user_id == user_id)\
+                                    .order_by(DBSession.last_activity.asc())\
+                                    .limit(num_to_delete).all()
+                                
+                                for old_sess in oldest_sessions:
+                                    # Manually delete related questions first (if cascade not set)
+                                    db.query(DBQuestion).filter(DBQuestion.session_id == old_sess.session_id).delete()
+                                    db.delete(old_sess)
+                                    print(f"DEBUG: Deleted old session {old_sess.session_id}", flush=True)
+                        except Exception as e:
+                            print(f"Error enforcing history limit: {e}", flush=True)
+
+                    # New session, use current question as title
+                    title = current_question[:50] + "..." if len(current_question) > 50 else current_question
+                    db_session = DBSession(session_id=session_id, user_id=user_id, title=title)
+                    db.add(db_session)
+                    print(f"DEBUG: Created new session {session_id} for user {user_id}", flush=True)
+                else:
+                    # Update last activity
+                    db_session.last_activity = func.now()
+                    # If user_id was missing (guest started, then logged in? unlikely flow but safe to set)
+                    if user_id and not db_session.user_id:
+                        db_session.user_id = user_id
+                        print(f"DEBUG: Associated session {session_id} with user {user_id}", flush=True)
+                
+                # Commit session changes FIRST to satisfy Foreign Key constraints
+                db.commit()
+                
+                # 2. Save Question
+                db_question = DBQuestion(
+                    session_id=session_id,
+                    question_id=question_id,
+                    previous_questions=json.loads(previous_questions), # Store as JSON
+                    current_question=current_question,
+                    answer=full_answer,
+                    references=references,
+                    rating=None
+                )
+                db.add(db_question)
+                db.commit()
+                print(f"DEBUG: DB save successful. Question saved with ID: {db_question.question_id}", flush=True)
+        except Exception as e:
+            print(f"Error saving to DB: {e}", flush=True)
+            import traceback
+            traceback.print_exc()
+
         yield "data: [DONE]\n\n"
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
@@ -581,6 +676,49 @@ async def submit_feedback(request: FeedbackRequest, db: Session = Depends(get_db
         "session_id": request.session_id,
         "question_id": request.question_id
     }
+
+
+@app.get("/api/v1/users/{user_id}/sessions")
+async def get_user_sessions(user_id: int, limit: int = 3, db: Session = Depends(get_db)):
+    sessions = db.query(DBSession).filter(DBSession.user_id == user_id)\
+        .order_by(DBSession.last_activity.desc())\
+        .limit(limit)\
+        .all()
+    
+    return [
+        {
+            "session_id": s.session_id,
+            "title": s.title or "New Chat",
+            "created_at": s.created_at,
+            "last_activity": s.last_activity
+        }
+        for s in sessions
+    ]
+
+@app.get("/api/v1/sessions/{session_id}/messages")
+async def get_session_messages(session_id: str, db: Session = Depends(get_db)):
+    questions = db.query(DBQuestion).filter(DBQuestion.session_id == session_id)\
+        .order_by(DBQuestion.created_at.asc())\
+        .all()
+    
+    messages = []
+    for q in questions:
+        # Add User Question
+        messages.append({
+            "role": "user",
+            "content": q.current_question,
+            "id": q.question_id + "_u" 
+        })
+        # Add Assistant Answer
+        messages.append({
+            "role": "assistant",
+            "content": q.answer,
+            "references": q.references,
+            "id": q.question_id + "_a",
+            "rating": q.rating
+        })
+    
+    return messages
 
 
 if __name__ == "__main__":

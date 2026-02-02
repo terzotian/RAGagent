@@ -7,7 +7,7 @@ import {
   Navigate,
   useLocation,
 } from 'react-router-dom';
-import { Navbar, Container, Nav, Image } from 'react-bootstrap';
+import { Navbar, Container, Nav, Image, Form } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ChatPage from './pages/ChatPage';
 import FilePage from './pages/FilePage';
@@ -20,6 +20,8 @@ const Layout: React.FC = () => {
   const location = useLocation();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [base, setBase] = useState('lingnan');
+  const [language, setLanguage] = useState<'en' | 'zh-cn' | 'zh-tw'>('en');
 
   const handleLoginSuccess = (loggedInUser: User) => {
     setUser(loggedInUser);
@@ -49,6 +51,27 @@ const Layout: React.FC = () => {
                 Files
               </Nav.Link>
             </Nav>
+            <div className="d-flex gap-2 me-3 align-items-center">
+              <Form.Select 
+                size="sm" 
+                value={base} 
+                onChange={(e) => setBase(e.target.value)} 
+                style={{ width: '140px', border: '1px solid #dee2e6' }}
+              >
+                <option value="lingnan">📚 Lingnan</option>
+                <option value="base_DS">📊 Data Science</option>
+              </Form.Select>
+              <Form.Select 
+                size="sm" 
+                value={language} 
+                onChange={(e) => setLanguage(e.target.value as 'en' | 'zh-cn' | 'zh-tw')} 
+                style={{ width: '140px', border: '1px solid #dee2e6' }}
+              >
+                <option value="zh-cn">🇨🇳 简体中文</option>
+                <option value="en">🇺🇸 English</option>
+                <option value="zh-tw">🇭🇰 繁体中文</option>
+              </Form.Select>
+            </div>
             <Nav>
               {user ? (
                 <div className="d-flex align-items-center">
@@ -105,7 +128,7 @@ const Layout: React.FC = () => {
       >
         <Routes>
           <Route path="/" element={<Navigate to="/chat" replace />} />
-          <Route path="/chat" element={<ChatPage user={user} />} />
+          <Route path="/chat" element={<ChatPage user={user} base={base} language={language} />} />
           <Route path="/files" element={<FilePage />} />
           <Route path="/profile" element={<ProfilePage user={user} setUser={setUser} />} />
         </Routes>

@@ -41,15 +41,24 @@ async def stream_qwen_plus_query(prompt: str):
     q = asyncio.Queue()
 
     def sync_producer():
+        print("DEBUG: Starting sync_producer")
         try:
+            print(f"DEBUG: Calling dashscope with prompt length: {len(prompt)}")
             for token in stream_qwen_plus_client.ask(prompt):
+                print(f"DEBUG: Got token from dashscope: {token[:10]}...")
                 # 将 token 放入队列（注意这里使用 run_coroutine_threadsafe）
                 asyncio.run_coroutine_threadsafe(q.put(token), loop)
         except Exception as e:
             print(f"Error in LLM generation: {e}")
-            # Optionally put an error message in the stream if desired, 
+            import traceback
+            traceback.print_exc()
+            # Yield error message to the stream so frontend can display it
+            error_msg = f"Error: {str(e)}"
+            asyncio.run_coroutine_threadsafe(q.put(error_msg), loop)
+ 
             # or just log it. For now, let's log it.
         finally:
+            print("DEBUG: sync_producer finished, putting None in queue")
             # 完成后向队列放入 None 表示结束
             asyncio.run_coroutine_threadsafe(q.put(None), loop)
 

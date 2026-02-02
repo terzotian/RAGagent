@@ -22,7 +22,12 @@ async def generate_search_query(user_question: str, history_questions: list[str]
     start_generate = time.time()
     # 构造语料库，将历史问题和当前问题合并
     corpus = history_questions + [user_question]
-    corpus = await async_translate(corpus, "en")
+    try:
+        corpus = await async_translate(corpus, "en")
+    except Exception as e:
+        print(f"Translation failed: {e}")
+        # Fallback to original text if translation fails
+        pass
 
     # 使用英文停用词，可以根据需要调整或替换为中文停用词列表
     vectorizer = TfidfVectorizer(stop_words='english')

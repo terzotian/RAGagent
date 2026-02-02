@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Container, Form, Button, Spinner, Image } from 'react-bootstrap';
-import { streamAnswer, getAvatarUrl, type Reference, type User } from '../services/api';
+import { Container, Form, Button, Spinner, Image, ListGroup } from 'react-bootstrap';
+import { streamAnswer, getAvatarUrl, api, type Reference, type User } from '../services/api';
 import ReactMarkdown from 'react-markdown';
 
 interface Message {
@@ -9,23 +9,73 @@ interface Message {
   references?: Reference[];
 }
 
-interface ChatPageProps {
-  user?: User | null;
+interface ChatSession {
+  session_id: string;
+  title: string;
+  created_at: string;
+  last_activity: string;
 }
 
-const ChatPage: React.FC<ChatPageProps> = ({ user }) => {
+interface ChatPageProps {
+  user?: User | null;
+  base: string;
+  language: 'en' | 'zh-cn' | 'zh-tw';
+}
+
+const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [base, setBase] = useState('lingnan'); // 默认知识库
-  const [language, setLanguage] = useState<'en' | 'zh-cn' | 'zh-tw'>('en'); // 默认语言
-  const [sessionId] = useState(() => 'session_' + Math.random().toString(36).substr(2, 9));
+  const [sessionId, setSessionId] = useState(() => 'session_' + Math.random().toString(36).substr(2, 9));
+  const [showSidebar, setShowSidebar] = useState(false);
+  const [historySessions, setHistorySessions] = useState<ChatSession[]>([]);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    if (user) {
+      api.getUserSessions(user.user_id).then(setHistorySessions).catch(console.error);
+    } else {
+      setHistorySessions([]);
+    }
+  }, [user]);
+
+  const handleNewChat = () => {
+    setSessionId('session_' + Math.random().toString(36).substr(2, 9));
+    setMessages([]);
+    setInput('');
+    if (user) {
+      api.getUserSessions(user.user_id).then(setHistorySessions).catch(console.error);
+    }
+  };
+
+  const loadSession = async (sid: string) => {
+    if (sid === sessionId) return;
+    try {
+      setLoading(true);
+      const msgs = await api.getSessionMessages(sid);
+      setMessages(msgs);
+      setSessionId(sid);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -40,7 +90,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ user }) => {
     }
   }, [input]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim() || loading) return;
 
     const userMsg = input.trim();
@@ -63,13 +113,19 @@ const ChatPage: React.FC<ChatPageProps> = ({ user }) => {
     // 累积 Token 的临时变量
     let currentAnswer = '';
 
-    streamAnswer({
+    // Close previous stream if any
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    const controller = await streamAnswer({
       session_id: sessionId,
       question_id: questionId,
       previous_questions: previousQuestions,
       current_question: userMsg,
       language: language,
       base: base,
+      user_id: user?.user_id,
       onToken: (token) => {
         currentAnswer += token;
         setMessages(prev => {
@@ -91,12 +147,25 @@ const ChatPage: React.FC<ChatPageProps> = ({ user }) => {
       },
       onDone: () => {
         setLoading(false);
+        abortControllerRef.current = null;
+        // Refresh history after chat
+        if (user) {
+           // Small delay to ensure DB is updated
+           setTimeout(() => {
+               api.getUserSessions(user.user_id).then(setHistorySessions).catch(console.error);
+           }, 1000);
+        }
       },
       onError: () => {
         setLoading(false);
-        setMessages(prev => [...prev, { role: 'assistant', content: '\n[Error: Connection interrupted]' }]);
+        abortControllerRef.current = null;
+        setMessages(prev => [...prev, { role: 'assistant', content: '\n[Error: Connection interrupted. Please try again.]' }]);
       }
     });
+    
+    if (controller) {
+      abortControllerRef.current = controller;
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -107,25 +176,75 @@ const ChatPage: React.FC<ChatPageProps> = ({ user }) => {
   };
 
   return (
-    <div className="d-flex flex-column h-100 position-relative">
-      {/* 顶部设置栏 (悬浮) */}
-      <div className="position-absolute top-0 end-0 p-3 z-3">
-         <div className="d-flex gap-2 bg-white p-2 rounded shadow-sm border">
-            <Form.Select size="sm" value={base} onChange={(e) => setBase(e.target.value)} style={{ width: '160px', border: 'none', background: '#f8f9fa' }} className="text-center">
-              <option value="lingnan">📚 Lingnan</option>
-              <option value="base_DS">📊 Data Science</option>
-            </Form.Select>
-            <Form.Select size="sm" value={language} onChange={(e) => setLanguage(e.target.value as 'en' | 'zh-cn' | 'zh-tw')} style={{ width: '160px', border: 'none', background: '#f8f9fa' }} className="text-center">
-              <option value="zh-cn">🇨🇳 简体中文</option>
-              <option value="en">🇺🇸 English</option>
-              <option value="zh-tw">🇭🇰 繁体中文</option>
-            </Form.Select>
-         </div>
+    <div className="d-flex h-100 w-100 overflow-hidden">
+      {/* Sidebar */}
+      <div 
+        className="bg-light border-end d-flex flex-column" 
+        style={{ 
+            width: showSidebar ? '280px' : '0px', 
+            overflow: 'hidden', 
+            transition: 'width 0.3s ease',
+            flexShrink: 0 
+        }}
+      >
+        <div className="p-3 border-bottom d-flex justify-content-between align-items-center bg-white">
+           <span className="fw-bold text-primary">History</span>
+           <Button variant="link" size="sm" className="p-0 text-secondary text-decoration-none" onClick={() => setShowSidebar(false)}>
+             <span style={{ fontSize: '1.2rem' }}>&times;</span>
+           </Button>
+        </div>
+        <div className="p-3 flex-grow-1 overflow-auto">
+           <Button variant="primary" className="w-100 mb-3 shadow-sm" onClick={handleNewChat}>
+             <span className="me-2">+</span> New Chat
+           </Button>
+           
+           {user ? (
+               <div className="mt-2">
+                   <div className="text-muted small mb-2 text-uppercase fw-bold" style={{ fontSize: '0.75rem' }}>Recent</div>
+                   <ListGroup variant="flush">
+                       {historySessions.map(s => (
+                           <ListGroup.Item 
+                               key={s.session_id} 
+                               action 
+                               active={s.session_id === sessionId}
+                               onClick={() => loadSession(s.session_id)}
+                               className="border-0 rounded mb-1 text-truncate px-2 py-2"
+                               style={{ fontSize: '0.9rem', backgroundColor: s.session_id === sessionId ? '#e9ecef' : 'transparent', color: '#333', fontWeight: s.session_id === sessionId ? 600 : 400 }}
+                           >
+                               {s.title || 'Untitled Chat'}
+                           </ListGroup.Item>
+                       ))}
+                       {historySessions.length === 0 && (
+                         <div className="text-center text-muted small mt-4">No history yet</div>
+                       )}
+                   </ListGroup>
+               </div>
+           ) : (
+               <div className="text-center text-muted small mt-5 p-3 bg-white rounded border border-dashed">
+                 Log in to view and save your chat history.
+               </div>
+           )}
+        </div>
       </div>
 
-      {/* 聊天内容区域 */}
-      <div className="flex-grow-1 overflow-auto w-100" style={{ paddingBottom: '140px' }}>
-        <Container className="chat-container py-5">
+      {/* Main Content */}
+      <div className="flex-grow-1 d-flex flex-column position-relative h-100" style={{ minWidth: 0 }}>
+        {/* Toggle Button */}
+        {!showSidebar && (
+          <Button 
+            variant="light" 
+            className="position-absolute top-0 start-0 m-3 shadow-sm z-3 border d-flex align-items-center justify-content-center"
+            onClick={() => setShowSidebar(true)}
+            style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.9)' }}
+            title="Show History"
+          >
+            <span style={{ fontSize: '1.2rem' }}>☰</span>
+          </Button>
+        )}
+
+        {/* 聊天内容区域 */}
+        <div className="flex-grow-1 overflow-auto w-100" style={{ paddingBottom: '140px' }}>
+          <Container className="chat-container py-5">
           {messages.length === 0 && (
             <div className="text-center mt-5 pt-5">
               <div className="mb-4">
@@ -158,7 +277,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ user }) => {
                     <ul className="mb-0 ps-3 text-muted">
                       {msg.references.map((ref, rIdx) => (
                         <li key={rIdx}>
-                          {ref.file_name} <span className="badge bg-light text-dark border ms-1">{ref.similarity?.toFixed(2)}</span>
+                          {ref.file_name} <span className="badge bg-light text-dark border ms-1">{typeof ref.similarity === 'number' ? ref.similarity.toFixed(2) : ref.similarity}</span>
                         </li>
                       ))}
                     </ul>
@@ -235,6 +354,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ user }) => {
           </div>
         </Container>
       </div>
+    </div>
     </div>
   );
 };
