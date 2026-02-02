@@ -221,7 +221,7 @@ async def update_profile(user_id: int, update_data: UserUpdate, db: Session = De
     user = db.query(DBUser).filter(DBUser.user_id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    
+
     user.nickname = update_data.nickname
     user.gender = update_data.gender
     user.identity = update_data.identity
@@ -244,10 +244,10 @@ async def update_password(user_id: int, password_data: PasswordUpdate, db: Sessi
     user = db.query(DBUser).filter(DBUser.user_id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    
+
     if not pwd_context.verify(password_data.old_password, user.password_hash):
         raise HTTPException(status_code=400, detail="Incorrect old password")
-    
+
     user.password_hash = pwd_context.hash(password_data.new_password)
     db.commit()
     return {"message": "Password updated successfully"}
@@ -257,20 +257,20 @@ async def upload_avatar(user_id: int, file: UploadFile = File(...), db: Session 
     user = db.query(DBUser).filter(DBUser.user_id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    
+
     # Create avatars directory
     avatars_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "avatars")
     os.makedirs(avatars_dir, exist_ok=True)
-    
+
     # Save file
     file_ext = os.path.splitext(file.filename)[1]
     filename = f"user_{user_id}_{int(datetime.now().timestamp())}{file_ext}"
     file_path = os.path.join(avatars_dir, filename)
-    
+
     content = await file.read()
     with open(file_path, "wb") as f:
         f.write(content)
-    
+
     # Delete old avatar if exists
     if user.avatar_path:
         old_path = os.path.join(avatars_dir, os.path.basename(user.avatar_path))
@@ -284,7 +284,7 @@ async def upload_avatar(user_id: int, file: UploadFile = File(...), db: Session 
     # We will serve it via a static endpoint.
     user.avatar_path = filename
     db.commit()
-    
+
     return {"message": "Avatar uploaded", "avatar_path": filename}
 
 @app.get("/api/v1/avatars/{filename}")
@@ -301,7 +301,7 @@ async def register(user: UserRegister, db: Session = Depends(get_db)):
     existing_user = db.query(DBUser).filter(DBUser.account == user.account).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="Account already exists")
-    
+
     hashed_password = pwd_context.hash(user.password)
     new_user = DBUser(
         account=user.account,
@@ -321,7 +321,7 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
     db_user = db.query(DBUser).filter(DBUser.account == user.account).first()
     if not db_user or not pwd_context.verify(user.password, db_user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid account or password")
-    
+
     return {
         "message": "Login successful",
         "user": {
@@ -442,11 +442,11 @@ async def stream_question(session_id: str, question_id: str, previous_questions:
                                 # Delete oldest session(s)
                                 num_to_delete = current_count - 9 # e.g., if 10, delete 1 to make room (result 9+1=10)
                                 print(f"DEBUG: User {user_id} has {current_count} sessions. Deleting {num_to_delete} oldest.", flush=True)
-                                
+
                                 oldest_sessions = db.query(DBSession).filter(DBSession.user_id == user_id)\
                                     .order_by(DBSession.last_activity.asc())\
                                     .limit(num_to_delete).all()
-                                
+
                                 for old_sess in oldest_sessions:
                                     # Manually delete related questions first (if cascade not set)
                                     db.query(DBQuestion).filter(DBQuestion.session_id == old_sess.session_id).delete()
@@ -467,10 +467,10 @@ async def stream_question(session_id: str, question_id: str, previous_questions:
                     if user_id and not db_session.user_id:
                         db_session.user_id = user_id
                         print(f"DEBUG: Associated session {session_id} with user {user_id}", flush=True)
-                
+
                 # Commit session changes FIRST to satisfy Foreign Key constraints
                 db.commit()
-                
+
                 # 2. Save Question
                 db_question = DBQuestion(
                     session_id=session_id,
@@ -684,7 +684,7 @@ async def get_user_sessions(user_id: int, limit: int = 3, db: Session = Depends(
         .order_by(DBSession.last_activity.desc())\
         .limit(limit)\
         .all()
-    
+
     return [
         {
             "session_id": s.session_id,
@@ -700,14 +700,14 @@ async def get_session_messages(session_id: str, db: Session = Depends(get_db)):
     questions = db.query(DBQuestion).filter(DBQuestion.session_id == session_id)\
         .order_by(DBQuestion.created_at.asc())\
         .all()
-    
+
     messages = []
     for q in questions:
         # Add User Question
         messages.append({
             "role": "user",
             "content": q.current_question,
-            "id": q.question_id + "_u" 
+            "id": q.question_id + "_u"
         })
         # Add Assistant Answer
         messages.append({
@@ -717,8 +717,33 @@ async def get_session_messages(session_id: str, db: Session = Depends(get_db)):
             "id": q.question_id + "_a",
             "rating": q.rating
         })
-    
+
     return messages
+
+
+@app.delete("/api/v1/sessions/{session_id}")
+async def delete_session(session_id: str, user_id: int = Query(...), db: Session = Depends(get_db)):
+    # Verify session exists and belongs to user
+    session = db.query(DBSession).filter(
+        DBSession.session_id == session_id,
+        DBSession.user_id == user_id
+    ).first()
+
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found or access denied")
+
+    try:
+        # Delete related questions first
+        db.query(DBQuestion).filter(DBQuestion.session_id == session_id).delete()
+
+        # Delete session
+        db.delete(session)
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to delete session: {str(e)}")
+
+    return {"message": "Session deleted successfully"}
 
 
 if __name__ == "__main__":

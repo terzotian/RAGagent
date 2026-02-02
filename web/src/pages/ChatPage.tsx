@@ -29,7 +29,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
   const [sessionId, setSessionId] = useState(() => 'session_' + Math.random().toString(36).substr(2, 9));
   const [showSidebar, setShowSidebar] = useState(false);
   const [historySessions, setHistorySessions] = useState<ChatSession[]>([]);
-  
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -78,6 +78,27 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
     }
   };
 
+  const handleDeleteSession = async (e: React.MouseEvent, sid: string) => {
+    e.stopPropagation();
+    if (!user) return;
+    if (!window.confirm('Are you sure you want to delete this chat history?')) return;
+
+    try {
+      await api.deleteSession(sid, user.user_id);
+
+      // Update local state
+      setHistorySessions(prev => prev.filter(s => s.session_id !== sid));
+
+      // If deleted session was active, reset to new chat
+      if (sid === sessionId) {
+        handleNewChat();
+      }
+    } catch (e) {
+      console.error('Failed to delete session:', e);
+      alert('Failed to delete session');
+    }
+  };
+
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -98,7 +119,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
     setMessages(newMessages);
     setInput('');
     setLoading(true);
-    
+
     // 重置输入框高度
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -162,7 +183,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
         setMessages(prev => [...prev, { role: 'assistant', content: '\n[Error: Connection interrupted. Please try again.]' }]);
       }
     });
-    
+
     if (controller) {
       abortControllerRef.current = controller;
     }
@@ -178,13 +199,13 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
   return (
     <div className="d-flex h-100 w-100 overflow-hidden">
       {/* Sidebar */}
-      <div 
-        className="bg-light border-end d-flex flex-column" 
-        style={{ 
-            width: showSidebar ? '280px' : '0px', 
-            overflow: 'hidden', 
+      <div
+        className="bg-light border-end d-flex flex-column"
+        style={{
+            width: showSidebar ? '280px' : '0px',
+            overflow: 'hidden',
             transition: 'width 0.3s ease',
-            flexShrink: 0 
+            flexShrink: 0
         }}
       >
         <div className="p-3 border-bottom d-flex justify-content-between align-items-center bg-white">
@@ -197,21 +218,35 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
            <Button variant="primary" className="w-100 mb-3 shadow-sm" onClick={handleNewChat}>
              <span className="me-2">+</span> New Chat
            </Button>
-           
+
            {user ? (
                <div className="mt-2">
                    <div className="text-muted small mb-2 text-uppercase fw-bold" style={{ fontSize: '0.75rem' }}>Recent</div>
                    <ListGroup variant="flush">
                        {historySessions.map(s => (
-                           <ListGroup.Item 
-                               key={s.session_id} 
-                               action 
+                           <ListGroup.Item
+                               key={s.session_id}
+                               action
                                active={s.session_id === sessionId}
                                onClick={() => loadSession(s.session_id)}
-                               className="border-0 rounded mb-1 text-truncate px-2 py-2"
+                               className="border-0 rounded mb-1 px-2 py-2 d-flex justify-content-between align-items-center"
                                style={{ fontSize: '0.9rem', backgroundColor: s.session_id === sessionId ? '#e9ecef' : 'transparent', color: '#333', fontWeight: s.session_id === sessionId ? 600 : 400 }}
                            >
-                               {s.title || 'Untitled Chat'}
+                               <div className="text-truncate" style={{ flex: 1 }}>
+                                   {s.title || 'Untitled Chat'}
+                               </div>
+                               <Button
+                                   variant="link"
+                                   size="sm"
+                                   className="p-0 ms-2 text-secondary"
+                                   onClick={(e) => handleDeleteSession(e, s.session_id)}
+                                   title="Delete chat"
+                                   style={{ textDecoration: 'none', lineHeight: 1, fontSize: '1.2rem', opacity: 0.6 }}
+                                   onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                                   onMouseLeave={(e) => e.currentTarget.style.opacity = '0.6'}
+                               >
+                                   &times;
+                               </Button>
                            </ListGroup.Item>
                        ))}
                        {historySessions.length === 0 && (
@@ -231,8 +266,8 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
       <div className="flex-grow-1 d-flex flex-column position-relative h-100" style={{ minWidth: 0 }}>
         {/* Toggle Button */}
         {!showSidebar && (
-          <Button 
-            variant="light" 
+          <Button
+            variant="light"
             className="position-absolute top-0 start-0 m-3 shadow-sm z-3 border d-flex align-items-center justify-content-center"
             onClick={() => setShowSidebar(true)}
             style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.9)' }}
@@ -254,14 +289,14 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
               <p className="text-muted">Select a knowledge base to get started</p>
             </div>
           )}
-          
+
           {messages.map((msg, idx) => (
             <div key={idx} className={`d-flex mb-4 ${msg.role === 'user' ? 'justify-content-end' : 'justify-content-start'}`}>
-              
+
               {msg.role === 'assistant' && (
                 <div className="avatar ai me-3 shadow-sm">AI</div>
               )}
-              
+
               <div className={`message-bubble ${msg.role} shadow-sm`} style={{ maxWidth: '85%' }}>
                 {msg.role === 'assistant' ? (
                    <div className="markdown-body">
@@ -270,7 +305,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
                 ) : (
                   msg.content
                 )}
-                
+
                 {msg.references && msg.references.length > 0 && (
                   <div className="mt-3 pt-2 border-top small" style={{ borderColor: 'rgba(0,0,0,0.1)' }}>
                     <div className="fw-bold mb-1 text-muted" style={{ fontSize: '0.8rem' }}>📚 Reference source:</div>
@@ -288,9 +323,9 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
               {msg.role === 'user' && (
                 <div className="avatar user ms-3 shadow-sm p-0 overflow-hidden d-flex align-items-center justify-content-center">
                   {user && user.avatar_path ? (
-                     <Image 
-                       src={getAvatarUrl(user.avatar_path)} 
-                       style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                     <Image
+                       src={getAvatarUrl(user.avatar_path)}
+                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                      />
                   ) : (
                     user ? user.nickname.charAt(0).toUpperCase() : 'Me'
@@ -300,7 +335,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
 
             </div>
           ))}
-          
+
           {loading && messages[messages.length - 1]?.role === 'user' && (
             <div className="d-flex mb-4 justify-content-start">
                <div className="avatar ai me-3 shadow-sm">AI</div>
@@ -312,7 +347,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
                </div>
             </div>
           )}
-          
+
           <div ref={messagesEndRef} />
         </Container>
       </div>
@@ -337,11 +372,11 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
                <div className="small text-muted ps-2">
                  <small>Shift + Enter Newline</small>
                </div>
-               <Button 
-                variant={input.trim() ? "primary" : "secondary"} 
-                size="sm" 
-                onClick={handleSend} 
-                disabled={loading || !input.trim()} 
+               <Button
+                variant={input.trim() ? "primary" : "secondary"}
+                size="sm"
+                onClick={handleSend}
+                disabled={loading || !input.trim()}
                 className="rounded-pill px-4"
                 style={{ opacity: input.trim() ? 1 : 0.6 }}
                >

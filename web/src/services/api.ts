@@ -105,6 +105,13 @@ export const api = {
   getSessionMessages: async (sessionId: string) => {
     const res = await client.get(`/sessions/${sessionId}/messages`);
     return res.data;
+  },
+
+  deleteSession: async (sessionId: string, userId: number) => {
+    const res = await client.delete(`/sessions/${sessionId}`, {
+      params: { user_id: userId }
+    });
+    return res.data;
   }
 };
 
