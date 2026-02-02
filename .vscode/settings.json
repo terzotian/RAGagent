@@ -1,0 +1,34 @@
+{
+    // 编辑器行为
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    
+    // 文件排除（在资源管理器中隐藏）
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/__pycache__": true,
+        "**/.pytest_cache": true,
+        "**/*.pyc": true,
+        "**/node_modules": true,
+        "**/dist": true,
+        "**/.idea": true
+    },
+    
+    // 搜索排除
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/dist": true,
+        "**/__pycache__": true,
+        "**/.pytest_cache": true,
+        "**/*.code-search": true
+    },
+
+    // Python 插件设置（避免检查 web 目录下的 TS 文件）
+    "python.analysis.exclude": ["web"],
+    "python.analysis.ignore": ["web"]
+}
