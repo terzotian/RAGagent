@@ -209,13 +209,13 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
         }}
       >
         <div className="p-3 border-bottom d-flex justify-content-between align-items-center bg-white">
-           <span className="fw-bold text-primary">History</span>
+           <span className="fw-bold" style={{ color: 'var(--primary-color)', fontSize: '1.25rem' }}>History</span>
            <Button variant="link" size="sm" className="p-0 text-secondary text-decoration-none" onClick={() => setShowSidebar(false)}>
              <span style={{ fontSize: '1.2rem' }}>&times;</span>
            </Button>
         </div>
         <div className="p-3 flex-grow-1 overflow-auto">
-           <Button variant="primary" className="w-100 mb-3 shadow-sm" onClick={handleNewChat}>
+           <Button variant="primary" className="w-100 mb-3 shadow-sm btn-dynamic" onClick={handleNewChat}>
              <span className="me-2">+</span> New Chat
            </Button>
 
@@ -230,7 +230,12 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
                                active={s.session_id === sessionId}
                                onClick={() => loadSession(s.session_id)}
                                className="border-0 rounded mb-1 px-2 py-2 d-flex justify-content-between align-items-center"
-                               style={{ fontSize: '0.9rem', backgroundColor: s.session_id === sessionId ? '#e9ecef' : 'transparent', color: '#333', fontWeight: s.session_id === sessionId ? 600 : 400 }}
+                               style={{
+                                 fontSize: '0.9rem',
+                                 backgroundColor: s.session_id === sessionId ? 'var(--primary-light-color)' : 'transparent',
+                                 color: s.session_id === sessionId ? 'var(--primary-color)' : '#333',
+                                 fontWeight: s.session_id === sessionId ? 600 : 400
+                               }}
                            >
                                <div className="text-truncate" style={{ flex: 1 }}>
                                    {s.title || 'Untitled Chat'}
@@ -268,7 +273,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
         {!showSidebar && (
           <Button
             variant="light"
-            className="position-absolute top-0 start-0 m-3 shadow-sm z-3 border d-flex align-items-center justify-content-center"
+            className="position-absolute top-0 start-0 m-3 shadow-sm z-3 border d-flex align-items-center justify-content-center btn-dynamic"
             onClick={() => setShowSidebar(true)}
             style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.9)' }}
             title="Show History"
@@ -277,18 +282,21 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
           </Button>
         )}
 
+        {/* Hero Section - 初始状态居中显示 */}
+        <div
+          className={`hero-section position-absolute w-100 text-center ${messages.length > 0 ? 'hidden' : ''}`}
+          style={{ top: '35%', left: 0, zIndex: 10 }}
+        >
+          <div className="mb-4">
+            <div style={{ fontSize: '4rem', animation: 'float 3s ease-in-out infinite', display: 'inline-block' }}>🤖</div>
+          </div>
+          <h2 className="fw-bold mb-3 text-dark">How can I assist you today?</h2>
+          <p className="text-muted">Select a knowledge base to get started</p>
+        </div>
+
         {/* 聊天内容区域 */}
         <div className="flex-grow-1 overflow-auto w-100" style={{ paddingBottom: '140px' }}>
           <Container className="chat-container py-5">
-          {messages.length === 0 && (
-            <div className="text-center mt-5 pt-5">
-              <div className="mb-4">
-                <div style={{ fontSize: '4rem' }}>🤖</div>
-              </div>
-              <h2 className="fw-bold mb-3 text-dark">How can I assist you today?</h2>
-              <p className="text-muted">Select a knowledge base to get started</p>
-            </div>
-          )}
 
           {messages.map((msg, idx) => (
             <div key={idx} className={`d-flex mb-4 ${msg.role === 'user' ? 'justify-content-end' : 'justify-content-start'}`}>
@@ -353,7 +361,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
       </div>
 
       {/* 底部输入区域 (固定) */}
-      <div className="position-absolute bottom-0 start-0 end-0 input-area-wrapper">
+      <div className={`input-area-wrapper ${messages.length === 0 ? 'initial' : 'chat-mode'}`}>
         <Container className="chat-container">
           <div className="modern-input-group d-flex flex-column">
             <Form.Control
@@ -368,7 +376,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
               disabled={loading}
               style={{ maxHeight: '200px', overflowY: 'auto' }}
             />
-            <div className="d-flex justify-content-between align-items-center px-2 pb-1 mt-1">
+            <div className="d-flex justify-content-between align-items-center px-2 modern-input-actions">
                <div className="small text-muted ps-2">
                  <small>Shift + Enter Newline</small>
                </div>
@@ -377,17 +385,20 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
                 size="sm"
                 onClick={handleSend}
                 disabled={loading || !input.trim()}
-                className="rounded-pill px-4"
+                className="rounded-pill px-4 btn-dynamic"
                 style={{ opacity: input.trim() ? 1 : 0.6 }}
                >
                 {loading ? <Spinner animation="border" size="sm" /> : 'Send'}
               </Button>
             </div>
           </div>
-          <div className="text-center mt-2">
-             <small className="text-muted" style={{ fontSize: '0.75rem' }}>AI-generated content may not be accurate, please verify important information.</small>
-          </div>
         </Container>
+      </div>
+      {/* 底部免责声明固定，不随输入框位置变化 */}
+      <div className="footer-disclaimer">
+        <small className="text-muted" style={{ fontSize: '0.75rem' }}>
+          AI-generated content may not be accurate, please verify important information.
+        </small>
       </div>
     </div>
     </div>

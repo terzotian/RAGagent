@@ -7,7 +7,7 @@ import {
   Navigate,
   useLocation,
 } from 'react-router-dom';
-import { Navbar, Container, Nav, Image, Form } from 'react-bootstrap';
+import { Navbar, Container, Nav, Image, Dropdown } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ChatPage from './pages/ChatPage';
 import FilePage from './pages/FilePage';
@@ -31,46 +31,88 @@ const Layout: React.FC = () => {
   return (
     <div className="d-flex flex-column vh-100">
       <Navbar
-        bg="white"
         variant="light"
         expand="lg"
-        className="border-bottom shadow-sm"
-        style={{ zIndex: 10 }}
+        className="border-bottom shadow-sm py-3 navbar-gradient"
+        style={{ zIndex: 10, minHeight: '110px' }}
       >
         <Container fluid>
-          <Navbar.Brand as={Link} to="/chat" className="fw-bold text-primary">
-            AgentRAG
+          <Navbar.Brand as={Link} to="/chat" className="fw-bold text-primary navbar-brand-dynamic d-flex align-items-center">
+            <Image
+              src="/logo.jpg"
+              alt="Lingnan University"
+              style={{ height: '70px', objectFit: 'contain' }}
+            />
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link as={Link} to="/chat" active={location.pathname === '/chat'}>
+              <Nav.Link as={Link} to="/chat" active={location.pathname === '/chat'} className={`nav-link-dynamic ${location.pathname === '/chat' ? 'active' : ''}`}>
                 Chat
               </Nav.Link>
-              <Nav.Link as={Link} to="/files" active={location.pathname === '/files'}>
+              <Nav.Link as={Link} to="/files" active={location.pathname === '/files'} className={`nav-link-dynamic ${location.pathname === '/files' ? 'active' : ''}`}>
                 Files
               </Nav.Link>
             </Nav>
-            <div className="d-flex gap-2 me-3 align-items-center">
-              <Form.Select 
-                size="sm" 
-                value={base} 
-                onChange={(e) => setBase(e.target.value)} 
-                style={{ width: '140px', border: '1px solid #dee2e6' }}
-              >
-                <option value="lingnan">📚 Lingnan</option>
-                <option value="base_DS">📊 Data Science</option>
-              </Form.Select>
-              <Form.Select 
-                size="sm" 
-                value={language} 
-                onChange={(e) => setLanguage(e.target.value as 'en' | 'zh-cn' | 'zh-tw')} 
-                style={{ width: '140px', border: '1px solid #dee2e6' }}
-              >
-                <option value="zh-cn">🇨🇳 简体中文</option>
-                <option value="en">🇺🇸 English</option>
-                <option value="zh-tw">🇭🇰 繁体中文</option>
-              </Form.Select>
+            <div className="d-flex gap-3 me-3 align-items-center">
+              <Dropdown>
+                <Dropdown.Toggle
+                  variant="custom"
+                  id="dropdown-base"
+                  className="custom-dropdown-toggle"
+                >
+                  {base === 'lingnan' ? 'Lingnan' : 'Data Science'}
+                </Dropdown.Toggle>
+                <Dropdown.Menu className="custom-dropdown-menu">
+                  <Dropdown.Item
+                    onClick={() => setBase('lingnan')}
+                    className="custom-dropdown-item"
+                    active={base === 'lingnan'}
+                  >
+                    Lingnan
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    onClick={() => setBase('base_DS')}
+                    className="custom-dropdown-item"
+                    active={base === 'base_DS'}
+                  >
+                    Data Science
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+
+              <Dropdown>
+                <Dropdown.Toggle
+                  variant="custom"
+                  id="dropdown-language"
+                  className="custom-dropdown-toggle"
+                >
+                  {language === 'zh-cn' ? '简体中文' : language === 'en' ? 'English' : '繁体中文'}
+                </Dropdown.Toggle>
+                <Dropdown.Menu className="custom-dropdown-menu">
+                  <Dropdown.Item
+                    onClick={() => setLanguage('zh-cn')}
+                    className="custom-dropdown-item"
+                    active={language === 'zh-cn'}
+                  >
+                    简体中文
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    onClick={() => setLanguage('en')}
+                    className="custom-dropdown-item"
+                    active={language === 'en'}
+                  >
+                    English
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    onClick={() => setLanguage('zh-tw')}
+                    className="custom-dropdown-item"
+                    active={language === 'zh-tw'}
+                  >
+                    繁体中文
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
             </div>
             <Nav>
               {user ? (
@@ -99,17 +141,16 @@ const Layout: React.FC = () => {
                   </Link>
                 </div>
               ) : (
-                <div
-                  className="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
-                  style={{ width: '40px', height: '40px', cursor: 'pointer' }}
+                <Image
+                  src="/guest_logo.png"
+                  roundedCircle
+                  width={40}
+                  height={40}
+                  className="border"
+                  style={{ objectFit: 'cover', cursor: 'pointer' }}
                   onClick={() => setShowAuthModal(true)}
                   title="Login / Register"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
-                    <path fillRule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
-                  </svg>
-                </div>
+                />
               )}
             </Nav>
           </Navbar.Collapse>
@@ -126,12 +167,14 @@ const Layout: React.FC = () => {
         className="flex-grow-1 position-relative"
         style={{ backgroundColor: '#f7f7f8', overflow: 'hidden' }}
       >
-        <Routes>
-          <Route path="/" element={<Navigate to="/chat" replace />} />
-          <Route path="/chat" element={<ChatPage user={user} base={base} language={language} />} />
-          <Route path="/files" element={<FilePage />} />
-          <Route path="/profile" element={<ProfilePage user={user} setUser={setUser} />} />
-        </Routes>
+        <div key={location.pathname} className="route-view page-enter">
+          <Routes>
+            <Route path="/" element={<Navigate to="/chat" replace />} />
+            <Route path="/chat" element={<ChatPage user={user} base={base} language={language} />} />
+            <Route path="/files" element={<FilePage />} />
+            <Route path="/profile" element={<ProfilePage user={user} setUser={setUser} />} />
+          </Routes>
+        </div>
       </div>
     </div>
   );

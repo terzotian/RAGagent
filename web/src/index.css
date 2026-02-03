@@ -2,12 +2,44 @@
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  
+
   --bs-body-bg: #f7f7f8;
-  --chat-bubble-user: #2c3e50;
+  --chat-bubble-user: #B71C1C;
   --chat-bubble-ai: #ffffff;
-  --primary-color: #0d6efd;
+  --primary-color: #B71C1C;
+  --primary-hover-color: #D32F2F;
+  --primary-light-color: #FFEBEE;
 }
+
+/* 覆盖 Bootstrap 默认 Primary 颜色变量 */
+.text-primary {
+  color: var(--primary-color) !important;
+}
+
+.bg-primary {
+  background-color: var(--primary-color) !important;
+}
+
+.btn-primary {
+  background-color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+  background-color: var(--primary-hover-color) !important;
+  border-color: var(--primary-hover-color) !important;
+}
+
+.btn-outline-primary {
+  color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+}
+
 
 body {
   margin: 0;
@@ -40,47 +72,114 @@ body {
   margin: 0 auto;
 }
 
+/* 动态悬浮动画 */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Hero Section Styles */
+.hero-section {
+  transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+  opacity: 1;
+  transform: translateY(-50%);
+  pointer-events: none; /* 让鼠标事件穿透，如果需要点击里面的东西再单独设置 pointer-events: auto */
+}
+
+.hero-section.hidden {
+  opacity: 0;
+  transform: translateY(-100px); /* 向上淡出 */
+}
+
+/* Input Area Wrapper Transition */
+.input-area-wrapper {
+  background: linear-gradient(180deg, rgba(247,247,248,0) 0%, rgba(247,247,248,1) 20%);
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); /* 弹性动画 */
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+/* 初始状态：居中 */
+.input-area-wrapper.initial {
+  bottom: 40%;
+  transform: translateY(40%);
+  background: transparent; /* 初始状态不需要渐变背景 */
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+
+/* 聊天状态：底部 */
+.input-area-wrapper.chat-mode {
+  bottom: 44px; /* 留出底部免责声明高度 */
+  transform: translateY(0);
+}
+
+/* 初始态对话框宽高比例与宽度约束 */
+.input-area-wrapper.initial .modern-input-group {
+  width: clamp(360px, 60vw, 700px);
+  aspect-ratio: 5 / 1.25;
+  margin: 0 auto;
+}
+
+/* 聊天态对话框更宽，平滑过渡 */
+.input-area-wrapper.chat-mode .modern-input-group {
+  width: clamp(720px, 85vw, 980px);
+  margin: 0 auto;
+}
+
 .message-bubble {
   padding: 1rem 1.25rem;
   border-radius: 1rem;
   position: relative;
   line-height: 1.6;
   font-size: 0.95rem;
+  animation: fadeIn 0.4s ease-out; /* 消息出现动画 */
 }
 
 .message-bubble.user {
   background-color: var(--chat-bubble-user);
   color: white;
   border-bottom-right-radius: 0.25rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 15px rgba(183, 28, 28, 0.25); /* 红色系阴影 */
 }
 
 .message-bubble.assistant {
   background-color: var(--chat-bubble-ai);
   color: #1a202c;
   border-bottom-left-radius: 0.25rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  border: 1px solid #e2e8f0;
-}
-
-.input-area-wrapper {
-  background: linear-gradient(180deg, rgba(247,247,248,0) 0%, rgba(247,247,248,1) 20%);
-  padding-top: 2rem;
-  padding-bottom: 2rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  border: 1px solid rgba(226, 232, 240, 0.8);
 }
 
 .modern-input-group {
-  background: white;
+  background: rgba(255, 255, 255, 0.95); /* 增加透明度 */
+  backdrop-filter: blur(10px); /* 毛玻璃效果 */
   border-radius: 1.5rem;
-  box-shadow: 0 0 15px rgba(0,0,0,0.1);
-  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.15); /* 更高级的阴影 */
+  border: 1px solid rgba(255,255,255,0.5);
   padding: 0.5rem;
-  transition: box-shadow 0.2s;
+  padding-bottom: 3rem;
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .modern-input-group:focus-within {
-  box-shadow: 0 0 20px rgba(0,0,0,0.15);
-  border-color: #cbd5e0;
+  box-shadow: 0 15px 40px -10px rgba(0,0,0,0.2);
+  border-color: var(--primary-color);
+  transform: translateY(-2px); /* 聚焦时轻微上浮 */
 }
 
 .modern-textarea {
@@ -95,26 +194,241 @@ body {
   background: transparent;
 }
 
+.modern-input-actions {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 8px;
+}
+
 .avatar {
   width: 36px;
   height: 36px;
-  border-radius: 6px;
+  border-radius: 12px; /* 方圆形 */
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
   font-size: 0.9rem;
   flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.avatar:hover {
+  transform: scale(1.1) rotate(5deg); /* 头像悬浮动效 */
 }
 
 .avatar.user {
-  background-color: #553c9a;
+  background: linear-gradient(135deg, #B71C1C 0%, #D32F2F 100%); /* 红色渐变 */
   color: white;
+  box-shadow: 0 4px 10px rgba(183, 28, 28, 0.3);
 }
 
 .avatar.ai {
-  background-color: #10b981;
+  background: linear-gradient(135deg, #424242 0%, #616161 100%); /* 深灰色/银色渐变，搭配红色更显高级 */
   color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 按钮通用动效 */
+.btn-dynamic {
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.btn-dynamic:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+}
+
+.btn-dynamic:active {
+  transform: translateY(1px);
+}
+
+/* 侧边栏列表项动效 */
+.list-group-item {
+  transition: all 0.2s ease;
+  border-radius: 8px !important;
+  margin-bottom: 4px;
+}
+
+.list-group-item:hover {
+  background-color: rgba(0,0,0,0.03);
+  transform: translateX(4px);
+}
+
+/* 底部免责声明固定 */
+.footer-disclaimer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, rgba(247,247,248,0) 0%, rgba(247,247,248,1) 60%);
+}
+.navbar-brand-dynamic {
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.navbar-brand-dynamic:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+}
+
+.nav-link-dynamic {
+  position: relative;
+  transition: color 0.2s ease, transform 0.2s ease;
+  padding-left: 0.5rem !important;
+  padding-right: 0.5rem !important;
+}
+
+.nav-link-dynamic:hover {
+  transform: translateY(-1px);
+}
+
+.nav-link-dynamic::after {
+  content: "";
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  bottom: -8px;
+  height: 2px;
+  background: var(--primary-color);
+  opacity: 0;
+  transform: scaleX(0);
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.nav-link-dynamic:hover::after,
+.nav-link-dynamic.active::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+/* 导航栏背景渐变 - 白色到红色透明度 */
+.navbar-gradient {
+  background: linear-gradient(90deg, #ffffff 0%, #ffffff 30%, rgba(183, 28, 28, 0.2) 65%, rgba(183, 28, 28, 0.5) 100%) !important;
+}
+
+/* 自定义下拉菜单 Toggle 按钮 */
+.custom-dropdown-toggle {
+  background-color: var(--primary-color) !important;
+  border: none !important;
+  color: white !important;
+  border-radius: 20px !important;
+  padding: 0.5rem 1.5rem !important;
+  padding-right: 2.5rem !important; /* 给箭头留空间 */
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative;
+  box-shadow: 0 4px 6px rgba(183, 28, 28, 0.2);
+  display: flex;
+  align-items: center;
+}
+
+.custom-dropdown-toggle:hover, .custom-dropdown-toggle:focus {
+  background-color: var(--primary-hover-color) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(183, 28, 28, 0.3);
+}
+
+/* 移除默认箭头 */
+.custom-dropdown-toggle::after {
+  display: none !important;
+}
+
+/* 自定义箭头 */
+.custom-dropdown-toggle::before {
+  content: '';
+  position: absolute;
+  right: 1.2rem;
+  top: 48%;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid white;
+  border-bottom: 2px solid white;
+  transform: translateY(-60%) rotate(45deg);
+  transition: transform 0.3s ease;
+}
+
+.custom-dropdown-toggle[aria-expanded="true"]::before {
+  transform: translateY(-30%) rotate(225deg);
+}
+
+/* 自定义下拉菜单容器 */
+.custom-dropdown-menu {
+  border: none !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px rgba(183, 28, 28, 0.15) !important;
+  padding: 8px !important;
+  margin-top: 12px !important;
+  animation: dropdownFadeIn 0.2s ease forwards;
+  min-width: 160px;
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(10px);
+}
+
+@keyframes dropdownFadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 自定义下拉菜单项 */
+.custom-dropdown-item {
+  border-radius: 8px !important;
+  padding: 10px 16px !important;
+  color: #333 !important;
+  transition: all 0.2s ease;
+  margin-bottom: 2px;
+  font-weight: 500;
+}
+
+.custom-dropdown-item:hover, .custom-dropdown-item:focus {
+  background-color: var(--primary-light-color) !important;
+  color: var(--primary-color) !important;
+  transform: translateX(4px);
+}
+
+.custom-dropdown-item.active {
+  background-color: var(--primary-light-color) !important;
+  color: var(--primary-color) !important;
+  font-weight: 600;
+}
+
+/* 导航链接悬浮主题色 */
+.nav-link-dynamic:hover {
+  color: var(--primary-color) !important;
+  transform: translateY(-1px);
+}
+
+.nav-link-dynamic.active {
+  color: var(--primary-color) !important;
+  font-weight: 600;
+}
+
+.nav-link-dynamic::after {
+  background: var(--primary-color);
+}
+
+.route-view {
+  height: 100%;
+}
+
+.page-enter {
+  animation: pageFadeSlide 350ms ease both;
+}
+
+@keyframes pageFadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Markdown 样式优化 */
