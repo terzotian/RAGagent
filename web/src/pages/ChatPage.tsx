@@ -22,6 +22,10 @@ interface ChatPageProps {
   language: 'en' | 'zh-cn' | 'zh-tw';
 }
 
+import AIAvatar from '../components/AIAvatar';
+import CatAvatar from '../components/CatAvatar';
+import HeroText from '../components/HeroText';
+
 const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -285,13 +289,9 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
         {/* Hero Section - 初始状态居中显示 */}
         <div
           className={`hero-section position-absolute w-100 text-center ${messages.length > 0 ? 'hidden' : ''}`}
-          style={{ top: '35%', left: 0, zIndex: 10 }}
+          style={{ top: '25%', left: 0, zIndex: 10 }}
         >
-          <div className="mb-4">
-            <div style={{ fontSize: '4rem', animation: 'float 3s ease-in-out infinite', display: 'inline-block' }}>🤖</div>
-          </div>
-          <h2 className="fw-bold mb-3 text-dark">How can I assist you today?</h2>
-          <p className="text-muted">Select a knowledge base to get started</p>
+          <HeroText language={language} />
         </div>
 
         {/* 聊天内容区域 */}
@@ -302,7 +302,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
             <div key={idx} className={`d-flex mb-4 ${msg.role === 'user' ? 'justify-content-end' : 'justify-content-start'}`}>
 
               {msg.role === 'assistant' && (
-                <div className="avatar ai me-3 shadow-sm">AI</div>
+                <AIAvatar />
               )}
 
               <div className={`message-bubble ${msg.role} shadow-sm`} style={{ maxWidth: '85%' }}>
@@ -346,7 +346,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
 
           {loading && messages[messages.length - 1]?.role === 'user' && (
             <div className="d-flex mb-4 justify-content-start">
-               <div className="avatar ai me-3 shadow-sm">AI</div>
+               <AIAvatar loading={true} />
                <div className="message-bubble assistant bg-white">
                   <div className="d-flex align-items-center gap-2 text-muted">
                     <Spinner animation="grow" size="sm" />
@@ -363,6 +363,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
       {/* 底部输入区域 (固定) */}
       <div className={`input-area-wrapper ${messages.length === 0 ? 'initial' : 'chat-mode'}`}>
         <Container className="chat-container">
+          {messages.length === 0 && <CatAvatar />}
           <div className="modern-input-group d-flex flex-column">
             <Form.Control
               as="textarea"
