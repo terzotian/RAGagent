@@ -14,9 +14,9 @@ const CatAvatar: React.FC = () => {
   return (
     <div
       className="cat-avatar-container"
-      style={{
-        width: '200px',
-        height: '200px',
+      style={{ 
+        width: '200px', 
+        height: '200px', 
         position: 'absolute',
         top: '-199px',
         left: '50%',
