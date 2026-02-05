@@ -20,3 +20,4 @@ pytesseract>=0.3.10
 nltk>=3.8.1
 passlib[bcrypt]
 psycopg2-binary
+lightrag
