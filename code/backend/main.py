@@ -24,7 +24,7 @@ from backend.model.doc_analysis import split
 from backend.model.rag_stream import stream_answer
 from sqlalchemy import create_engine, Column, String, Text, Integer, TIMESTAMP, func, LargeBinary, text, orm, Index, Enum as SQLEnum
 from sqlalchemy.orm import sessionmaker, Session
-from sqlalchemy.dialects.mysql import JSON
+from sqlalchemy.dialects.postgresql import JSONB as JSON
 from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -34,7 +34,9 @@ from backend.model.doc_search import search_documents, load_segments_from_folder
 from backend.root_path import PIECES_DIR, locate_path, policy_file, piece_file, piece_dir
 
 # 数据库配置
-DATABASE_URL = "mysql+mysqlconnector://root:TTZZ3388@localhost:3306/LURAG"
+# MySQL (Old): DATABASE_URL = "mysql+mysqlconnector://root:TTZZ3388@localhost:3306/LURAG"
+# PostgreSQL (New):
+DATABASE_URL = "postgresql://postgres:TTZZ3388@localhost:5432/LURAG"
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
