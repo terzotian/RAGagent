@@ -3,6 +3,8 @@ import mimetypes
 import os
 import random
 import json
+import shutil
+import uuid
 from urllib.parse import unquote
 
 import uvicorn
@@ -20,7 +22,7 @@ from typing import List, Dict
 from datetime import datetime, timezone
 from fastapi.responses import StreamingResponse
 
-from backend.model.doc_analysis import split
+from backend.model.doc_analysis import split, read_file
 from backend.model.agent_router import route_stream
 from backend.model.rag_indexer import ingest_file
 from sqlalchemy import create_engine, Column, String, Text, Integer, TIMESTAMP, func, LargeBinary, text, orm, Index, Enum as SQLEnum
@@ -65,27 +67,36 @@ class DBQuestion(Base):
     created_at = Column(TIMESTAMP, server_default=func.now())
 
 
+class DBMajor(Base):
+    __tablename__ = "majors"
+    code = Column(String(20), primary_key=True)  # AIBA, DS, ADS
+    name = Column(String(100), nullable=False)   # MSc in AIBA
+    department = Column(String(100), nullable=False, default="Data Science")
+
+class DBCourse(Base):
+    __tablename__ = "courses"
+    course_code = Column(String(20), primary_key=True) # CDS524
+    name = Column(String(100), nullable=False)
+    major_code = Column(String(20), nullable=False) # FK -> majors.code
+
 class DBFile(Base):
     __tablename__ = "files"
-    # 复合主键 (base, file_name)
-    base = Column(String(28), primary_key=True, nullable=False, server_default="lingnan",
-                  comment="文件来源于哪个知识库")
-    file_name = Column(String(255), primary_key=True, nullable=False, comment="文件名称")
-    file_description = Column(Text, comment="文件简介")
-    file_path = Column(String(512), nullable=False, comment="文件在存储系统里的路径或 URL")
-    file_size = Column(String(28), nullable=False, comment="文件大小")
-    uploaded_at = Column(
-        TIMESTAMP,
-        nullable=False,
-        server_default=func.now(),
-        onupdate=func.current_timestamp(),
-        comment="上传/更新文件时间"
-    )
-    __table_args__ = (
-        # 加速按 base 查询
-        Index("idx_base", "base"),
-    )
+    file_id = Column(Integer, primary_key=True, autoincrement=True)
+    file_name = Column(String(255), nullable=False)
+    file_path = Column(String(512), nullable=False)
+    file_size = Column(String(28), nullable=True)
+    file_type = Column(String(20), nullable=False) # policy, course_ppt, course_rubric, student_assignment
+    access_level = Column(String(20), nullable=False, default='internal') # public, internal, private
 
+    # Context
+    base = Column(String(28), nullable=False, default="lingnan") # Legacy support
+    related_course_code = Column(String(20), nullable=True) # FK -> courses.course_code
+
+    # Ownership
+    uploader_id = Column(Integer, nullable=True) # FK -> users.user_id
+
+    uploaded_at = Column(TIMESTAMP, server_default=func.now())
+    description = Column(Text, nullable=True)
 
 class DBUser(Base):
     __tablename__ = "users"
@@ -93,8 +104,8 @@ class DBUser(Base):
     account = Column(String(50), unique=True, nullable=False)
     password_hash = Column(String(255), nullable=False)
     nickname = Column(String(50), nullable=False)
-    gender = Column(String(10), nullable=False)
-    identity = Column(String(20), nullable=False)
+    role = Column(String(20), nullable=False, default='student') # student, teacher, admin
+    major_code = Column(String(20), nullable=True) # AIBA, DS...
     avatar_path = Column(String(255), nullable=True)
     created_at = Column(TIMESTAMP, server_default=func.now())
 
@@ -165,8 +176,8 @@ class UserRegister(BaseModel):
     account: str = Field(..., description="Phone number (digits only)")
     password: str = Field(..., description="6-digit password")
     nickname: str = Field(..., description="Nickname (English or Chinese)")
-    gender: str
-    identity: str
+    role: str = Field(..., description="student, teacher, or admin")
+    major_code: str = Field(None, description="Major code (e.g. AIBA)")
 
     @field_validator('account')
     @classmethod
@@ -197,8 +208,7 @@ class UserLogin(BaseModel):
 
 class UserUpdate(BaseModel):
     nickname: str = Field(..., description="Nickname")
-    gender: str
-    identity: str
+    major_code: str = Field(None, description="Major code")
 
     @field_validator('nickname')
     @classmethod
@@ -227,8 +237,8 @@ async def get_user_profile(user_id: int, db: Session = Depends(get_db)):
         "user_id": user.user_id,
         "account": user.account,
         "nickname": user.nickname,
-        "gender": user.gender,
-        "identity": user.identity,
+        "role": user.role,
+        "major_code": user.major_code,
         "avatar_path": user.avatar_path
     }
 
@@ -239,8 +249,7 @@ async def update_profile(user_id: int, update_data: UserUpdate, db: Session = De
         raise HTTPException(status_code=404, detail="User not found")
 
     user.nickname = update_data.nickname
-    user.gender = update_data.gender
-    user.identity = update_data.identity
+    user.major_code = update_data.major_code
     db.commit()
     db.refresh(user)
     return {
@@ -249,8 +258,8 @@ async def update_profile(user_id: int, update_data: UserUpdate, db: Session = De
             "user_id": user.user_id,
             "account": user.account,
             "nickname": user.nickname,
-            "gender": user.gender,
-            "identity": user.identity,
+            "role": user.role,
+            "major_code": user.major_code,
             "avatar_path": user.avatar_path
         }
     }
@@ -323,8 +332,8 @@ async def register(user: UserRegister, db: Session = Depends(get_db)):
         account=user.account,
         password_hash=hashed_password,
         nickname=user.nickname,
-        gender=user.gender,
-        identity=user.identity
+        role=user.role,
+        major_code=user.major_code
     )
     db.add(new_user)
     db.commit()
@@ -344,8 +353,8 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
             "user_id": db_user.user_id,
             "account": db_user.account,
             "nickname": db_user.nickname,
-            "gender": db_user.gender,
-            "identity": db_user.identity,
+            "role": db_user.role,
+            "major_code": db_user.major_code,
             "avatar_path": db_user.avatar_path
         }
     }
@@ -402,12 +411,52 @@ async def admin_reset_password(account: str = Query(...), new_password: str = Qu
 #     }
 
 
+@app.post("/api/v1/chat/upload_temp")
+async def upload_temp_file(file: UploadFile = File(...)):
+    # Create temp directory
+    temp_dir = locate_path("data", "temp_uploads")
+    os.makedirs(temp_dir, exist_ok=True)
+
+    # Generate unique ID
+    file_id = str(uuid.uuid4())
+    file_ext = os.path.splitext(file.filename)[1]
+    filename = f"{file_id}{file_ext}"
+    file_path = os.path.join(temp_dir, filename)
+
+    # Save file
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    # Preview content
+    try:
+        content = read_file(file_path)
+        preview = content[:200] if content else ""
+    except Exception as e:
+        preview = "Error reading file"
+
+    return {"temp_file_id": filename, "preview": preview}
+
+
 @app.get("/api/v1/questions/stream")
 async def stream_question(session_id: str, question_id: str, previous_questions: str, current_question: str, language: str = "en",
-                          base: str = "lingnan", user_id: int = Query(None)):
+                          base: str = "lingnan", user_id: int = Query(None), temp_file_id: str = Query(None)):
+
+    temp_content = None
+    if temp_file_id:
+        temp_dir = locate_path("data", "temp_uploads")
+        # Security check: ensure temp_file_id is just a filename, not a path
+        temp_file_id = os.path.basename(temp_file_id)
+        file_path = os.path.join(temp_dir, temp_file_id)
+        if os.path.exists(file_path):
+            try:
+                temp_content = read_file(file_path)
+                print(f"DEBUG: Read temp file {temp_file_id}, length: {len(temp_content)}")
+            except Exception as e:
+                print(f"Error reading temp file: {e}")
+
     previous_questions_list = json.loads(previous_questions)
 
-    gen_iter, references = await route_stream(current_question, previous_questions_list, language, base)
+    gen_iter, references = await route_stream(current_question, previous_questions_list, language, base, temp_file_content=temp_content)
 
     async def event_generator():
         print(f"DEBUG: Starting event_generator for session {session_id}")
@@ -496,107 +545,193 @@ async def stream_question(session_id: str, question_id: str, previous_questions:
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
 
-@app.get("/api/v1/files/list")
-async def list_files(
-        base: str = Query("lingnan"),
-        db: Session = Depends(get_db)
+@app.get("/api/v1/public/policies")
+async def list_policies(db: Session = Depends(get_db)):
+    files = db.query(DBFile).filter(DBFile.file_type == 'policy').all()
+    return {"files": files}
+
+@app.get("/api/v1/majors")
+async def list_majors(db: Session = Depends(get_db)):
+    majors = db.query(DBMajor).all()
+    return {"majors": majors}
+
+@app.get("/api/v1/courses")
+async def list_courses(user_id: int = Query(None), db: Session = Depends(get_db)):
+    query = db.query(DBCourse)
+    if user_id:
+        user = db.query(DBUser).filter(DBUser.user_id == user_id).first()
+        if user and user.role == 'student' and user.major_code:
+            query = query.filter(DBCourse.major_code == user.major_code)
+
+    courses = query.all()
+    return {"courses": courses}
+
+@app.get("/api/v1/courses/{code}/files")
+async def list_course_files(code: str, db: Session = Depends(get_db)):
+    files = db.query(DBFile).filter(
+        DBFile.related_course_code == code,
+        DBFile.file_type.in_(['course_ppt', 'course_rubric'])
+    ).all()
+    return {"files": files}
+
+@app.post("/api/v1/courses/{code}/files")
+async def upload_course_file(
+    code: str,
+    user_id: int = Form(...),
+    file_type: str = Form(...), # course_ppt, course_rubric
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db)
 ):
-    # 只查询指定 base 下的文件
-    files = (
-        db.query(DBFile)
-        .filter(DBFile.base == base)
-        .all()
-    )
+    user = db.query(DBUser).filter(DBUser.user_id == user_id).first()
+    if not user or user.role != 'teacher':
+        raise HTTPException(status_code=403, detail="Only teachers can upload course files")
 
-    return {
-        "files": [
-            {
-                "file_name": file.file_name,
-                "file_description": file.file_description,
-                "file_path": file.file_path,
-                "file_size": file.file_size,
-                "uploaded_at": file.uploaded_at,
-                "base": file.base
-            }
-            for file in files
-        ]
-    }
+    # Logic to save file and ingest (similar to previous upload)
+    # For now, just save DB record to demonstrate structure
+    # In real impl, would call ingest_file with specific scope
 
-
-@app.post("/api/v1/files")
-async def upload_file(
-        base: str = Form(...),
-        file: UploadFile = File(...),
-        db: Session = Depends(get_db)
-):
     content = await file.read()
-    if not content:
-        raise HTTPException(status_code=400, detail="Empty file")
-
     size_kb = len(content) / 1024
     file_size = f"{size_kb:.1f}KB" if size_kb < 1024 else f"{size_kb / 1024:.1f}MB"
 
-    # 文件保存到 policies 目录
-    policies_dir = locate_path("knowledge_base", base, "policies")
-    os.makedirs(policies_dir, exist_ok=True)
-    pieces_dir = locate_path("knowledge_base", base, "pieces")
-    os.makedirs(pieces_dir, exist_ok=True)
+    # Define path
+    save_dir = locate_path("knowledge_base", "courses", code)
+    os.makedirs(save_dir, exist_ok=True)
+    file_path = os.path.join(save_dir, file.filename)
 
-    policy_path = policy_file(base=base, filename=file.filename)
-    pieces_path = piece_dir(base=base)
-    with open(policy_path, "wb") as f:
+    with open(file_path, "wb") as f:
         f.write(content)
 
-    file_description = await split(policy_path, pieces_path)
-    try:
-        asyncio.create_task(ingest_file(base, policy_path))
-    except Exception:
-        pass
-
-    # 先看看同名文件是否已存在
-    existing = (
-        db.query(DBFile)
-        .filter(DBFile.base == base,
-                DBFile.file_name == file.filename)
-        .first()
-    )
-    if existing:
-        existing.file_size = file_size
-        existing.file_description = file_description
-        existing.uploaded_at = datetime.now(timezone.utc)
-        db.commit()
-        db.refresh(existing)
-        return {
-            "base": existing.base,
-            "file_name": existing.file_name,
-            "file_description": existing.file_description,
-            "file_path": existing.file_path,
-            "uploaded_at": existing.uploaded_at,
-            "file_size": existing.file_size,
-            "message": "Existing file overwritten"
-        }
-
-    # 不存在则新建，显式传入 base，让 SQL 默认值生效也会回填
-    new_file = DBFile(
-        base=base,
+    db_file = DBFile(
         file_name=file.filename,
-        file_description=file_description,
-        file_path=policy_path,
-        file_size=file_size
+        file_path=file_path,
+        file_size=file_size,
+        file_type=file_type,
+        access_level='internal',
+        base=f"course_{code}",
+        related_course_code=code,
+        uploader_id=user_id
     )
-    db.add(new_file)
+    db.add(db_file)
     db.commit()
-    db.refresh(new_file)
 
-    return {
-        "base": new_file.base,
-        "file_name": new_file.file_name,
-        "file_description": new_file.file_description,
-        "file_path": new_file.file_path,
-        "uploaded_at": new_file.uploaded_at,
-        "file_size": new_file.file_size,
-        "message": "File uploaded"
-    }
+    # Trigger ingestion (Async)
+    # await ingest_file(f"course_{code}", file_path)
+
+    return {"message": "File uploaded"}
+
+@app.post("/api/v1/admin/policies")
+async def upload_policy(
+    user_id: int = Form(...),
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
+    user = db.query(DBUser).filter(DBUser.user_id == user_id).first()
+    if not user or user.role != 'admin':
+        raise HTTPException(status_code=403, detail="Only admins can upload policies")
+
+    content = await file.read()
+    size_kb = len(content) / 1024
+    file_size = f"{size_kb:.1f}KB" if size_kb < 1024 else f"{size_kb / 1024:.1f}MB"
+
+    save_dir = locate_path("knowledge_base", "public", "policies")
+    os.makedirs(save_dir, exist_ok=True)
+    file_path = os.path.join(save_dir, file.filename)
+
+    with open(file_path, "wb") as f:
+        f.write(content)
+
+    db_file = DBFile(
+        file_name=file.filename,
+        file_path=file_path,
+        file_size=file_size,
+        file_type='policy',
+        access_level='public',
+        base="lingnan_policies",
+        uploader_id=user_id
+    )
+    db.add(db_file)
+    db.commit()
+
+    return {"message": "Policy uploaded"}
+
+@app.post("/api/v1/my/assignments")
+async def upload_assignment(
+    course_code: str = Form(...),
+    user_id: int = Form(...),
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
+    user = db.query(DBUser).filter(DBUser.user_id == user_id).first()
+    if not user or user.role != 'student':
+        raise HTTPException(status_code=403, detail="Only students can upload assignments")
+
+    content = await file.read()
+    size_kb = len(content) / 1024
+    file_size = f"{size_kb:.1f}KB" if size_kb < 1024 else f"{size_kb / 1024:.1f}MB"
+
+    save_dir = locate_path("knowledge_base", "users", str(user_id), "assignments")
+    os.makedirs(save_dir, exist_ok=True)
+    file_path = os.path.join(save_dir, file.filename)
+
+    with open(file_path, "wb") as f:
+        f.write(content)
+
+    db_file = DBFile(
+        file_name=file.filename,
+        file_path=file_path,
+        file_size=file_size,
+        file_type='student_assignment',
+        access_level='private',
+        base=f"user_{user_id}_private",
+        related_course_code=course_code,
+        uploader_id=user_id
+    )
+    db.add(db_file)
+    db.commit()
+
+    return {"message": "Assignment uploaded"}
+
+@app.delete("/api/v1/files/{file_id}")
+async def delete_file(
+    file_id: int,
+    user_id: int = Query(...),
+    db: Session = Depends(get_db)
+):
+    file = db.query(DBFile).filter(DBFile.file_id == file_id).first()
+    if not file:
+        raise HTTPException(status_code=404, detail="File not found")
+
+    user = db.query(DBUser).filter(DBUser.user_id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=403, detail="User not found")
+
+    # Permission Logic
+    can_delete = False
+    if user.role == 'admin':
+        can_delete = True
+    elif user.role == 'teacher':
+        # Teachers can delete course files (assuming they manage the course)
+        # For simplicity, allowing teachers to delete any course file for now,
+        # or strictly their own uploads. Let's go with their own uploads or course files.
+        if file.file_type in ['course_ppt', 'course_rubric']:
+             can_delete = True
+    elif user.role == 'student':
+        # Students can only delete their own assignments
+        if file.uploader_id == user.user_id and file.file_type == 'student_assignment':
+            can_delete = True
+
+    if not can_delete:
+        raise HTTPException(status_code=403, detail="Permission denied")
+
+    # Delete from disk
+    if os.path.exists(file.file_path):
+        os.remove(file.file_path)
+
+    db.delete(file)
+    db.commit()
+
+    return {"message": "File deleted"}
 
 
 @app.get("/api/v1/files/preview")

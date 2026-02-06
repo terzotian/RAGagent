@@ -18,8 +18,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onHide, onLoginSuccess }) =
     account: '',
     password: '',
     nickname: '',
-    gender: 'Male',
-    identity: 'Student'
+    role: 'student',
+    major_code: 'AIBA'
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -65,8 +65,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onHide, onLoginSuccess }) =
             account: formData.account,
             password: formData.password,
             nickname: formData.nickname,
-            gender: formData.gender,
-            identity: formData.identity
+            role: formData.role,
+            major_code: formData.role === 'student' ? formData.major_code : undefined
         });
         setMode('login');
         setError(null);
@@ -75,7 +75,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onHide, onLoginSuccess }) =
     } catch (err: unknown) {
       console.error(err);
       const apiError = err as { response?: { data?: { detail?: string | Array<{ msg: string }> } } };
-      
+
       if (apiError.response?.data?.detail) {
         const detail = apiError.response.data.detail;
         if (typeof detail === 'string' && detail === 'Account already exists') {
@@ -149,59 +149,64 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onHide, onLoginSuccess }) =
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">
             <Form.Label>Account</Form.Label>
-            <Form.Control 
-              name="account" 
-              value={formData.account} 
-              onChange={handleChange} 
-              placeholder="Enter your account" 
-              required 
+            <Form.Control
+              name="account"
+              value={formData.account}
+              onChange={handleChange}
+              placeholder="Enter your account"
+              required
             />
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Password</Form.Label>
-            <Form.Control 
-              type="password" 
-              name="password" 
-              value={formData.password} 
-              onChange={handleChange} 
-              placeholder="Enter password" 
-              required 
+            <Form.Control
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Enter password"
+              required
             />
           </Form.Group>
-          
+
           {mode === 'register' && (
             <>
               <Form.Group className="mb-3">
                 <Form.Label>Nickname</Form.Label>
-                <Form.Control 
-                  name="nickname" 
-                  value={formData.nickname} 
-                  onChange={handleChange} 
-                  placeholder="Display name" 
-                  required 
+                <Form.Control
+                  name="nickname"
+                  value={formData.nickname}
+                  onChange={handleChange}
+                  placeholder="Display name"
+                  required
                 />
               </Form.Group>
               <Form.Group className="mb-3">
-                <Form.Label>Gender</Form.Label>
-                <Form.Select name="gender" value={formData.gender} onChange={handleChange}>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
+                <Form.Label>Role</Form.Label>
+                <Form.Select name="role" value={formData.role} onChange={handleChange}>
+                  <option value="student">Student</option>
+                  <option value="teacher">Teacher</option>
+                  <option value="admin">Admin</option>
                 </Form.Select>
               </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Identity</Form.Label>
-                <Form.Select name="identity" value={formData.identity} onChange={handleChange}>
-                  <option value="Student">Student</option>
-                  <option value="Teacher">Teacher</option>
-                </Form.Select>
-              </Form.Group>
+
+              {formData.role === 'student' && (
+                <Form.Group className="mb-3">
+                    <Form.Label>Major</Form.Label>
+                    <Form.Select name="major_code" value={formData.major_code} onChange={handleChange}>
+                    <option value="AIBA">MSc in AIBA</option>
+                    <option value="DS">MSc in Data Science</option>
+                    <option value="ADS">MSc in Applied Data Science</option>
+                    </Form.Select>
+                </Form.Group>
+              )}
             </>
           )}
 
           <div className="d-grid mt-4">
-            <Button 
-              variant="primary" 
-              type="submit" 
+            <Button
+              variant="primary"
+              type="submit"
               className="avant-garde-btn py-2 text-uppercase fw-bold"
               disabled={loading}
             >

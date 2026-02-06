@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Container, Card, Form, Button, Row, Col, Alert, Image } from 'react-bootstrap';
 import { api, getAvatarUrl } from '../services/api';
 import type { User } from '../services/api';
@@ -8,31 +8,17 @@ interface ProfilePageProps {
   setUser: (user: User | null) => void;
 }
 
-const ProfilePage: React.FC<ProfilePageProps> = ({ user, setUser }) => {
+const ProfileForm: React.FC<{ user: User; setUser: (user: User | null) => void }> = ({ user, setUser }) => {
   const [formData, setFormData] = useState({
-    nickname: '',
-    gender: 'Male',
-    identity: 'Student'
+    nickname: user.nickname,
+    role: user.role,
+    major_code: user.major_code || ''
   });
   const [passData, setPassData] = useState({
     oldPassword: '',
     newPassword: ''
   });
   const [message, setMessage] = useState<{ type: 'success' | 'danger', text: string } | null>(null);
-
-  useEffect(() => {
-    if (user) {
-      setFormData({
-        nickname: user.nickname,
-        gender: user.gender,
-        identity: user.identity
-      });
-    }
-  }, [user]);
-
-  if (!user) {
-    return <Container className="mt-5"><Alert variant="warning">Please log in to view profile.</Alert></Container>;
-  }
 
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,7 +70,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user, setUser }) => {
             </Card.Header>
             <Card.Body className="p-4">
               {message && <Alert variant={message.type} onClose={() => setMessage(null)} dismissible>{message.text}</Alert>}
-              
+
               <div className="text-center mb-4">
                 <div className="position-relative d-inline-block">
                   {user.avatar_path ? (
@@ -141,28 +127,25 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user, setUser }) => {
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>Gender</Form.Label>
-                      <Form.Select
-                        value={formData.gender}
-                        onChange={(e) => setFormData({...formData, gender: e.target.value})}
-                      >
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                      </Form.Select>
+                      <Form.Label>Role</Form.Label>
+                      <Form.Control type="text" value={formData.role} disabled />
                     </Form.Group>
                   </Col>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Identity</Form.Label>
-                      <Form.Select
-                        value={formData.identity}
-                        onChange={(e) => setFormData({...formData, identity: e.target.value})}
-                      >
-                        <option value="Student">Student</option>
-                        <option value="Teacher">Teacher</option>
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
+                  {formData.role === 'student' && (
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>Major</Form.Label>
+                        <Form.Select
+                          value={formData.major_code}
+                          onChange={(e) => setFormData({...formData, major_code: e.target.value})}
+                        >
+                          <option value="AIBA">MSc in AIBA</option>
+                          <option value="DS">MSc in Data Science</option>
+                          <option value="ADS">MSc in Applied Data Science</option>
+                        </Form.Select>
+                      </Form.Group>
+                    </Col>
+                  )}
                 </Row>
                 <div className="d-grid mb-4">
                   <Button variant="primary" type="submit">
@@ -172,7 +155,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user, setUser }) => {
               </Form>
 
               <hr className="my-4" />
-              
+
               <h5 className="mb-3">Change Password</h5>
               <Form onSubmit={handlePasswordUpdate}>
                 <Row>
@@ -214,6 +197,14 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user, setUser }) => {
       </Row>
     </Container>
   );
+};
+
+const ProfilePage: React.FC<ProfilePageProps> = ({ user, setUser }) => {
+  if (!user) {
+    return <Container className="mt-5"><Alert variant="warning">Please log in to view profile.</Alert></Container>;
+  }
+
+  return <ProfileForm key={user.user_id} user={user} setUser={setUser} />;
 };
 
 export default ProfilePage;

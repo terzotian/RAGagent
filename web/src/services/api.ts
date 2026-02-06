@@ -15,8 +15,8 @@ export interface User {
   user_id: number;
   account: string;
   nickname: string;
-  gender: string;
-  identity: string;
+  role: string;
+  major_code?: string;
   avatar_path?: string;
 }
 
@@ -25,32 +25,89 @@ export const getAvatarUrl = (filename?: string) => {
   return `${API_BASE_URL}/avatars/${filename}`;
 };
 
+export interface Major {
+  code: string;
+  name: string;
+  department: string;
+}
+
+export interface Course {
+  course_code: string;
+  name: string;
+  major_code: string;
+}
+
 export interface FileItem {
+  file_id: number;
   file_name: string;
-  file_description: string;
   file_path: string;
   file_size: string;
+  file_type: string;
+  access_level: string;
   uploaded_at: string;
-  base: string;
+  uploader_id?: number;
 }
 
 export const fileApi = {
+  // Legacy
   list: async (base: string) => {
     const res = await client.get('/files/list', { params: { base } });
     return res.data.files;
   },
 
-  upload: async (base: string, file: File) => {
+  // New Methods
+  listPolicies: async () => {
+    const res = await client.get('/public/policies');
+    return res.data.files;
+  },
+
+  listMajors: async () => {
+    const res = await client.get('/majors');
+    return res.data.majors;
+  },
+
+  listCourses: async (userId?: number) => {
+    const params = userId ? { user_id: userId } : {};
+    const res = await client.get('/courses', { params });
+    return res.data.courses;
+  },
+
+  listCourseFiles: async (courseCode: string) => {
+    const res = await client.get(`/courses/${courseCode}/files`);
+    return res.data.files;
+  },
+
+  uploadPolicy: async (userId: number, file: File) => {
     const formData = new FormData();
-    formData.append('base', base);
+    formData.append('user_id', userId.toString());
     formData.append('file', file);
-    const res = await client.post('/files', formData, {
+    const res = await client.post('/admin/policies', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     return res.data;
   },
 
+  uploadCourseFile: async (courseCode: string, userId: number, fileType: string, file: File) => {
+    const formData = new FormData();
+    formData.append('user_id', userId.toString());
+    formData.append('file_type', fileType);
+    formData.append('file', file);
+    const res = await client.post(`/courses/${courseCode}/files`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return res.data;
+  },
+
+  deleteFile: async (fileId: number, userId: number) => {
+    const res = await client.delete(`/files/${fileId}`, {
+        params: { user_id: userId }
+    });
+    return res.data;
+  },
+
+  // Legacy delete for compatibility if needed (deprecated)
   delete: async (base: string, fileName: string) => {
+    // This might fail with new backend, better use deleteFile
     const res = await client.delete('/files', {
       params: { base, file_name: fileName }
     });
@@ -112,6 +169,15 @@ export const api = {
       params: { user_id: userId }
     });
     return res.data;
+  },
+
+  uploadTempFile: async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await client.post('/chat/upload_temp', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return res.data;
   }
 };
 
@@ -123,15 +189,20 @@ export const streamAnswer = async (params: {
     language: string;
     base: string;
     user_id?: number;
+    temp_file_id?: string | null;
     onToken: (token: string) => void;
     onReferences: (refs: Reference[]) => void;
     onDone: () => void;
     onError: () => void;
 }) => {
     let url = `${API_BASE_URL}/questions/stream?session_id=${params.session_id}&question_id=${params.question_id}&previous_questions=${encodeURIComponent(JSON.stringify(params.previous_questions))}&current_question=${encodeURIComponent(params.current_question)}&language=${params.language}&base=${params.base}`;
-    
+
     if (params.user_id) {
         url += `&user_id=${params.user_id}`;
+    }
+
+    if (params.temp_file_id) {
+        url += `&temp_file_id=${params.temp_file_id}`;
     }
 
     const controller = new AbortController();
@@ -171,7 +242,7 @@ export const streamAnswer = async (params: {
             for (const line of lines) {
                 if (line.startsWith('data: ')) {
                     const dataStr = line.slice(6);
-                    
+
                     if (dataStr === '[DONE]') {
                         params.onDone();
                         return controller; // Return controller but we are done

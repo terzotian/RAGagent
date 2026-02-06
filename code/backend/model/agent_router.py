@@ -58,7 +58,7 @@ async def _ollama_stream(prompt: str, base_url: str, model: str):
     except:
         return
 
-async def route_stream(current_question: str, previous_questions: List[str], language: str, base: str):
+async def route_stream(current_question: str, previous_questions: List[str], language: str, base: str, temp_file_content: str = None):
     start_t = time.time()
     try:
         search_query, assembled_question, generate_time = await generate_search_query(current_question, previous_questions)
@@ -82,6 +82,15 @@ async def route_stream(current_question: str, previous_questions: List[str], lan
     except:
         references = []
         search_time = 0.0
+
+    # Add temp file content if present
+    if temp_file_content:
+        references.insert(0, {
+            "content": temp_file_content,
+            "file_name": "Uploaded Assignment/Document",
+            "similarity": "100%"
+        })
+
     threshold = float(os.getenv("SIMILARITY_THRESHOLD", "0.6"))
     max_score = 0.0
     for ref in references:

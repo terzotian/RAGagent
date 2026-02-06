@@ -33,9 +33,12 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
   const [sessionId, setSessionId] = useState(() => 'session_' + Math.random().toString(36).substr(2, 9));
   const [showSidebar, setShowSidebar] = useState(false);
   const [historySessions, setHistorySessions] = useState<ChatSession[]>([]);
+  const [tempFileId, setTempFileId] = useState<string | null>(null);
+  const [tempFileName, setTempFileName] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   // Cleanup on unmount
@@ -115,14 +118,47 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
     }
   }, [input]);
 
+  const handleFileClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      try {
+        const res = await api.uploadTempFile(file);
+        setTempFileId(res.temp_file_id);
+        setTempFileName(file.name);
+      } catch (err) {
+        console.error(err);
+        alert('Failed to upload file');
+      } finally {
+        if (e.target) e.target.value = '';
+      }
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setTempFileId(null);
+    setTempFileName(null);
+  };
+
   const handleSend = async () => {
-    if (!input.trim() || loading) return;
+    if ((!input.trim() && !tempFileId) || loading) return;
 
     const userMsg = input.trim();
-    const newMessages: Message[] = [...messages, { role: 'user', content: userMsg }];
+    // If only file is sent, use a default message or just show the file
+    const displayMsg = userMsg || (tempFileName ? `[Attached: ${tempFileName}]` : '');
+
+    const newMessages: Message[] = [...messages, { role: 'user', content: displayMsg }];
     setMessages(newMessages);
     setInput('');
     setLoading(true);
+
+    // Reset file state locally, but keep ID for API call
+    const currentTempFileId = tempFileId;
+    setTempFileId(null);
+    setTempFileName(null);
 
     // 重置输入框高度
     if (textareaRef.current) {
@@ -147,10 +183,11 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
       session_id: sessionId,
       question_id: questionId,
       previous_questions: previousQuestions,
-      current_question: userMsg,
+      current_question: userMsg || "Please analyze the attached file.",
       language: language,
       base: base,
       user_id: user?.user_id,
+      temp_file_id: currentTempFileId,
       onToken: (token) => {
         currentAnswer += token;
         setMessages(prev => {
@@ -365,6 +402,14 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
         <Container className="chat-container">
           {messages.length === 0 && <CatAvatar />}
           <div className="modern-input-group d-flex flex-column">
+            {tempFileName && (
+                <div className="px-3 pt-2 d-flex align-items-center">
+                    <span className="badge bg-light text-dark border d-flex align-items-center">
+                        📄 {tempFileName}
+                        <Button variant="link" size="sm" className="p-0 ms-2 text-danger" onClick={handleRemoveFile} style={{ textDecoration: 'none' }}>&times;</Button>
+                    </span>
+                </div>
+            )}
             <Form.Control
               as="textarea"
               ref={textareaRef}
@@ -378,16 +423,34 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
               style={{ maxHeight: '200px', overflowY: 'auto' }}
             />
             <div className="d-flex justify-content-between align-items-center px-2 modern-input-actions">
-               <div className="small text-muted ps-2">
-                 <small>Shift + Enter Newline</small>
+               <div className="d-flex align-items-center">
+                   <input
+                     type="file"
+                     ref={fileInputRef}
+                     onChange={handleFileSelect}
+                     style={{ display: 'none' }}
+                     accept=".txt,.pdf,.doc,.docx,.md"
+                   />
+                   <Button
+                     variant="link"
+                     className="text-muted p-0 me-2"
+                     onClick={handleFileClick}
+                     title="Attach file"
+                     style={{ textDecoration: 'none' }}
+                   >
+                     <span style={{ fontSize: '1.2rem' }}>📎</span>
+                   </Button>
+                   <div className="small text-muted ps-2">
+                     <small>Shift + Enter Newline</small>
+                   </div>
                </div>
                <Button
-                variant={input.trim() ? "primary" : "secondary"}
+                variant={input.trim() || tempFileId ? "primary" : "secondary"}
                 size="sm"
                 onClick={handleSend}
-                disabled={loading || !input.trim()}
+                disabled={loading || (!input.trim() && !tempFileId)}
                 className="rounded-pill px-4 btn-dynamic"
-                style={{ opacity: input.trim() ? 1 : 0.6 }}
+                style={{ opacity: input.trim() || tempFileId ? 1 : 0.6 }}
                >
                 {loading ? <Spinner animation="border" size="sm" /> : 'Send'}
               </Button>
