@@ -150,7 +150,7 @@ const FilePage: React.FC<FilePageProps> = ({ user }) => {
   const canUpload = () => {
     if (!user) return false;
     if (activeTab === 'policies') return user.role === 'admin';
-    if (activeTab === 'courses') return user.role === 'teacher'; // Students upload in Assignments (Chat), not here
+    if (activeTab === 'courses') return user.role === 'teacher' || user.role === 'admin'; // Admin can also upload course files
     return false;
   };
 
@@ -298,7 +298,21 @@ const FilePage: React.FC<FilePageProps> = ({ user }) => {
             </div>
 
             {canUpload() && (activeTab === 'policies' || selectedCourse) && (
-                <Button variant="danger" onClick={() => setShowUpload(true)} style={{ backgroundColor: '#B71C1C', borderColor: '#B71C1C' }}>
+                <Button
+                    variant="danger"
+                    onClick={() => setShowUpload(true)}
+                    style={{ backgroundColor: '#B71C1C', borderColor: '#B71C1C', transition: 'all 0.3s ease' }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#D32F2F';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 4px 8px rgba(183, 28, 28, 0.3)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#B71C1C';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = 'none';
+                    }}
+                >
                     Upload File
                 </Button>
             )}

@@ -28,6 +28,16 @@ const Layout: React.FC = () => {
     setShowAuthModal(false);
   };
 
+  const handleLogout = () => {
+    setUser(null);
+    // Optional: Clear any local storage if implemented later
+  };
+
+  const handleSwitchAccount = () => {
+    handleLogout();
+    setShowAuthModal(true);
+  };
+
   return (
     <div className="d-flex flex-column vh-100">
       <Navbar
@@ -127,13 +137,13 @@ const Layout: React.FC = () => {
                         height={40}
                         className="border"
                         style={{ objectFit: 'cover', cursor: 'pointer' }}
-                        title={user.identity}
+                        title={user.role}
                       />
                     ) : (
                       <div
                         className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
                         style={{ width: '40px', height: '40px', cursor: 'pointer', fontSize: '1.2rem' }}
-                        title={user.identity}
+                        title={user.role}
                       >
                         {user.nickname.charAt(0).toUpperCase()}
                       </div>
@@ -165,14 +175,21 @@ const Layout: React.FC = () => {
 
       <div
         className="flex-grow-1 position-relative"
-        style={{ backgroundColor: '#f7f7f8', overflow: 'hidden' }}
+        style={{ backgroundColor: '#f7f7f8', overflow: 'auto' }}
       >
-        <div key={location.pathname} className="route-view page-enter">
+        <div key={location.pathname} className="route-view page-enter h-100">
           <Routes>
             <Route path="/" element={<Navigate to="/chat" replace />} />
             <Route path="/chat" element={<ChatPage user={user} base={base} language={language} />} />
-            <Route path="/files" element={<FilePage />} />
-            <Route path="/profile" element={<ProfilePage user={user} setUser={setUser} />} />
+            <Route path="/files" element={<FilePage user={user} />} />
+            <Route path="/profile" element={
+                <ProfilePage
+                    user={user}
+                    setUser={setUser}
+                    onLogout={handleLogout}
+                    onSwitchAccount={handleSwitchAccount}
+                />
+            } />
           </Routes>
         </div>
       </div>

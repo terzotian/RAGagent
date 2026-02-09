@@ -6,9 +6,16 @@ import type { User } from '../services/api';
 interface ProfilePageProps {
   user: User | null;
   setUser: (user: User | null) => void;
+  onLogout: () => void;
+  onSwitchAccount: () => void;
 }
 
-const ProfileForm: React.FC<{ user: User; setUser: (user: User | null) => void }> = ({ user, setUser }) => {
+const ProfileForm: React.FC<{
+    user: User;
+    setUser: (user: User | null) => void;
+    onLogout: () => void;
+    onSwitchAccount: () => void;
+}> = ({ user, setUser, onLogout, onSwitchAccount }) => {
   const [formData, setFormData] = useState({
     nickname: user.nickname,
     role: user.role,
@@ -191,6 +198,17 @@ const ProfileForm: React.FC<{ user: User; setUser: (user: User | null) => void }
                 </div>
               </Form>
 
+              <hr className="my-4" />
+
+              <div className="d-grid gap-2">
+                <Button variant="outline-danger" onClick={onLogout}>
+                  Log Out
+                </Button>
+                <Button variant="outline-secondary" onClick={onSwitchAccount}>
+                  Switch Account
+                </Button>
+              </div>
+
             </Card.Body>
           </Card>
         </Col>
@@ -199,12 +217,20 @@ const ProfileForm: React.FC<{ user: User; setUser: (user: User | null) => void }
   );
 };
 
-const ProfilePage: React.FC<ProfilePageProps> = ({ user, setUser }) => {
+const ProfilePage: React.FC<ProfilePageProps> = ({ user, setUser, onLogout, onSwitchAccount }) => {
   if (!user) {
     return <Container className="mt-5"><Alert variant="warning">Please log in to view profile.</Alert></Container>;
   }
 
-  return <ProfileForm key={user.user_id} user={user} setUser={setUser} />;
+  return (
+    <ProfileForm
+      key={user.user_id}
+      user={user}
+      setUser={setUser}
+      onLogout={onLogout}
+      onSwitchAccount={onSwitchAccount}
+    />
+  );
 };
 
 export default ProfilePage;

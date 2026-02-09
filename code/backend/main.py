@@ -583,8 +583,8 @@ async def upload_course_file(
     db: Session = Depends(get_db)
 ):
     user = db.query(DBUser).filter(DBUser.user_id == user_id).first()
-    if not user or user.role != 'teacher':
-        raise HTTPException(status_code=403, detail="Only teachers can upload course files")
+    if not user or (user.role != 'teacher' and user.role != 'admin'):
+        raise HTTPException(status_code=403, detail="Only teachers or admins can upload course files")
 
     # Logic to save file and ingest (similar to previous upload)
     # For now, just save DB record to demonstrate structure
