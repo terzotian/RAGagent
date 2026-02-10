@@ -13,7 +13,32 @@ import mammoth
 
 import sys
 import os
+print(f"DEBUG: sys.path: {sys.path}")
+# Add libs to path
+libs_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'libs')
+if libs_path not in sys.path:
+    sys.path.insert(0, libs_path)
+    print(f"DEBUG: Added libs path: {libs_path}")
+
+# Add libs/bin to PATH for mineru command
+libs_bin_path = os.path.join(libs_path, 'bin')
+if libs_bin_path not in os.environ["PATH"]:
+    os.environ["PATH"] += os.pathsep + libs_bin_path
+    print(f"DEBUG: Added libs/bin to PATH: {libs_bin_path}")
+
+# Add LibreOffice to PATH
+soffice_path = "/Applications/LibreOffice.app/Contents/MacOS"
+if soffice_path not in os.environ["PATH"]:
+    os.environ["PATH"] += os.pathsep + soffice_path
+    print(f"DEBUG: Added LibreOffice to PATH: {soffice_path}")
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+try:
+    import lightrag
+    print(f"DEBUG: lightrag location: {lightrag.__file__}")
+except ImportError:
+    print("DEBUG: lightrag not found")
 
 from fastapi import FastAPI, HTTPException, status, Depends, UploadFile, File, Form, Query
 from fastapi.responses import StreamingResponse, HTMLResponse, PlainTextResponse, FileResponse
@@ -439,7 +464,7 @@ async def upload_temp_file(file: UploadFile = File(...)):
 
 @app.get("/api/v1/questions/stream")
 async def stream_question(session_id: str, question_id: str, previous_questions: str, current_question: str, language: str = "en",
-                          base: str = "lingnan", user_id: int = Query(None), temp_file_id: str = Query(None)):
+                          base: str = "lingnan", user_id: int = Query(None), temp_file_id: str = Query(None), db: Session = Depends(get_db)):
 
     temp_content = None
     if temp_file_id:
@@ -456,7 +481,23 @@ async def stream_question(session_id: str, question_id: str, previous_questions:
 
     previous_questions_list = json.loads(previous_questions)
 
-    gen_iter, references = await route_stream(current_question, previous_questions_list, language, base, temp_file_content=temp_content)
+    # Determine user's accessible bases
+    accessible_bases = ["lingnan"] # Always include public base
+    if user_id:
+        user = db.query(DBUser).filter(DBUser.user_id == user_id).first()
+        if user:
+            # Add user's major courses
+            if user.role == 'student' and user.major_code:
+                 courses = db.query(DBCourse).filter(DBCourse.major_code == user.major_code).all()
+                 for c in courses:
+                     accessible_bases.append(f"course_{c.course_code}")
+            # Add courses for teachers/admins
+            elif user.role in ['teacher', 'admin']:
+                 courses = db.query(DBCourse).all()
+                 for c in courses:
+                     accessible_bases.append(f"course_{c.course_code}")
+
+    gen_iter, references = await route_stream(current_question, previous_questions_list, language, accessible_bases, temp_file_content=temp_content)
 
     async def event_generator():
         print(f"DEBUG: Starting event_generator for session {session_id}")
@@ -616,7 +657,10 @@ async def upload_course_file(
     db.commit()
 
     # Trigger ingestion (Async)
-    # await ingest_file(f"course_{code}", file_path)
+    try:
+        await ingest_file(f"course_{code}", file_path)
+    except Exception as e:
+        print(f"Error indexing file: {e}")
 
     return {"message": "File uploaded"}
 

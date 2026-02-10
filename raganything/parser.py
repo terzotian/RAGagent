@@ -111,8 +111,13 @@ class Parser:
                 conversion_successful = False
                 for cmd in commands_to_try:
                     try:
+                        # Create unique user profile dir for this conversion
+                        import uuid
+                        user_profile_dir = temp_path / f"LO_User_{uuid.uuid4()}"
+                        
                         convert_cmd = [
                             cmd,
+                            f"-env:UserInstallation=file://{user_profile_dir}",
                             "--headless",
                             "--convert-to",
                             "pdf",

@@ -58,7 +58,7 @@ async def _ollama_stream(prompt: str, base_url: str, model: str):
     except:
         return
 
-async def route_stream(current_question: str, previous_questions: List[str], language: str, base: str, temp_file_content: str = None):
+async def route_stream(current_question: str, previous_questions: List[str], language: str, bases: List[str], temp_file_content: str = None):
     start_t = time.time()
     try:
         search_query, assembled_question, generate_time = await generate_search_query(current_question, previous_questions)
@@ -71,17 +71,43 @@ async def route_stream(current_question: str, previous_questions: List[str], lan
     use_lightrag = os.getenv("USE_LIGHTRAG_RETRIEVAL", "1") == "1"
     if use_lightrag:
         print("Using LightRAG retrieval...")
+
+    # 聚合检索结果
+    references = []
+    search_time = 0.0
+
+    # 确保 bases 列表唯一
+    unique_bases = list(set(bases))
+    print(f"DEBUG: Searching across bases: {unique_bases}")
+
     try:
         if use_lightrag:
-            references, search_time = await search_documents_lightrag(search_query, base)
+            # 并行检索所有库
+            tasks = [search_documents_lightrag(search_query, base) for base in unique_bases]
+            results_list = await asyncio.gather(*tasks)
+
+            # 合并结果
+            for res, t in results_list:
+                references.extend(res)
+                search_time = max(search_time, t) # 取最长耗时
         else:
-            references, search_time = await search_documents(search_query, load_segments_from_folder(input_folder=piece_dir(base=base)))
-            for ref in references:
-                if "source" in ref and "file_name" not in ref:
-                    ref["file_name"] = ref["source"]
-    except:
+            # 传统检索 (按顺序或并行，这里简化为顺序)
+            for base in unique_bases:
+                refs, t = await search_documents(search_query, load_segments_from_folder(input_folder=piece_dir(base=base)))
+                for ref in refs:
+                    if "source" in ref and "file_name" not in ref:
+                        ref["file_name"] = ref["source"]
+                references.extend(refs)
+                search_time += t
+    except Exception as e:
+        print(f"Search error: {e}")
         references = []
         search_time = 0.0
+
+    # 对合并后的 references 按相似度降序排序
+    references.sort(key=lambda x: _parse_similarity(x.get("similarity", "0%")), reverse=True)
+    # 截取前 5 个最相关的 (跨库去重)
+    references = references[:5]
 
     # Add temp file content if present
     if temp_file_content:

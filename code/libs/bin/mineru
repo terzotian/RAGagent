@@ -1,0 +1,11 @@
+#!/bin/bash
+# Get the absolute path of the directory containing this script
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+# libs directory is one level up
+LIBS_DIR="$(dirname "$DIR")"
+
+# Set PYTHONPATH to include the libs directory
+export PYTHONPATH="$LIBS_DIR:$PYTHONPATH"
+
+# Run the python module
+exec python3 -m mineru.cli.client "$@"

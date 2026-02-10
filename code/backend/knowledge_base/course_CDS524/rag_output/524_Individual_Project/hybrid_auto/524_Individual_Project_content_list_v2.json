@@ -1,0 +1,1010 @@
+[
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "Final Individual Project — Personal Job-Seeking Website (Google Sites / GitHub Pages) "
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                161,
+                79,
+                835,
+                121
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "What you need to do "
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                115,
+                149,
+                376,
+                168
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Build a job-seeking personal website to showcase your skills and projects (you may include your course individual/group projects). Choose one platform: "
+                    }
+                ]
+            },
+            "bbox": [
+                115,
+                187,
+                880,
+                221
+            ]
+        },
+        {
+            "type": "list",
+            "content": {
+                "list_type": "text_list",
+                "list_items": [
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• Google Sites, or "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• GitHub Pages (github.io). "
+                            }
+                        ]
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                239,
+                389,
+                279
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Submission: Submit a Word document containing your website URL. "
+                    }
+                ]
+            },
+            "bbox": [
+                115,
+                298,
+                690,
+                313
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "Required Sections (Website must include) "
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                115,
+                342,
+                620,
+                363
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Your website must include at least the following 6 sections (as separate pages in the navigation bar or as sections on one page): "
+                    }
+                ]
+            },
+            "bbox": [
+                114,
+                382,
+                880,
+                414
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "1) Home / Headline "
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                115,
+                438,
+                321,
+                456
+            ]
+        },
+        {
+            "type": "list",
+            "content": {
+                "list_type": "text_list",
+                "list_items": [
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• A one-sentence positioning statement (what kind of job/internship you are seeking) "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• Key tags (e.g., Data Analytics / ML for Business / Python / SQL) "
+                            }
+                        ]
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                469,
+                833,
+                508
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "2) About Me "
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                115,
+                537,
+                253,
+                552
+            ]
+        },
+        {
+            "type": "list",
+            "content": {
+                "list_type": "text_list",
+                "list_items": [
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• A short self-introduction (3–8 sentences) "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• Education background (school/major/graduation time; “expected” is acceptable) "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• Your strengths / focus areas (2–4 bullet points) "
+                            }
+                        ]
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                567,
+                813,
+                634
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "3) Skills "
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                115,
+                661,
+                201,
+                678
+            ]
+        },
+        {
+            "type": "list",
+            "content": {
+                "list_type": "text_list",
+                "list_items": [
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• Technical skills (e.g., Python, SQL, Excel, ML, NLP, statistics, visualization) — based on your actual skills "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• Business skills (e.g., problem framing, A/B testing, metrics, reporting/storytelling) "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• Tools (e.g., pandas, scikit-learn, Power BI/Tableau if used) "
+                            }
+                        ]
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                690,
+                875,
+                774
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "4) Projects (Portfolio) — Core "
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                115,
+                801,
+                428,
+                819
+            ]
+        },
+        {
+            "type": "list",
+            "content": {
+                "list_type": "text_list",
+                "list_items": [
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• Include at least two projects (recommended: one individual "
+                            },
+                            {
+                                "type": "equation_inline",
+                                "content": "^ +"
+                            },
+                            {
+                                "type": "text",
+                                "content": "one group project, or more). "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• Each project must include the following “project card” information: "
+                            }
+                        ]
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                832,
+                875,
+                889
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "– Project title + time "
+                    }
+                ]
+            },
+            "bbox": [
+                181,
+                902,
+                366,
+                915
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "1 "
+                    }
+                ]
+            },
+            "bbox": [
+                492,
+                938,
+                504,
+                950
+            ]
+        }
+    ],
+    [
+        {
+            "type": "list",
+            "content": {
+                "list_type": "text_list",
+                "list_items": [
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "– Problem: what problem you solved (business context) "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "– Data: data source/size/main fields (1–2 sentences) "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "– Approach: methods/models/pipeline used (1–2 sentences) "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "– Outcome/Impact: results/value (metrics or conclusions; if no metrics, state clear deliverables) "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "– Your contribution: for group projects, specify what you did "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "– (Optional) links to code/report (GitHub/Google Drive, etc.) "
+                            }
+                        ]
+                    }
+                ]
+            },
+            "bbox": [
+                179,
+                85,
+                878,
+                223
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "5) Resume / CV "
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                115,
+                244,
+                287,
+                263
+            ]
+        },
+        {
+            "type": "list",
+            "content": {
+                "list_type": "text_list",
+                "list_items": [
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• Provide a downloadable/viewable resume link (PDF link or Google Drive link), or "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• Provide a short resume section on the site (Education/Experience/Projects). "
+                            }
+                        ]
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                277,
+                828,
+                321
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "6) Contact "
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                115,
+                344,
+                228,
+                362
+            ]
+        },
+        {
+            "type": "list",
+            "content": {
+                "list_type": "text_list",
+                "list_items": [
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• Email (required) "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• Optional: LinkedIn, GitHub, phone number (not required) "
+                            }
+                        ]
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                376,
+                636,
+                419
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Note: Charts are not required, but your project descriptions must clearly communicate: what you did + what you can do + what value you created. "
+                    }
+                ]
+            },
+            "bbox": [
+                115,
+                439,
+                880,
+                472
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "Rubric (Total: 20 points) "
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                115,
+                500,
+                420,
+                521
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "1) Basic information and job positioning (3 points) "
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                115,
+                539,
+                626,
+                558
+            ]
+        },
+        {
+            "type": "list",
+            "content": {
+                "list_type": "text_list",
+                "list_items": [
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• 0–1: No clear job target / unclear positioning "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• 2: Has job target and intro, but highlights are not strong "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• 3: Clear positioning (one-sentence headline "
+                            },
+                            {
+                                "type": "equation_inline",
+                                "content": "+"
+                            },
+                            {
+                                "type": "text",
+                                "content": "clear target role/area) and complete info "
+                            }
+                        ]
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                570,
+                865,
+                640
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "2) Completeness and structure (4 points) "
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                115,
+                664,
+                529,
+                683
+            ]
+        },
+        {
+            "type": "list",
+            "content": {
+                "list_type": "text_list",
+                "list_items": [
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• 0–1: Many missing sections; confusing navigation "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• 2–3: Most required sections included; structure is mostly clear "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• 4: All 6 required sections included; clear navigation/hierarchy; easy to find projects and contact info "
+                            }
+                        ]
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                695,
+                878,
+                778
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "3) Skills presentation and alignment (3 points) "
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                115,
+                804,
+                583,
+                824
+            ]
+        },
+        {
+            "type": "list",
+            "content": {
+                "list_type": "text_list",
+                "list_items": [
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• 0–1: Skills listed randomly; not aligned with job target "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• 2: Skills are clear but lack structure/evidence "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• 3: Skills are well organized (technical/business/tools) and can be mapped to projects/experience "
+                            }
+                        ]
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                835,
+                921,
+                906
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "2 "
+                    }
+                ]
+            },
+            "bbox": [
+                492,
+                938,
+                505,
+                950
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "4) Project showcase quality (8 points) — Core "
+                    }
+                ]
+            },
+            "bbox": [
+                115,
+                84,
+                583,
+                101
+            ]
+        },
+        {
+            "type": "list",
+            "content": {
+                "list_type": "text_list",
+                "list_items": [
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• 0–3: Too few projects or incomplete info (only titles; no methods/results) "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• 4–6: At least 2 projects; includes Problem/Data/Approach/Outcome "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• 7–8: Professional, specific project narratives; clear results/impact; clear personal contribution in group projects; links/attachments are a plus "
+                            }
+                        ]
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                115,
+                873,
+                198
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "5) Professional presentation and accessibility (2 points) "
+                    }
+                ]
+            },
+            "bbox": [
+                115,
+                225,
+                668,
+                243
+            ]
+        },
+        {
+            "type": "list",
+            "content": {
+                "list_type": "text_list",
+                "list_items": [
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• 0: Poor formatting/many typos; links do not work or access is blocked "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• 1: Readable but inconsistent formatting/details "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• 2: Clean and consistent layout; mobile-friendly; all links are accessible "
+                            }
+                        ]
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                256,
+                729,
+                323
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "Submission Requirements (Word) "
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                115,
+                355,
+                521,
+                375
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Your Word document should include: "
+                    }
+                ]
+            },
+            "bbox": [
+                115,
+                394,
+                420,
+                407
+            ]
+        },
+        {
+            "type": "list",
+            "content": {
+                "list_type": "text_list",
+                "list_items": [
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• Name / Student ID "
+                            }
+                        ]
+                    },
+                    {
+                        "item_type": "text",
+                        "item_content": [
+                            {
+                                "type": "text",
+                                "content": "• Website link (URL) "
+                            }
+                        ]
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                428,
+                322,
+                468
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "3 "
+                    }
+                ]
+            },
+            "bbox": [
+                492,
+                938,
+                504,
+                950
+            ]
+        }
+    ]
+]

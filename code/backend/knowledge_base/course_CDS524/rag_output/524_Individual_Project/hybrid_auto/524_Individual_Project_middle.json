@@ -1,0 +1,2646 @@
+{
+    "pdf_info": [
+        {
+            "para_blocks": [
+                {
+                    "bbox": [
+                        96,
+                        67,
+                        497,
+                        102
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "index": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                95,
+                                67,
+                                498,
+                                89
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        95,
+                                        67,
+                                        498,
+                                        89
+                                    ],
+                                    "type": "text",
+                                    "content": "Final Individual Project — Personal Job-Seeking Website",
+                                    "score": 1.0
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                217,
+                                87,
+                                377,
+                                104
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        217,
+                                        87,
+                                        377,
+                                        104
+                                    ],
+                                    "type": "text",
+                                    "content": "(Google Sites / GitHub Pages)",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        69,
+                        126,
+                        224,
+                        142
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "index": 1,
+                    "lines": [
+                        {
+                            "bbox": [
+                                70,
+                                125,
+                                224,
+                                145
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        70,
+                                        125,
+                                        224,
+                                        145
+                                    ],
+                                    "type": "text",
+                                    "content": "What you need to do",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        69,
+                        158,
+                        524,
+                        186
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "index": 2,
+                    "lines": [
+                        {
+                            "bbox": [
+                                69,
+                                158,
+                                524,
+                                174
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        69,
+                                        158,
+                                        524,
+                                        174
+                                    ],
+                                    "type": "text",
+                                    "content": "Build a job-seeking personal website to showcase your skills and projects (you may include your",
+                                    "score": 1.0
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                69,
+                                173,
+                                342,
+                                187
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        69,
+                                        173,
+                                        342,
+                                        187
+                                    ],
+                                    "type": "text",
+                                    "content": "course individual/group projects). Choose one platform:",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        84,
+                        201,
+                        232,
+                        235
+                    ],
+                    "type": "list",
+                    "angle": 0,
+                    "index": 5,
+                    "blocks": [
+                        {
+                            "bbox": [
+                                84,
+                                201,
+                                175,
+                                211
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 3,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        84,
+                                        199,
+                                        176,
+                                        216
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                84,
+                                                199,
+                                                176,
+                                                216
+                                            ],
+                                            "type": "text",
+                                            "content": "• Google Sites, or",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                84,
+                                223,
+                                232,
+                                235
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 4,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        84,
+                                        222,
+                                        234,
+                                        238
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                84,
+                                                222,
+                                                234,
+                                                238
+                                            ],
+                                            "type": "text",
+                                            "content": "• GitHub Pages (github.io).",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "sub_type": "text"
+                },
+                {
+                    "bbox": [
+                        69,
+                        251,
+                        411,
+                        264
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "index": 6,
+                    "lines": [
+                        {
+                            "bbox": [
+                                70,
+                                251,
+                                412,
+                                265
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        70,
+                                        251,
+                                        412,
+                                        265
+                                    ],
+                                    "type": "text",
+                                    "content": "Submission: Submit a Word document containing your website URL.",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        69,
+                        288,
+                        369,
+                        306
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "index": 7,
+                    "lines": [
+                        {
+                            "bbox": [
+                                69,
+                                287,
+                                370,
+                                307
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        69,
+                                        287,
+                                        370,
+                                        307
+                                    ],
+                                    "type": "text",
+                                    "content": "Required Sections (Website must include)",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        68,
+                        322,
+                        524,
+                        349
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "index": 8,
+                    "lines": [
+                        {
+                            "bbox": [
+                                70,
+                                321,
+                                524,
+                                336
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        70,
+                                        321,
+                                        524,
+                                        336
+                                    ],
+                                    "type": "text",
+                                    "content": "Your website must include at least the following 6 sections (as separate pages in the navigation",
+                                    "score": 1.0
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                70,
+                                335,
+                                224,
+                                349
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        70,
+                                        335,
+                                        224,
+                                        349
+                                    ],
+                                    "type": "text",
+                                    "content": "bar or as sections on one page):",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        69,
+                        369,
+                        191,
+                        384
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "index": 9,
+                    "lines": [
+                        {
+                            "bbox": [
+                                70,
+                                367,
+                                192,
+                                387
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        70,
+                                        367,
+                                        192,
+                                        387
+                                    ],
+                                    "type": "text",
+                                    "content": "1) Home / Headline",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        83,
+                        395,
+                        496,
+                        428
+                    ],
+                    "type": "list",
+                    "angle": 0,
+                    "index": 12,
+                    "blocks": [
+                        {
+                            "bbox": [
+                                83,
+                                395,
+                                496,
+                                406
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 10,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        85,
+                                        394,
+                                        497,
+                                        408
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                85,
+                                                394,
+                                                497,
+                                                408
+                                            ],
+                                            "type": "text",
+                                            "content": "• A one-sentence positioning statement (what kind of job/internship you are seeking)",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                84,
+                                417,
+                                420,
+                                428
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 11,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        85,
+                                        417,
+                                        421,
+                                        431
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                85,
+                                                417,
+                                                421,
+                                                431
+                                            ],
+                                            "type": "text",
+                                            "content": "• Key tags (e.g., Data Analytics / ML for Business / Python / SQL)",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "sub_type": "text"
+                },
+                {
+                    "bbox": [
+                        69,
+                        452,
+                        151,
+                        465
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "index": 13,
+                    "lines": [
+                        {
+                            "bbox": [
+                                69,
+                                450,
+                                151,
+                                468
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        69,
+                                        450,
+                                        151,
+                                        468
+                                    ],
+                                    "type": "text",
+                                    "content": "2) About Me",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        83,
+                        477,
+                        484,
+                        534
+                    ],
+                    "type": "list",
+                    "angle": 0,
+                    "index": 17,
+                    "blocks": [
+                        {
+                            "bbox": [
+                                84,
+                                477,
+                                293,
+                                488
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 14,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        85,
+                                        477,
+                                        293,
+                                        491
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                85,
+                                                477,
+                                                293,
+                                                491
+                                            ],
+                                            "type": "text",
+                                            "content": "• A short self-introduction (3–8 sentences)",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                83,
+                                500,
+                                484,
+                                512
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 15,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        83,
+                                        497,
+                                        487,
+                                        515
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                83,
+                                                497,
+                                                487,
+                                                515
+                                            ],
+                                            "type": "text",
+                                            "content": "• Education background (school/major/graduation time; “expected” is acceptable)",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                84,
+                                522,
+                                326,
+                                534
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 16,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        85,
+                                        521,
+                                        327,
+                                        536
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                85,
+                                                521,
+                                                327,
+                                                536
+                                            ],
+                                            "type": "text",
+                                            "content": "• Your strengths / focus areas (2–4 bullet points)",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "sub_type": "text"
+                },
+                {
+                    "bbox": [
+                        69,
+                        556,
+                        120,
+                        571
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "index": 18,
+                    "lines": [
+                        {
+                            "bbox": [
+                                69,
+                                555,
+                                121,
+                                574
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        69,
+                                        555,
+                                        121,
+                                        574
+                                    ],
+                                    "type": "text",
+                                    "content": "3) Skills",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        83,
+                        581,
+                        521,
+                        651
+                    ],
+                    "type": "list",
+                    "angle": 0,
+                    "index": 22,
+                    "blocks": [
+                        {
+                            "bbox": [
+                                83,
+                                581,
+                                521,
+                                607
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 19,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        83,
+                                        580,
+                                        524,
+                                        597
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                83,
+                                                580,
+                                                524,
+                                                597
+                                            ],
+                                            "type": "text",
+                                            "content": "• Technical skills (e.g., Python, SQL, Excel, ML, NLP, statistics, visualization) — based on",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                },
+                                {
+                                    "bbox": [
+                                        96,
+                                        597,
+                                        181,
+                                        608
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                96,
+                                                597,
+                                                181,
+                                                608
+                                            ],
+                                            "type": "text",
+                                            "content": "your actual skills",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                83,
+                                618,
+                                495,
+                                630
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 20,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        83,
+                                        615,
+                                        496,
+                                        634
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                83,
+                                                615,
+                                                496,
+                                                634
+                                            ],
+                                            "type": "text",
+                                            "content": "• Business skills (e.g., problem framing, A/B testing, metrics, reporting/storytelling)",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                84,
+                                640,
+                                380,
+                                651
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 21,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        83,
+                                        638,
+                                        382,
+                                        655
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                83,
+                                                638,
+                                                382,
+                                                655
+                                            ],
+                                            "type": "text",
+                                            "content": "• Tools (e.g., pandas, scikit-learn, Power BI/Tableau if used)",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "sub_type": "text"
+                },
+                {
+                    "bbox": [
+                        69,
+                        674,
+                        255,
+                        689
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "index": 23,
+                    "lines": [
+                        {
+                            "bbox": [
+                                70,
+                                673,
+                                255,
+                                692
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        70,
+                                        673,
+                                        255,
+                                        692
+                                    ],
+                                    "type": "text",
+                                    "content": "4) Projects (Portfolio) — Core",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        83,
+                        700,
+                        521,
+                        748
+                    ],
+                    "type": "list",
+                    "angle": 0,
+                    "index": 26,
+                    "blocks": [
+                        {
+                            "bbox": [
+                                83,
+                                700,
+                                521,
+                                724
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 24,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        83,
+                                        698,
+                                        524,
+                                        715
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                83,
+                                                698,
+                                                402,
+                                                715
+                                            ],
+                                            "type": "text",
+                                            "content": "• Include at least two projects (recommended: one individual",
+                                            "score": 1.0
+                                        },
+                                        {
+                                            "bbox": [
+                                                402,
+                                                704,
+                                                411,
+                                                712
+                                            ],
+                                            "type": "inline_equation",
+                                            "content": "^ +",
+                                            "score": 0.76
+                                        },
+                                        {
+                                            "bbox": [
+                                                412,
+                                                698,
+                                                524,
+                                                715
+                                            ],
+                                            "type": "text",
+                                            "content": "one group project, or",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                },
+                                {
+                                    "bbox": [
+                                        95,
+                                        713,
+                                        133,
+                                        729
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                95,
+                                                713,
+                                                133,
+                                                729
+                                            ],
+                                            "type": "text",
+                                            "content": "more).",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                84,
+                                736,
+                                421,
+                                748
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 25,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        85,
+                                        736,
+                                        424,
+                                        750
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                85,
+                                                736,
+                                                424,
+                                                750
+                                            ],
+                                            "type": "text",
+                                            "content": "• Each project must include the following “project card” information:",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "sub_type": "text"
+                },
+                {
+                    "bbox": [
+                        108,
+                        759,
+                        218,
+                        770
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "index": 27,
+                    "lines": [
+                        {
+                            "bbox": [
+                                108,
+                                758,
+                                219,
+                                772
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        108,
+                                        758,
+                                        219,
+                                        772
+                                    ],
+                                    "type": "text",
+                                    "content": "– Project title + time",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "discarded_blocks": [
+                {
+                    "bbox": [
+                        293,
+                        789,
+                        300,
+                        799
+                    ],
+                    "type": "page_number",
+                    "angle": 0,
+                    "index": 28,
+                    "lines": [
+                        {
+                            "bbox": [
+                                293,
+                                790,
+                                301,
+                                802
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        293,
+                                        790,
+                                        301,
+                                        802
+                                    ],
+                                    "type": "text",
+                                    "content": "1",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "page_size": [
+                595,
+                841
+            ],
+            "page_idx": 0
+        },
+        {
+            "para_blocks": [
+                {
+                    "bbox": [
+                        107,
+                        72,
+                        523,
+                        188
+                    ],
+                    "type": "list",
+                    "angle": 0,
+                    "index": 6,
+                    "blocks": [
+                        {
+                            "bbox": [
+                                107,
+                                72,
+                                387,
+                                85
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 0,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        108,
+                                        70,
+                                        388,
+                                        88
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                108,
+                                                70,
+                                                388,
+                                                88
+                                            ],
+                                            "type": "text",
+                                            "content": "– Problem: what problem you solved (business context)",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                108,
+                                89,
+                                369,
+                                104
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 1,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        109,
+                                        88,
+                                        368,
+                                        105
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                109,
+                                                88,
+                                                368,
+                                                105
+                                            ],
+                                            "type": "text",
+                                            "content": "– Data: data source/size/main fields (1–2 sentences)",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                108,
+                                107,
+                                406,
+                                121
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 2,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        109,
+                                        106,
+                                        408,
+                                        123
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                109,
+                                                106,
+                                                408,
+                                                123
+                                            ],
+                                            "type": "text",
+                                            "content": "– Approach: methods/models/pipeline used (1–2 sentences)",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                107,
+                                125,
+                                523,
+                                152
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 3,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        109,
+                                        123,
+                                        524,
+                                        140
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                109,
+                                                123,
+                                                524,
+                                                140
+                                            ],
+                                            "type": "text",
+                                            "content": "– Outcome/Impact: results/value (metrics or conclusions; if no metrics, state clear",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                },
+                                {
+                                    "bbox": [
+                                        120,
+                                        137,
+                                        185,
+                                        153
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                120,
+                                                137,
+                                                185,
+                                                153
+                                            ],
+                                            "type": "text",
+                                            "content": "deliverables)",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                108,
+                                156,
+                                422,
+                                169
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 4,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        108,
+                                        154,
+                                        423,
+                                        171
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                108,
+                                                154,
+                                                423,
+                                                171
+                                            ],
+                                            "type": "text",
+                                            "content": "– Your contribution: for group projects, specify what you did",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                108,
+                                173,
+                                412,
+                                188
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 5,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        108,
+                                        172,
+                                        414,
+                                        190
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                108,
+                                                172,
+                                                414,
+                                                190
+                                            ],
+                                            "type": "text",
+                                            "content": "– (Optional) links to code/report (GitHub/Google Drive, etc.)",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "sub_type": "text"
+                },
+                {
+                    "bbox": [
+                        69,
+                        206,
+                        171,
+                        222
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "index": 7,
+                    "lines": [
+                        {
+                            "bbox": [
+                                69,
+                                206,
+                                171,
+                                224
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        69,
+                                        206,
+                                        171,
+                                        224
+                                    ],
+                                    "type": "text",
+                                    "content": "5) Resume / CV",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        83,
+                        233,
+                        493,
+                        270
+                    ],
+                    "type": "list",
+                    "angle": 0,
+                    "index": 10,
+                    "blocks": [
+                        {
+                            "bbox": [
+                                83,
+                                233,
+                                493,
+                                248
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 8,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        84,
+                                        231,
+                                        494,
+                                        248
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                84,
+                                                231,
+                                                494,
+                                                248
+                                            ],
+                                            "type": "text",
+                                            "content": "• Provide a downloadable/viewable resume link (PDF link or Google Drive link), or",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                84,
+                                256,
+                                465,
+                                270
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 9,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        83,
+                                        253,
+                                        467,
+                                        272
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                83,
+                                                253,
+                                                467,
+                                                272
+                                            ],
+                                            "type": "text",
+                                            "content": "• Provide a short resume section on the site (Education/Experience/Projects).",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "sub_type": "text"
+                },
+                {
+                    "bbox": [
+                        69,
+                        290,
+                        136,
+                        305
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "index": 11,
+                    "lines": [
+                        {
+                            "bbox": [
+                                69,
+                                289,
+                                136,
+                                306
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        69,
+                                        289,
+                                        136,
+                                        306
+                                    ],
+                                    "type": "text",
+                                    "content": "6) Contact",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        84,
+                        317,
+                        379,
+                        353
+                    ],
+                    "type": "list",
+                    "angle": 0,
+                    "index": 14,
+                    "blocks": [
+                        {
+                            "bbox": [
+                                84,
+                                317,
+                                179,
+                                330
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 12,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        84,
+                                        313,
+                                        179,
+                                        332
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                84,
+                                                313,
+                                                179,
+                                                332
+                                            ],
+                                            "type": "text",
+                                            "content": "• Email (required)",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                84,
+                                338,
+                                379,
+                                353
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 13,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        85,
+                                        337,
+                                        380,
+                                        355
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                85,
+                                                337,
+                                                380,
+                                                355
+                                            ],
+                                            "type": "text",
+                                            "content": "• Optional: LinkedIn, GitHub, phone number (not required)",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "sub_type": "text"
+                },
+                {
+                    "bbox": [
+                        69,
+                        370,
+                        524,
+                        397
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "index": 15,
+                    "lines": [
+                        {
+                            "bbox": [
+                                69,
+                                370,
+                                525,
+                                385
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        69,
+                                        370,
+                                        525,
+                                        385
+                                    ],
+                                    "type": "text",
+                                    "content": "Note: Charts are not required, but your project descriptions must clearly communicate: what",
+                                    "score": 1.0
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                69,
+                                384,
+                                329,
+                                398
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        69,
+                                        384,
+                                        329,
+                                        398
+                                    ],
+                                    "type": "text",
+                                    "content": "you did + what you can do + what value you created.",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        69,
+                        421,
+                        250,
+                        439
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "index": 16,
+                    "lines": [
+                        {
+                            "bbox": [
+                                68,
+                                418,
+                                252,
+                                441
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        68,
+                                        418,
+                                        252,
+                                        441
+                                    ],
+                                    "type": "text",
+                                    "content": "Rubric (Total: 20 points)",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        69,
+                        454,
+                        373,
+                        470
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "index": 17,
+                    "lines": [
+                        {
+                            "bbox": [
+                                71,
+                                453,
+                                373,
+                                470
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        71,
+                                        453,
+                                        373,
+                                        470
+                                    ],
+                                    "type": "text",
+                                    "content": "1) Basic information and job positioning (3 points)",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        84,
+                        480,
+                        515,
+                        539
+                    ],
+                    "type": "list",
+                    "angle": 0,
+                    "index": 21,
+                    "blocks": [
+                        {
+                            "bbox": [
+                                84,
+                                480,
+                                318,
+                                494
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 18,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        84,
+                                        477,
+                                        319,
+                                        496
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                84,
+                                                477,
+                                                319,
+                                                496
+                                            ],
+                                            "type": "text",
+                                            "content": "• 0–1: No clear job target / unclear positioning",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                84,
+                                502,
+                                373,
+                                517
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 19,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        85,
+                                        501,
+                                        375,
+                                        518
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                85,
+                                                501,
+                                                375,
+                                                518
+                                            ],
+                                            "type": "text",
+                                            "content": "• 2: Has job target and intro, but highlights are not strong",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                84,
+                                524,
+                                515,
+                                539
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 20,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        84,
+                                        523,
+                                        516,
+                                        539
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                84,
+                                                523,
+                                                306,
+                                                539
+                                            ],
+                                            "type": "text",
+                                            "content": "• 3: Clear positioning (one-sentence headline",
+                                            "score": 1.0
+                                        },
+                                        {
+                                            "bbox": [
+                                                307,
+                                                527,
+                                                317,
+                                                537
+                                            ],
+                                            "type": "inline_equation",
+                                            "content": "+",
+                                            "score": 0.71
+                                        },
+                                        {
+                                            "bbox": [
+                                                317,
+                                                523,
+                                                516,
+                                                539
+                                            ],
+                                            "type": "text",
+                                            "content": "clear target role/area) and complete info",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "sub_type": "text"
+                },
+                {
+                    "bbox": [
+                        69,
+                        559,
+                        315,
+                        575
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "index": 22,
+                    "lines": [
+                        {
+                            "bbox": [
+                                70,
+                                558,
+                                315,
+                                577
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        70,
+                                        558,
+                                        315,
+                                        577
+                                    ],
+                                    "type": "text",
+                                    "content": "2) Completeness and structure (4 points)",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        84,
+                        585,
+                        523,
+                        655
+                    ],
+                    "type": "list",
+                    "angle": 0,
+                    "index": 26,
+                    "blocks": [
+                        {
+                            "bbox": [
+                                84,
+                                585,
+                                335,
+                                599
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 23,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        85,
+                                        583,
+                                        335,
+                                        600
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                85,
+                                                583,
+                                                335,
+                                                600
+                                            ],
+                                            "type": "text",
+                                            "content": "• 0–1: Many missing sections; confusing navigation",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                84,
+                                608,
+                                397,
+                                621
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 24,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        85,
+                                        607,
+                                        398,
+                                        622
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                85,
+                                                607,
+                                                398,
+                                                622
+                                            ],
+                                            "type": "text",
+                                            "content": "• 2–3: Most required sections included; structure is mostly clear",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                84,
+                                630,
+                                523,
+                                655
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 25,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        83,
+                                        629,
+                                        524,
+                                        645
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                83,
+                                                629,
+                                                524,
+                                                645
+                                            ],
+                                            "type": "text",
+                                            "content": "• 4: All 6 required sections included; clear navigation/hierarchy; easy to find projects and",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                },
+                                {
+                                    "bbox": [
+                                        96,
+                                        644,
+                                        157,
+                                        656
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                96,
+                                                644,
+                                                157,
+                                                656
+                                            ],
+                                            "type": "text",
+                                            "content": "contact info",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "sub_type": "text"
+                },
+                {
+                    "bbox": [
+                        69,
+                        677,
+                        347,
+                        693
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "index": 27,
+                    "lines": [
+                        {
+                            "bbox": [
+                                70,
+                                677,
+                                348,
+                                695
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        70,
+                                        677,
+                                        348,
+                                        695
+                                    ],
+                                    "type": "text",
+                                    "content": "3) Skills presentation and alignment (3 points)",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        83,
+                        703,
+                        548,
+                        762
+                    ],
+                    "type": "list",
+                    "angle": 0,
+                    "index": 31,
+                    "blocks": [
+                        {
+                            "bbox": [
+                                83,
+                                703,
+                                362,
+                                718
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 28,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        85,
+                                        703,
+                                        363,
+                                        719
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                85,
+                                                703,
+                                                363,
+                                                719
+                                            ],
+                                            "type": "text",
+                                            "content": "• 0–1: Skills listed randomly; not aligned with job target",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                84,
+                                726,
+                                317,
+                                740
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 29,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        85,
+                                        724,
+                                        318,
+                                        741
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                85,
+                                                724,
+                                                318,
+                                                741
+                                            ],
+                                            "type": "text",
+                                            "content": "• 2: Skills are clear but lack structure/evidence",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                83,
+                                749,
+                                548,
+                                762
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 30,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        83,
+                                        747,
+                                        550,
+                                        764
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                83,
+                                                747,
+                                                550,
+                                                764
+                                            ],
+                                            "type": "text",
+                                            "content": "• 3: Skills are well organized (technical/business/tools) and can be mapped to projects/experience",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "sub_type": "text"
+                }
+            ],
+            "discarded_blocks": [
+                {
+                    "bbox": [
+                        293,
+                        789,
+                        301,
+                        799
+                    ],
+                    "type": "page_number",
+                    "angle": 0,
+                    "index": 32,
+                    "lines": [
+                        {
+                            "bbox": [
+                                292,
+                                789,
+                                301,
+                                801
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        292,
+                                        789,
+                                        301,
+                                        801
+                                    ],
+                                    "type": "text",
+                                    "content": "2",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "page_size": [
+                595,
+                841
+            ],
+            "page_idx": 1
+        },
+        {
+            "para_blocks": [
+                {
+                    "bbox": [
+                        69,
+                        71,
+                        347,
+                        85
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "index": 0,
+                    "lines": [
+                        {
+                            "bbox": [
+                                70,
+                                69,
+                                348,
+                                89
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        70,
+                                        69,
+                                        348,
+                                        89
+                                    ],
+                                    "type": "text",
+                                    "content": "4) Project showcase quality (8 points) — Core",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        83,
+                        97,
+                        520,
+                        167
+                    ],
+                    "type": "list",
+                    "angle": 0,
+                    "index": 4,
+                    "blocks": [
+                        {
+                            "bbox": [
+                                83,
+                                97,
+                                450,
+                                109
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 1,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        85,
+                                        97,
+                                        451,
+                                        111
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                85,
+                                                97,
+                                                451,
+                                                111
+                                            ],
+                                            "type": "text",
+                                            "content": "• 0–3: Too few projects or incomplete info (only titles; no methods/results)",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                84,
+                                120,
+                                429,
+                                132
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 2,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        84,
+                                        119,
+                                        430,
+                                        134
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                84,
+                                                119,
+                                                430,
+                                                134
+                                            ],
+                                            "type": "text",
+                                            "content": "• 4–6: At least 2 projects; includes Problem/Data/Approach/Outcome",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                84,
+                                142,
+                                520,
+                                167
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 3,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        85,
+                                        141,
+                                        522,
+                                        157
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                85,
+                                                141,
+                                                522,
+                                                157
+                                            ],
+                                            "type": "text",
+                                            "content": "• 7–8: Professional, specific project narratives; clear results/impact; clear personal contri-",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                },
+                                {
+                                    "bbox": [
+                                        96,
+                                        156,
+                                        358,
+                                        169
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                96,
+                                                156,
+                                                358,
+                                                169
+                                            ],
+                                            "type": "text",
+                                            "content": "bution in group projects; links/attachments are a plus",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "sub_type": "text"
+                },
+                {
+                    "bbox": [
+                        69,
+                        190,
+                        398,
+                        205
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "index": 5,
+                    "lines": [
+                        {
+                            "bbox": [
+                                69,
+                                189,
+                                398,
+                                207
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        69,
+                                        189,
+                                        398,
+                                        207
+                                    ],
+                                    "type": "text",
+                                    "content": "5) Professional presentation and accessibility (2 points)",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        83,
+                        216,
+                        434,
+                        272
+                    ],
+                    "type": "list",
+                    "angle": 0,
+                    "index": 9,
+                    "blocks": [
+                        {
+                            "bbox": [
+                                83,
+                                216,
+                                434,
+                                227
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 6,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        85,
+                                        216,
+                                        437,
+                                        229
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                85,
+                                                216,
+                                                437,
+                                                229
+                                            ],
+                                            "type": "text",
+                                            "content": "• 0: Poor formatting/many typos; links do not work or access is blocked",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                84,
+                                238,
+                                327,
+                                250
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 7,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        85,
+                                        238,
+                                        327,
+                                        252
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                85,
+                                                238,
+                                                327,
+                                                252
+                                            ],
+                                            "type": "text",
+                                            "content": "• 1: Readable but inconsistent formatting/details",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                84,
+                                261,
+                                433,
+                                272
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 8,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        84,
+                                        260,
+                                        435,
+                                        275
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                84,
+                                                260,
+                                                435,
+                                                275
+                                            ],
+                                            "type": "text",
+                                            "content": "• 2: Clean and consistent layout; mobile-friendly; all links are accessible",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "sub_type": "text"
+                },
+                {
+                    "bbox": [
+                        69,
+                        299,
+                        310,
+                        316
+                    ],
+                    "type": "title",
+                    "angle": 0,
+                    "index": 10,
+                    "lines": [
+                        {
+                            "bbox": [
+                                69,
+                                297,
+                                312,
+                                318
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        69,
+                                        297,
+                                        312,
+                                        318
+                                    ],
+                                    "type": "text",
+                                    "content": "Submission Requirements (Word)",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        69,
+                        332,
+                        250,
+                        343
+                    ],
+                    "type": "text",
+                    "angle": 0,
+                    "index": 11,
+                    "lines": [
+                        {
+                            "bbox": [
+                                71,
+                                332,
+                                250,
+                                344
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        71,
+                                        332,
+                                        250,
+                                        344
+                                    ],
+                                    "type": "text",
+                                    "content": "Your Word document should include:",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "bbox": [
+                        84,
+                        360,
+                        192,
+                        394
+                    ],
+                    "type": "list",
+                    "angle": 0,
+                    "index": 14,
+                    "blocks": [
+                        {
+                            "bbox": [
+                                84,
+                                360,
+                                192,
+                                370
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 12,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        85,
+                                        359,
+                                        193,
+                                        373
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                85,
+                                                359,
+                                                193,
+                                                373
+                                            ],
+                                            "type": "text",
+                                            "content": "• Name / Student ID",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "bbox": [
+                                84,
+                                383,
+                                192,
+                                394
+                            ],
+                            "type": "text",
+                            "angle": 0,
+                            "index": 13,
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        83,
+                                        382,
+                                        193,
+                                        396
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                83,
+                                                382,
+                                                193,
+                                                396
+                                            ],
+                                            "type": "text",
+                                            "content": "• Website link (URL)",
+                                            "score": 1.0
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "sub_type": "text"
+                }
+            ],
+            "discarded_blocks": [
+                {
+                    "bbox": [
+                        293,
+                        789,
+                        300,
+                        799
+                    ],
+                    "type": "page_number",
+                    "angle": 0,
+                    "index": 15,
+                    "lines": [
+                        {
+                            "bbox": [
+                                293,
+                                789,
+                                302,
+                                801
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        293,
+                                        789,
+                                        302,
+                                        801
+                                    ],
+                                    "type": "text",
+                                    "content": "3",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "page_size": [
+                595,
+                841
+            ],
+            "page_idx": 2
+        }
+    ],
+    "_backend": "hybrid",
+    "_ocr_enable": false,
+    "_vlm_ocr_enable": false,
+    "_version_name": "2.7.6"
+}

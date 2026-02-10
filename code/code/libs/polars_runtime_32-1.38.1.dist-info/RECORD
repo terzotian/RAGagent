@@ -1,0 +1,10 @@
+_polars_runtime_32/__init__.py,sha256=vgRSj51P2d87BW3xnH3Vb78OibrLdpFyNnjkRpGEXPQ,167
+_polars_runtime_32/__pycache__/__init__.cpython-312.pyc,,
+_polars_runtime_32/__pycache__/build_feature_flags.cpython-312.pyc,,
+_polars_runtime_32/_polars_runtime.abi3.so,sha256=DD2nOD9wSvkPx7srRW7Gtejn3fNjVTOVeXJqn-w7RaI,151802832
+_polars_runtime_32/build_feature_flags.py,sha256=l9Yt422S2AL0m7sTWf9ZK6XoJr-5f0_f4S9SPwxkelQ,25
+polars_runtime_32-1.38.1.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+polars_runtime_32-1.38.1.dist-info/METADATA,sha256=_z9Gcm4hJyzFIikhcGkNga6hDPrZ-twBe_p54wJRCo8,1467
+polars_runtime_32-1.38.1.dist-info/RECORD,,
+polars_runtime_32-1.38.1.dist-info/WHEEL,sha256=WcVLymwUFXZZBOS7GhUoID5qvQcDPxnkUAYBKypRBtM,103
+polars_runtime_32-1.38.1.dist-info/licenses/LICENSE,sha256=TSDKkMRxpvPXNgVdp1bbHOJAOMKGmk31x4vlZo2voVs,1143

@@ -20,8 +20,8 @@ const Layout: React.FC = () => {
   const location = useLocation();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const [base, setBase] = useState('lingnan');
-  const [language, setLanguage] = useState<'en' | 'zh-cn' | 'zh-tw'>('en');
+  const [base] = useState('lingnan'); // Default base, effectively ignored by backend's multi-base logic
+  const [language, setLanguage] = useState<'en' | 'zh-cn' | 'zh-tw'>('zh-cn');
 
   const handleLoginSuccess = (loggedInUser: User) => {
     setUser(loggedInUser);
@@ -65,32 +65,6 @@ const Layout: React.FC = () => {
               </Nav.Link>
             </Nav>
             <div className="d-flex gap-3 me-3 align-items-center">
-              <Dropdown>
-                <Dropdown.Toggle
-                  variant="custom"
-                  id="dropdown-base"
-                  className="custom-dropdown-toggle"
-                >
-                  {base === 'lingnan' ? 'Lingnan' : 'Data Science'}
-                </Dropdown.Toggle>
-                <Dropdown.Menu className="custom-dropdown-menu">
-                  <Dropdown.Item
-                    onClick={() => setBase('lingnan')}
-                    className="custom-dropdown-item"
-                    active={base === 'lingnan'}
-                  >
-                    Lingnan
-                  </Dropdown.Item>
-                  <Dropdown.Item
-                    onClick={() => setBase('base_DS')}
-                    className="custom-dropdown-item"
-                    active={base === 'base_DS'}
-                  >
-                    Data Science
-                  </Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-
               <Dropdown>
                 <Dropdown.Toggle
                   variant="custom"
