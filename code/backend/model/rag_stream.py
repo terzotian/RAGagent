@@ -1,9 +1,42 @@
 import os
+import json
+import requests
 from typing import Literal
-
-from backend.model.llm_stream_tongyiqianwen import stream_qwen_plus_query
 import asyncio
 
+async def stream_ollama_query(prompt: str):
+    base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+    model = os.getenv("OLLAMA_GEN_MODEL", "qwen3:8b")
+
+    try:
+        # Note: requests.post is blocking. In a high-concurrency production env, use aiohttp.
+        # For this local setup, it's acceptable, but we add asyncio.sleep(0) to yield control during iteration.
+        with requests.post(
+            f"{base_url}/api/generate",
+            json={"model": model, "prompt": prompt, "stream": True},
+            stream=True,
+            timeout=300
+        ) as r:
+            if r.status_code != 200:
+                yield f"Error: Ollama returned status {r.status_code}"
+                return
+
+            for line in r.iter_lines():
+                if not line:
+                    continue
+                try:
+                    obj = json.loads(line.decode("utf-8"))
+                    chunk = obj.get("response")
+                    if chunk:
+                        yield chunk
+                    if obj.get("done"):
+                        break
+                except:
+                    pass
+                # Yield control to event loop
+                await asyncio.sleep(0)
+    except Exception as e:
+        yield f"Error connecting to Ollama: {str(e)}"
 
 async def stream_answer(assembled_question: str, generate_time: float, references: list[dict[str, str]],
                         search_time: float, target_language: Literal['en', 'zh-cn', 'zh-tw'] = 'en'):
@@ -22,24 +55,56 @@ async def stream_answer(assembled_question: str, generate_time: float, reference
 
     prompt = promt_select(target_language, assembled_question, references)
 
-    # 流式调用LLM
-    previous_text = ""
-    async for token in stream_qwen_plus_query(prompt):
-        # token 是累计的完整文本，取出新部分
-        new_part = token[len(previous_text):]
-        previous_text = token
-        yield new_part
+    # 流式调用LLM (Switch to Ollama)
+    async for chunk in stream_ollama_query(prompt):
+        yield chunk
 
 
 def promt_select(language: Literal['en', 'zh-cn', 'zh-tw'], assembled_question, references) -> str:
+    # Build context string
+    context_str = "\n\n".join([f"[{i + 1}] {ref['content']}" for i, ref in enumerate(references)])
+
     if language == "zh-cn":
-        return f"""你现在的角色是岭南大学政策问答助手。请根据用户问题和参考资料来回答。如果参考资料能够解答用户的提问，就模拟RAG系统，在回答中用『1』『2』『3』来标记参考文献的出处。否则回复目前为止小助手没有查询到岭南大学有相关政策，很抱歉我不能帮你解答。
-        {assembled_question}参考资料:{" ".join([f"[{i + 1}] {ref['content']}" for i, ref in enumerate(references)])}"""
+        return f"""你现在的角色是岭南大学政策问答助手。
+请务必根据下方的【参考资料】来回答用户的问题。
+如果在参考资料中找到了答案，请在回答中相应位置标注引用来源，格式为 [1], [2]。
+如果参考资料中没有相关信息，请明确告知用户未找到相关政策，不要编造答案。
+
+【参考资料】：
+{context_str}
+
+【用户问题】：
+{assembled_question}
+
+【你的回答】："""
     elif language == "zh-tw":
-        return f"""你現在的角色是嶺南大學政策問答助手。請根據用戶問題和參考資料來回答。如果參考資料能夠解答用戶的提問，就模擬RAG系統，在回答中用『1』『2』『3』來標記參考文獻的出處。否則回復目前為止小助手沒有查詢到嶺南大學有相關政策，很抱歉我不能幫你解答。
-         {assembled_question}參考資料:{" ".join([f"[{i + 1}] {ref['content']}" for i, ref in enumerate(references)])}"""
-    return f"""You are now a Lingnan University policy QA assistant. Please answer based on the user's questions and references. If the references can answer the user's question, simulate the RAG system and use 『1』『2』『3』 to mark the source of the reference in the answer. Otherwise, reply that the assistant has not found any relevant policies of Lingnan University so far. I'm sorry that I can't help you.
-    {assembled_question}References:{" ".join([f"[{i + 1}] {ref['content']}" for i, ref in enumerate(references)])}"""
+        return f"""你現在的角色是嶺南大學政策問答助手。
+請務必根據下方的【參考資料】來回答用戶的問題。
+如果在參考資料中找到了答案，請在回答中相應位置標註引用來源，格式為 [1], [2]。
+如果參考資料中沒有相關資訊，請明確告知用戶未找到相關政策，不要編造答案。
+
+【參考資料】：
+{context_str}
+
+【用戶問題】：
+{assembled_question}
+
+【你的回答】："""
+
+    # English default
+    return f"""You are a helpful assistant for Lingnan University.
+Please answer the user's question STRICTLY based on the provided [References] below.
+- If the information is in the references, answer the question and cite the source number like [1], [2] at the end of the sentence.
+- If the references do not contain the answer, say "I cannot find the answer in the provided policy documents."
+- Do not use your general knowledge to answer if it's not in the documents.
+
+[References]:
+{context_str}
+
+[User Question]:
+{assembled_question}
+
+[Answer]:"""
 
 
 if __name__ == "__main__":

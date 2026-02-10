@@ -20,10 +20,10 @@ try:
 except ImportError:
     import env_setup
 
-try:
-    import lightrag
-except ImportError:
-    pass
+# try:
+#     import lightrag
+# except ImportError:
+#     pass
 
 from fastapi import FastAPI, HTTPException, status, Depends, UploadFile, File, Form, Query
 from fastapi.responses import StreamingResponse, HTMLResponse, PlainTextResponse, FileResponse
@@ -467,7 +467,7 @@ async def stream_question(session_id: str, question_id: str, previous_questions:
     previous_questions_list = json.loads(previous_questions)
 
     # Determine user's accessible bases
-    accessible_bases = ["lingnan"] # Always include public base
+    accessible_bases = ["public"] # Always include public base
     if user_id:
         user = db.query(DBUser).filter(DBUser.user_id == user_id).first()
         if user:
@@ -481,6 +481,25 @@ async def stream_question(session_id: str, question_id: str, previous_questions:
                  courses = db.query(DBCourse).all()
                  for c in courses:
                      accessible_bases.append(f"course_{c.course_code}")
+
+    base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+    # Auto-detect available model if not set or default
+    # Priority: OLLAMA_GEN_MODEL env -> qwen3:8b -> qwen2.5:3b
+    env_model = os.getenv("OLLAMA_GEN_MODEL")
+    if not env_model:
+        # Check available models
+        try:
+            import requests
+            r = requests.get(f"{base_url}/api/tags", timeout=2)
+            if r.status_code == 200:
+                models = [m["name"] for m in r.json().get("models", [])]
+                if "qwen3:8b" in models:
+                    os.environ["OLLAMA_GEN_MODEL"] = "qwen3:8b"
+                    print("DEBUG: Auto-detected and using qwen3:8b")
+                elif "qwen2.5:3b" in models:
+                    os.environ["OLLAMA_GEN_MODEL"] = "qwen2.5:3b"
+        except:
+            pass
 
     gen_iter, references = await route_stream(current_question, previous_questions_list, language, accessible_bases, temp_file_content=temp_content)
 
@@ -621,7 +640,10 @@ async def upload_course_file(
     file_size = f"{size_kb:.1f}KB" if size_kb < 1024 else f"{size_kb / 1024:.1f}MB"
 
     # Define path
-    save_dir = locate_path("knowledge_base", "courses", code)
+    # 修正：将路径保存到 course_{code}/files 下，而不是 courses/{code}
+    # 保持与 base 命名一致：base="course_{code}"
+    # save_dir = locate_path("knowledge_base", "courses", code)
+    save_dir = locate_path("knowledge_base", f"course_{code}", "files")
     os.makedirs(save_dir, exist_ok=True)
     file_path = os.path.join(save_dir, file.filename)
 

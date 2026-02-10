@@ -2,8 +2,8 @@ import os
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-POLICIES_DIR = os.path.join(PROJECT_ROOT, "knowledge_base", "lingnan", "policies")
-PIECES_DIR = os.path.join(PROJECT_ROOT, "knowledge_base", "lingnan", "pieces")
+POLICIES_DIR = os.path.join(PROJECT_ROOT, "knowledge_base", "public", "policies")
+PIECES_DIR = os.path.join(PROJECT_ROOT, "knowledge_base", "public", "pieces")
 
 
 def locate_path(*subdirs):

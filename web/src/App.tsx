@@ -21,7 +21,7 @@ const Layout: React.FC = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [base] = useState('lingnan'); // Default base, effectively ignored by backend's multi-base logic
-  const [language, setLanguage] = useState<'en' | 'zh-cn' | 'zh-tw'>('zh-cn');
+  const [language, setLanguage] = useState<'en' | 'zh-cn' | 'zh-tw'>('en');
 
   const handleLoginSuccess = (loggedInUser: User) => {
     setUser(loggedInUser);

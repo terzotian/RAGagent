@@ -108,7 +108,7 @@ async def search_documents(search_query, document_segments, top_k=5):
         # 格式化结果（保留一位小数，若小数点后为0可按需调整）
         similarity_str = f"{new_percent:.1f}%"
 
-        if orig_percent > 20:
+        if orig_percent > 1:
             results.append({
                 'content': document_segments[idx]['content'],
                 'source': source_finding(document_segments[idx]['source']),

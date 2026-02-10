@@ -5,8 +5,8 @@ def setup_environment():
     """
     Configure environment variables and python path for local dependencies.
     Includes:
-    - code/libs: For local python packages (LightRAG, Mineru)
-    - code/libs/bin: For Mineru binaries
+    - code/libs: For local python packages
+    - code/libs/bin: For local binaries
     - LibreOffice: For document conversion
     - Project root: For module resolution
     """

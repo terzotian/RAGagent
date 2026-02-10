@@ -1,0 +1,484 @@
+--- Segment 1 ---
+Sunday Monday Tuesday Wednesday Thursday Friday Saturday
+04-Jan-2026 05-Jan-2026 06-Jan-2026 07-Jan-2026 08-Jan-2026 09-Jan-2026 10-Jan-2026
+11-Jan-2026 12-Jan-2026 13-Jan-2026 14-Jan-2026 15-Jan-2026 16-Jan-2026 17-Jan-2026
+10:00 AM - 1:00 PM
+CDS527 Big Data Analytics
+Prof. CHIU Hon Wing Billy
+MBG06   9:30 AM - 12:30 PM
+CDS526 Artificial Intelligence 
+Based Optimization
+Prof. LIU Jialin
+MBG06            
+3:30 PM - 7:00 PM
+CDS524 Machine Learning 
+for Business
+Prof. DONG Chengzu
+MBG22  2:30 PM - 5:30 PM
+CDS540 Computer Vision
+Dr. GUO Haifeng
+AUD0112:30 PM - 3:30 PM
+CDS547 Introduction to Large 
+Language Models
+Prof. LIN Zehong
+MBG0612:00 PM - 3:30 PM
+CDS525 Practical Application 
+of Deep Learning
+Prof. DONG Chengzu 
+AUD01        
+18-Jan-2026 19-Jan-2026 20-Jan-2026 21-Jan-2026 22-Jan-2026 23-Jan-2026 24-Jan-2026
+10:00 AM - 1:00 PM
+CDS527 Big Data Analytics
+Prof. CHIU Hon Wing Billy
+MBG06   9:30 AM - 12:30 PM
+CDS526 Artificial Intelligence 
+Based Optimization
+Prof. LIU Jialin
+MBG06            
+3:30 PM - 7:00 PM
+CDS524 Machine Learning 
+for Business
+Prof. DONG Chengzu
+MBG22  2:30 PM - 5:30 PM
+CDS540 Computer Vision
+Dr.
+
+--- Segment 2 ---
+LIU Jialin
+MBG06            
+3:30 PM - 7:00 PM
+CDS524 Machine Learning 
+for Business
+Prof. DONG Chengzu
+MBG22  2:30 PM - 5:30 PM
+CDS540 Computer Vision
+Dr. GUO Haifeng
+AUD0112:30 PM - 3:30 PM
+CDS547 Introduction to Large 
+Language Models
+Prof. LIN Zehong
+MBG0612:00 PM - 3:30 PM
+CDS525 Practical Application 
+of Deep Learning
+Prof. DONG Chengzu 
+AUD01        
+25-Jan-2026 26-Jan-2026 27-Jan-2026 28-Jan-2026 29-Jan-2026 30-Jan-2026 31-Jan-2026
+10:00 AM - 1:00 PM
+CDS527 Big Data Analytics
+Prof. CHIU Hon Wing Billy
+MBG06   9:30 AM - 12:30 PM
+CDS526 Artificial Intelligence 
+Based Optimization
+Prof. LIU Jialin
+MBG06            
+3:30 PM - 7:00 PM
+CDS524 Machine Learning 
+for Business
+Prof. DONG Chengzu
+MBG22  2:30 PM - 5:30 PM
+CDS540 Computer Vision
+Dr. GUO Haifeng
+AUD0112:30 PM - 3:30 PM
+CDS547 Introduction to Large 
+Language Models
+Prof. LIN Zehong
+MBG0612:00 PM - 3:30 PM
+CDS525 Practical Application 
+of Deep Learning
+Prof.
+
+--- Segment 3 ---
+GUO Haifeng
+AUD0112:30 PM - 3:30 PM
+CDS547 Introduction to Large 
+Language Models
+Prof. LIN Zehong
+MBG0612:00 PM - 3:30 PM
+CDS525 Practical Application 
+of Deep Learning
+Prof. DONG Chengzu 
+AUD01        Master of Science in Artificial Intelligence and Business Analytics (MScAIBA) Programme
+Course Schedule (Term 2 of AY 2025-26)
+01-Feb-2026 02-Feb-2026 03-Feb-2026 04-Feb-2026 05-Feb-2026 06-Feb-2026 07-Feb-2026
+10:00 AM - 1:00 PM
+CDS527 Big Data Analytics
+Prof. CHIU Hon Wing Billy
+MBG06   9:30 AM - 12:30 PM
+CDS526 Artificial Intelligence 
+Based Optimization
+Prof. LIU Jialin
+MBG06            Sports Day
+(Classes Suspended)
+3:30 PM - 7:00 PM
+CDS524 Machine Learning 
+for Business
+Prof. DONG Chengzu
+MBG22  2:30 PM - 5:30 PM
+CDS540 Computer Vision
+Dr. GUO Haifeng
+AUD0112:30 PM - 3:30 PM
+CDS547 Introduction to Large 
+Language Models
+Prof. LIN Zehong
+MBG06
+08-Feb-2026 09-Feb-2026 10-Feb-2026 11-Feb-2026 12-Feb-2026 13-Feb-2026 14-Feb-2026
+10:00 AM - 1:00 PM
+CDS527 Big Data Analytics
+Prof. CHIU Hon Wing Billy
+MBG06   9:30 AM - 12:30 PM
+CDS526 Artificial Intelligence 
+Based Optimization
+Prof. LIU Jialin
+MBG06            
+3:30 PM - 7:00 PM
+CDS524 Machine Learning 
+for Business
+Prof.
+
+--- Segment 4 ---
+CHIU Hon Wing Billy
+MBG06   9:30 AM - 12:30 PM
+CDS526 Artificial Intelligence 
+Based Optimization
+Prof. LIU Jialin
+MBG06            
+3:30 PM - 7:00 PM
+CDS524 Machine Learning 
+for Business
+Prof. DONG Chengzu
+MBG22  2:30 PM - 5:30 PM
+CDS540 Computer Vision
+Dr. GUO Haifeng
+AUD0112:30 PM - 3:30 PM
+CDS547 Introduction to Large 
+Language Models
+Prof. LIN Zehong
+MBG0612:00 PM - 3:30 PM
+CDS525 Practical Application 
+of Deep Learning
+Prof. DONG Chengzu 
+AUD01        
+15-Feb-2026 16-Feb-2026 17-Feb-2026 18-Feb-2026 19-Feb-2026 20-Feb-2026 21-Feb-2026
+Chinese New Year Holidays 
+(for students)Chinese New Year Holidays 
+(for students)Chinese New Year Holidays 
+(for students)Chinese New Year Holidays 
+(for students)Chinese New Year Holidays 
+(for students)
+22-Feb-2026 23-Feb-2026 24-Feb-2026 25-Feb-2026 26-Feb-2026 27-Feb-2026 28-Feb-2026
+10:00 AM - 1:00 PM
+CDS527 Big Data Analytics
+Prof. CHIU Hon Wing Billy
+MBG06   9:30 AM - 12:30 PM
+CDS526 Artificial Intelligence 
+Based Optimization
+Prof. LIU Jialin
+MBG06            
+3:30 PM - 7:00 PM
+CDS524 Machine Learning 
+for Business
+Prof. DONG Chengzu
+MBG22  2:30 PM - 5:30 PM
+CDS540 Computer Vision
+Dr. GUO Haifeng
+AUD0112:30 PM - 3:30 PM
+CDS547 Introduction to Large 
+Language Models
+Prof.
+
+--- Segment 5 ---
+DONG Chengzu
+MBG22  2:30 PM - 5:30 PM
+CDS540 Computer Vision
+Dr. GUO Haifeng
+AUD0112:30 PM - 3:30 PM
+CDS547 Introduction to Large 
+Language Models
+Prof. LIN Zehong
+MBG0612:00 PM - 3:30 PM
+CDS525 Practical Application 
+of Deep Learning
+Prof. DONG Chengzu 
+AUD01        
+01-Mar-2026 02-Mar-2026 03-Mar-2026 04-Mar-2026 05-Mar-2026 06-Mar-2026 07-Mar-2026
+10:00 AM - 1:00 PM
+CDS527 Big Data Analytics
+Prof. CHIU Hon Wing Billy
+MBG06   9:30 AM - 12:30 PM
+CDS526 Artificial Intelligence 
+Based Optimization
+Prof. LIU Jialin
+MBG06            
+3:30 PM - 7:00 PM
+CDS524 Machine Learning 
+for Business
+Prof. DONG Chengzu
+MBG22  2:30 PM - 5:30 PM
+CDS540 Computer Vision
+Dr. GUO Haifeng
+AUD0112:30 PM - 3:30 PM
+CDS547 Introduction to Large 
+Language Models
+Prof. LIN Zehong
+MBG0612:00 PM - 3:30 PM
+CDS525 Practical Application 
+of Deep Learning
+Prof. DONG Chengzu 
+AUD01        
+08-Mar-2026 09-Mar-2026 10-Mar-2026 11-Mar-2026 12-Mar-2026 13-Mar-2026 14-Mar-2026
+10:00 AM - 1:00 PM
+CDS527 Big Data Analytics
+Prof.
+
+--- Segment 6 ---
+LIN Zehong
+MBG0612:00 PM - 3:30 PM
+CDS525 Practical Application 
+of Deep Learning
+Prof. DONG Chengzu 
+AUD01        
+08-Mar-2026 09-Mar-2026 10-Mar-2026 11-Mar-2026 12-Mar-2026 13-Mar-2026 14-Mar-2026
+10:00 AM - 1:00 PM
+CDS527 Big Data Analytics
+Prof. CHIU Hon Wing Billy
+MBG06   9:30 AM - 12:30 PM
+CDS526 Artificial Intelligence 
+Based Optimization
+Prof. LIU Jialin
+MBG06            
+3:30 PM - 7:00 PM
+CDS524 Machine Learning 
+for Business
+Prof. DONG Chengzu
+MBG22  2:30 PM - 5:30 PM
+CDS540 Computer Vision
+Dr. GUO Haifeng
+AUD0112:30 PM - 3:30 PM
+CDS547 Introduction to Large 
+Language Models
+Prof. LIN Zehong
+MBG0612:00 PM - 3:30 PM
+CDS525 Practical Application 
+of Deep Learning
+Prof. DONG Chengzu 
+AUD01        
+15-Mar-2026 16-Mar-2026 17-Mar-2026 18-Mar-2026 19-Mar-2026 20-Mar-2026 21-Mar-2026
+10:00 AM - 1:00 PM
+CDS527 Big Data Analytics
+Prof. CHIU Hon Wing Billy
+MBG06   9:30 AM - 12:30 PM
+CDS526 Artificial Intelligence 
+Based Optimization
+Prof. LIU Jialin
+MBG06            
+3:30 PM - 7:00 PM
+CDS524 Machine Learning 
+for Business
+Prof.
+
+--- Segment 7 ---
+CHIU Hon Wing Billy
+MBG06   9:30 AM - 12:30 PM
+CDS526 Artificial Intelligence 
+Based Optimization
+Prof. LIU Jialin
+MBG06            
+3:30 PM - 7:00 PM
+CDS524 Machine Learning 
+for Business
+Prof. DONG Chengzu
+MBG22  2:30 PM - 5:30 PM
+CDS540 Computer Vision
+Dr. GUO Haifeng
+AUD0112:30 PM - 3:30 PM
+CDS547 Introduction to Large 
+Language Models
+Prof. LIN Zehong
+MBG0612:00 PM - 3:30 PM
+CDS525 Practical Application 
+of Deep Learning
+Prof. DONG Chengzu 
+AUD01        
+22-Mar-2026 23-Mar-2026 24-Mar-2026 25-Mar-2026 26-Mar-2026 27-Mar-2026 28-Mar-2026
+10:00 AM - 1:00 PM
+CDS527 Big Data Analytics
+Prof. CHIU Hon Wing Billy
+MBG06   9:30 AM - 12:30 PM
+CDS526 Artificial Intelligence 
+Based Optimization
+Prof. LIU Jialin
+MBG06            
+2:30 PM - 5:30 PM
+CDS540 Computer Vision
+Dr. GUO Haifeng
+AUD0112:30 PM - 3:30 PM
+CDS547 Introduction to Large 
+Language Models
+Prof. LIN Zehong
+MBG0612:00 PM - 3:30 PM
+CDS525 Practical Application 
+of Deep Learning
+Prof.
+
+--- Segment 8 ---
+GUO Haifeng
+AUD0112:30 PM - 3:30 PM
+CDS547 Introduction to Large 
+Language Models
+Prof. LIN Zehong
+MBG0612:00 PM - 3:30 PM
+CDS525 Practical Application 
+of Deep Learning
+Prof. DONG Chengzu 
+AUD01        
+29-Mar-2026 30-Mar-2026 31-Mar-2026 01-Apr-2026 02-Apr-2026 03-Apr-2026 04-Apr-2026
+10:00 AM - 1:00 PM
+CDS527 Big Data Analytics
+Prof. CHIU Hon Wing Billy
+MBG06   9:30 AM - 12:30 PM
+CDS526 Artificial Intelligence 
+Based Optimization
+Prof. LIU Jialin
+MBG06            Good FridayThe day following Good 
+Friday
+3:30 PM - 7:00 PM
+CDS524 Machine Learning 
+for Business
+Prof. DONG Chengzu
+MBG22  2:30 PM - 5:30 PM
+CDS540 Computer Vision
+Dr. GUO Haifeng
+AUD0112:30 PM - 3:30 PM
+CDS547 Introduction to Large 
+Language Models
+Prof. LIN Zehong
+MBG06
+05-Apr-2026 06-Apr-2026 07-Apr-2026 08-Apr-2026 09-Apr-2026 10-Apr-2026 11-Apr-2026
+Ching Ming FestivalThe day following Ching 
+Ming FestivalThe day following Easter 
+Monday
+12:30 PM - 3:30 PM
+CDS547 Introduction to Large 
+Language Models
+Prof. LIN Zehong
+MBG061:30 PM - 5:00 PM
+CDS521 Foundation of 
+Artificial Intelligence
+Prof. WANG Meng
+Auditorium            
+12-Apr-2026 13-Apr-2026 14-Apr-2026 15-Apr-2026 16-Apr-2026 17-Apr-2026 18-Apr-2026
+10:00 AM - 1:00 PM
+CDS527 Big Data Analytics
+Prof.
+
+--- Segment 9 ---
+LIN Zehong
+MBG061:30 PM - 5:00 PM
+CDS521 Foundation of 
+Artificial Intelligence
+Prof. WANG Meng
+Auditorium            
+12-Apr-2026 13-Apr-2026 14-Apr-2026 15-Apr-2026 16-Apr-2026 17-Apr-2026 18-Apr-2026
+10:00 AM - 1:00 PM
+CDS527 Big Data Analytics
+Prof. CHIU Hon Wing Billy
+MBG06   9:30 AM - 12:30 PM
+CDS526 Artificial Intelligence 
+Based Optimization
+Prof. LIU Jialin
+MBG06            
+3:30 PM - 7:00 PM
+CDS524 Machine Learning 
+for Business
+Prof. DONG Chengzu
+MBG22  2:30 PM - 5:30 PM
+CDS540 Computer Vision
+Dr. GUO Haifeng
+AUD0112:30 PM - 3:30 PM
+CDS547 Introduction to Large 
+Language Models
+Prof. LIN Zehong
+MBG0612:00 PM - 3:30 PM
+CDS525 Practical Application 
+of Deep Learning
+Prof. DONG Chengzu 
+AUD01        
+19-Apr-2026 20-Apr-2026 21-Apr-2026 22-Apr-2026 23-Apr-2026 24-Apr-2026 25-Apr-2026
+10:00 AM - 1:00 PM
+CDS527 Big Data Analytics
+Prof. CHIU Hon Wing Billy
+MBG06   9:30 AM - 12:30 PM
+CDS526 Artificial Intelligence 
+Based Optimization
+Prof. LIU Jialin
+MBG06            
+3:30 PM - 7:00 PM
+CDS524 Machine Learning 
+for Business
+Prof.
+
+--- Segment 10 ---
+CHIU Hon Wing Billy
+MBG06   9:30 AM - 12:30 PM
+CDS526 Artificial Intelligence 
+Based Optimization
+Prof. LIU Jialin
+MBG06            
+3:30 PM - 7:00 PM
+CDS524 Machine Learning 
+for Business
+Prof. DONG Chengzu
+MBG22  2:30 PM - 5:30 PM
+CDS540 Computer Vision
+Dr. GUO Haifeng
+AUD0112:30 PM - 3:30 PM
+CDS547 Introduction to Large 
+Language Models
+Prof. LIN Zehong
+MBG0612:00 PM - 3:30 PM
+CDS525 Practical Application 
+of Deep Learning
+Prof. DONG Chengzu 
+AUD01        
+26-Apr-2026 27-Apr-2026 28-Apr-2026 29-Apr-2026 30-Apr-2026 01-May-2026 02-May-2026
+10:00 AM - 1:00 PM
+CDS527 Big Data Analytics
+Prof. CHIU Hon Wing Billy
+MBG06   9:30 AM - 12:30 PM
+CDS526 Artificial Intelligence 
+Based Optimization
+Prof. LIU Jialin
+MBG06            Labour Day
+2:30 PM - 5:30 PM
+CDS540 Computer Vision
+Dr. GUO Haifeng
+AUD01
+03-May-2026 04-May-2026 05-May-2026 06-May-2026 07-May-2026 08-May-2026 09-May-2026
+Term 2 Examinations Term 2 Examinations Term 2 Examinations Term 2 Examinations Term 2 Examinations Term 2 Examinations
+10-May-2026 11-May-2026 12-May-2026 13-May-2026 14-May-2026 15-May-2026 16-May-2026
+Term 2 Examinations Term 2 Examinations Term 2 Examinations Term 2 Examinations Term 2 Examinations Term 2 Examinations Term 2 Examinations
+17-May-2026 18-May-2026 19-May-2026 20-May-2026 21-May-2026 22-May-2026 23-May-2026
+Term 2 Examinations Term 2 Examinations Term 2 Examinations Term 2 ExaminationsTerm 2 Examinations
+(Reserved for Exams 
+Postponed Due to 
+Extenuating Circumstances)Term 2 Examinations
+(Reserved for Exams 
+Postponed Due to 
+Extenuating Circumstances)
+
+--- Segment 11 ---
+GUO Haifeng
+AUD01
+03-May-2026 04-May-2026 05-May-2026 06-May-2026 07-May-2026 08-May-2026 09-May-2026
+Term 2 Examinations Term 2 Examinations Term 2 Examinations Term 2 Examinations Term 2 Examinations Term 2 Examinations
+10-May-2026 11-May-2026 12-May-2026 13-May-2026 14-May-2026 15-May-2026 16-May-2026
+Term 2 Examinations Term 2 Examinations Term 2 Examinations Term 2 Examinations Term 2 Examinations Term 2 Examinations Term 2 Examinations
+17-May-2026 18-May-2026 19-May-2026 20-May-2026 21-May-2026 22-May-2026 23-May-2026
+Term 2 Examinations Term 2 Examinations Term 2 Examinations Term 2 ExaminationsTerm 2 Examinations
+(Reserved for Exams 
+Postponed Due to 
+Extenuating Circumstances)Term 2 Examinations
+(Reserved for Exams 
+Postponed Due to 
+Extenuating Circumstances)
+

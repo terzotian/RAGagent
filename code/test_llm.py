@@ -6,13 +6,13 @@ from dotenv import load_dotenv
 # 手动加载 .env，确保路径正确
 load_dotenv(".env")
 
-from backend.model.llm_stream_tongyiqianwen import stream_qwen_plus_query
+from backend.model.rag_stream import stream_ollama_query
 
 async def main():
-    print(f"API Key from env: {os.getenv('tongyiqianwen')}")
+    # print(f"API Key from env: {os.getenv('tongyiqianwen')}")
     try:
-        print("Start testing LLM...")
-        async for token in stream_qwen_plus_query("你好，测试一下连接"):
+        print("Start testing LLM (Ollama - qwen3:8b)...")
+        async for token in stream_ollama_query("你好，测试一下连接"):
             print(token, end='', flush=True)
         print("\nTest finished.")
     except Exception as e:
