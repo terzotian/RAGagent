@@ -233,11 +233,9 @@ class RAGAnything(QueryMixin, ProcessorMixin, BatchMixin):
 
     async def _ensure_lightrag_initialized(self):
         """Ensure LightRAG instance is initialized, create if necessary"""
-        print("DEBUG: Entering _ensure_lightrag_initialized")
         try:
             # Check parser installation first
             if not self._parser_installation_checked:
-                print("DEBUG: Checking parser installation")
                 if not self.doc_parser.check_installation():
                     error_msg = (
                         f"Parser '{self.config.parser}' is not properly installed. "
@@ -250,7 +248,6 @@ class RAGAnything(QueryMixin, ProcessorMixin, BatchMixin):
                 self.logger.info(f"Parser '{self.config.parser}' installation verified")
 
             if self.lightrag is not None:
-                print("DEBUG: LightRAG already initialized (not None)")
                 # LightRAG was pre-provided, but we need to ensure it's properly initialized
                 # Inherit model functions from LightRAG if not explicitly provided
                 if self.llm_model_func is None and hasattr(
@@ -328,7 +325,6 @@ class RAGAnything(QueryMixin, ProcessorMixin, BatchMixin):
                 "llm_model_func": self.llm_model_func,
                 "embedding_func": self.embedding_func,
             }
-            print(f"DEBUG: Initializing LightRAG with params keys: {lightrag_params.keys()}")
 
             # Merge user-provided lightrag_kwargs, which can override defaults
             lightrag_params.update(self.lightrag_kwargs)
@@ -345,11 +341,8 @@ class RAGAnything(QueryMixin, ProcessorMixin, BatchMixin):
             try:
                 # Create LightRAG instance with merged parameters
                 self.lightrag = LightRAG(**lightrag_params)
-                print("DEBUG: LightRAG instance created")
                 await self.lightrag.initialize_storages()
-                print("DEBUG: Storages initialized")
                 await initialize_pipeline_status()
-                print("DEBUG: Pipeline status initialized")
 
                 # Initialize parse cache storage using LightRAG's KV storage
                 self.parse_cache = self.lightrag.key_string_value_json_storage_cls(

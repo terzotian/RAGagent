@@ -13,32 +13,17 @@ import mammoth
 
 import sys
 import os
-print(f"DEBUG: sys.path: {sys.path}")
-# Add libs to path
-libs_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'libs')
-if libs_path not in sys.path:
-    sys.path.insert(0, libs_path)
-    print(f"DEBUG: Added libs path: {libs_path}")
 
-# Add libs/bin to PATH for mineru command
-libs_bin_path = os.path.join(libs_path, 'bin')
-if libs_bin_path not in os.environ["PATH"]:
-    os.environ["PATH"] += os.pathsep + libs_bin_path
-    print(f"DEBUG: Added libs/bin to PATH: {libs_bin_path}")
-
-# Add LibreOffice to PATH
-soffice_path = "/Applications/LibreOffice.app/Contents/MacOS"
-if soffice_path not in os.environ["PATH"]:
-    os.environ["PATH"] += os.pathsep + soffice_path
-    print(f"DEBUG: Added LibreOffice to PATH: {soffice_path}")
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Environment Setup
+try:
+    from backend import env_setup
+except ImportError:
+    import env_setup
 
 try:
     import lightrag
-    print(f"DEBUG: lightrag location: {lightrag.__file__}")
 except ImportError:
-    print("DEBUG: lightrag not found")
+    pass
 
 from fastapi import FastAPI, HTTPException, status, Depends, UploadFile, File, Form, Query
 from fastapi.responses import StreamingResponse, HTMLResponse, PlainTextResponse, FileResponse

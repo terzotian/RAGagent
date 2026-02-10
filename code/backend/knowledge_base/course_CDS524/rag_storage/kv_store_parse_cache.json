@@ -1,0 +1,527 @@
+{
+  "2365ea53aaecf1667b62aa68eb0d4655": {
+    "content_list": [
+      {
+        "type": "text",
+        "text": "Final Individual Project — Personal Job-Seeking Website (Google Sites / GitHub Pages) ",
+        "text_level": 1,
+        "bbox": [
+          161,
+          79,
+          835,
+          121
+        ],
+        "page_idx": 0
+      },
+      {
+        "type": "text",
+        "text": "What you need to do ",
+        "text_level": 1,
+        "bbox": [
+          115,
+          149,
+          376,
+          168
+        ],
+        "page_idx": 0
+      },
+      {
+        "type": "text",
+        "text": "Build a job-seeking personal website to showcase your skills and projects (you may include your course individual/group projects). Choose one platform: ",
+        "bbox": [
+          115,
+          187,
+          880,
+          221
+        ],
+        "page_idx": 0
+      },
+      {
+        "type": "list",
+        "sub_type": "text",
+        "list_items": [
+          "• Google Sites, or ",
+          "• GitHub Pages (github.io). "
+        ],
+        "bbox": [
+          141,
+          239,
+          389,
+          279
+        ],
+        "page_idx": 0
+      },
+      {
+        "type": "text",
+        "text": "Submission: Submit a Word document containing your website URL. ",
+        "bbox": [
+          115,
+          298,
+          690,
+          313
+        ],
+        "page_idx": 0
+      },
+      {
+        "type": "text",
+        "text": "Required Sections (Website must include) ",
+        "text_level": 1,
+        "bbox": [
+          115,
+          342,
+          620,
+          363
+        ],
+        "page_idx": 0
+      },
+      {
+        "type": "text",
+        "text": "Your website must include at least the following 6 sections (as separate pages in the navigation bar or as sections on one page): ",
+        "bbox": [
+          114,
+          382,
+          880,
+          414
+        ],
+        "page_idx": 0
+      },
+      {
+        "type": "text",
+        "text": "1) Home / Headline ",
+        "text_level": 1,
+        "bbox": [
+          115,
+          438,
+          321,
+          456
+        ],
+        "page_idx": 0
+      },
+      {
+        "type": "list",
+        "sub_type": "text",
+        "list_items": [
+          "• A one-sentence positioning statement (what kind of job/internship you are seeking) ",
+          "• Key tags (e.g., Data Analytics / ML for Business / Python / SQL) "
+        ],
+        "bbox": [
+          139,
+          469,
+          833,
+          508
+        ],
+        "page_idx": 0
+      },
+      {
+        "type": "text",
+        "text": "2) About Me ",
+        "text_level": 1,
+        "bbox": [
+          115,
+          537,
+          253,
+          552
+        ],
+        "page_idx": 0
+      },
+      {
+        "type": "list",
+        "sub_type": "text",
+        "list_items": [
+          "• A short self-introduction (3–8 sentences) ",
+          "• Education background (school/major/graduation time; “expected” is acceptable) ",
+          "• Your strengths / focus areas (2–4 bullet points) "
+        ],
+        "bbox": [
+          139,
+          567,
+          813,
+          634
+        ],
+        "page_idx": 0
+      },
+      {
+        "type": "text",
+        "text": "3) Skills ",
+        "text_level": 1,
+        "bbox": [
+          115,
+          661,
+          201,
+          678
+        ],
+        "page_idx": 0
+      },
+      {
+        "type": "list",
+        "sub_type": "text",
+        "list_items": [
+          "• Technical skills (e.g., Python, SQL, Excel, ML, NLP, statistics, visualization) — based on your actual skills ",
+          "• Business skills (e.g., problem framing, A/B testing, metrics, reporting/storytelling) ",
+          "• Tools (e.g., pandas, scikit-learn, Power BI/Tableau if used) "
+        ],
+        "bbox": [
+          139,
+          690,
+          875,
+          774
+        ],
+        "page_idx": 0
+      },
+      {
+        "type": "text",
+        "text": "4) Projects (Portfolio) — Core ",
+        "text_level": 1,
+        "bbox": [
+          115,
+          801,
+          428,
+          819
+        ],
+        "page_idx": 0
+      },
+      {
+        "type": "list",
+        "sub_type": "text",
+        "list_items": [
+          "• Include at least two projects (recommended: one individual $^ +$ one group project, or more). ",
+          "• Each project must include the following “project card” information: "
+        ],
+        "bbox": [
+          139,
+          832,
+          875,
+          889
+        ],
+        "page_idx": 0
+      },
+      {
+        "type": "text",
+        "text": "– Project title + time ",
+        "bbox": [
+          181,
+          902,
+          366,
+          915
+        ],
+        "page_idx": 0
+      },
+      {
+        "type": "page_number",
+        "text": "1 ",
+        "bbox": [
+          492,
+          938,
+          504,
+          950
+        ],
+        "page_idx": 0
+      },
+      {
+        "type": "list",
+        "sub_type": "text",
+        "list_items": [
+          "– Problem: what problem you solved (business context) ",
+          "– Data: data source/size/main fields (1–2 sentences) ",
+          "– Approach: methods/models/pipeline used (1–2 sentences) ",
+          "– Outcome/Impact: results/value (metrics or conclusions; if no metrics, state clear deliverables) ",
+          "– Your contribution: for group projects, specify what you did ",
+          "– (Optional) links to code/report (GitHub/Google Drive, etc.) "
+        ],
+        "bbox": [
+          179,
+          85,
+          878,
+          223
+        ],
+        "page_idx": 1
+      },
+      {
+        "type": "text",
+        "text": "5) Resume / CV ",
+        "text_level": 1,
+        "bbox": [
+          115,
+          244,
+          287,
+          263
+        ],
+        "page_idx": 1
+      },
+      {
+        "type": "list",
+        "sub_type": "text",
+        "list_items": [
+          "• Provide a downloadable/viewable resume link (PDF link or Google Drive link), or ",
+          "• Provide a short resume section on the site (Education/Experience/Projects). "
+        ],
+        "bbox": [
+          139,
+          277,
+          828,
+          321
+        ],
+        "page_idx": 1
+      },
+      {
+        "type": "text",
+        "text": "6) Contact ",
+        "text_level": 1,
+        "bbox": [
+          115,
+          344,
+          228,
+          362
+        ],
+        "page_idx": 1
+      },
+      {
+        "type": "list",
+        "sub_type": "text",
+        "list_items": [
+          "• Email (required) ",
+          "• Optional: LinkedIn, GitHub, phone number (not required) "
+        ],
+        "bbox": [
+          141,
+          376,
+          636,
+          419
+        ],
+        "page_idx": 1
+      },
+      {
+        "type": "text",
+        "text": "Note: Charts are not required, but your project descriptions must clearly communicate: what you did + what you can do + what value you created. ",
+        "bbox": [
+          115,
+          439,
+          880,
+          472
+        ],
+        "page_idx": 1
+      },
+      {
+        "type": "text",
+        "text": "Rubric (Total: 20 points) ",
+        "text_level": 1,
+        "bbox": [
+          115,
+          500,
+          420,
+          521
+        ],
+        "page_idx": 1
+      },
+      {
+        "type": "text",
+        "text": "1) Basic information and job positioning (3 points) ",
+        "text_level": 1,
+        "bbox": [
+          115,
+          539,
+          626,
+          558
+        ],
+        "page_idx": 1
+      },
+      {
+        "type": "list",
+        "sub_type": "text",
+        "list_items": [
+          "• 0–1: No clear job target / unclear positioning ",
+          "• 2: Has job target and intro, but highlights are not strong ",
+          "• 3: Clear positioning (one-sentence headline $+$ clear target role/area) and complete info "
+        ],
+        "bbox": [
+          141,
+          570,
+          865,
+          640
+        ],
+        "page_idx": 1
+      },
+      {
+        "type": "text",
+        "text": "2) Completeness and structure (4 points) ",
+        "text_level": 1,
+        "bbox": [
+          115,
+          664,
+          529,
+          683
+        ],
+        "page_idx": 1
+      },
+      {
+        "type": "list",
+        "sub_type": "text",
+        "list_items": [
+          "• 0–1: Many missing sections; confusing navigation ",
+          "• 2–3: Most required sections included; structure is mostly clear ",
+          "• 4: All 6 required sections included; clear navigation/hierarchy; easy to find projects and contact info "
+        ],
+        "bbox": [
+          141,
+          695,
+          878,
+          778
+        ],
+        "page_idx": 1
+      },
+      {
+        "type": "text",
+        "text": "3) Skills presentation and alignment (3 points) ",
+        "text_level": 1,
+        "bbox": [
+          115,
+          804,
+          583,
+          824
+        ],
+        "page_idx": 1
+      },
+      {
+        "type": "list",
+        "sub_type": "text",
+        "list_items": [
+          "• 0–1: Skills listed randomly; not aligned with job target ",
+          "• 2: Skills are clear but lack structure/evidence ",
+          "• 3: Skills are well organized (technical/business/tools) and can be mapped to projects/experience "
+        ],
+        "bbox": [
+          139,
+          835,
+          921,
+          906
+        ],
+        "page_idx": 1
+      },
+      {
+        "type": "page_number",
+        "text": "2 ",
+        "bbox": [
+          492,
+          938,
+          505,
+          950
+        ],
+        "page_idx": 1
+      },
+      {
+        "type": "text",
+        "text": "4) Project showcase quality (8 points) — Core ",
+        "bbox": [
+          115,
+          84,
+          583,
+          101
+        ],
+        "page_idx": 2
+      },
+      {
+        "type": "list",
+        "sub_type": "text",
+        "list_items": [
+          "• 0–3: Too few projects or incomplete info (only titles; no methods/results) ",
+          "• 4–6: At least 2 projects; includes Problem/Data/Approach/Outcome ",
+          "• 7–8: Professional, specific project narratives; clear results/impact; clear personal contribution in group projects; links/attachments are a plus "
+        ],
+        "bbox": [
+          139,
+          115,
+          873,
+          198
+        ],
+        "page_idx": 2
+      },
+      {
+        "type": "text",
+        "text": "5) Professional presentation and accessibility (2 points) ",
+        "bbox": [
+          115,
+          225,
+          668,
+          243
+        ],
+        "page_idx": 2
+      },
+      {
+        "type": "list",
+        "sub_type": "text",
+        "list_items": [
+          "• 0: Poor formatting/many typos; links do not work or access is blocked ",
+          "• 1: Readable but inconsistent formatting/details ",
+          "• 2: Clean and consistent layout; mobile-friendly; all links are accessible "
+        ],
+        "bbox": [
+          139,
+          256,
+          729,
+          323
+        ],
+        "page_idx": 2
+      },
+      {
+        "type": "text",
+        "text": "Submission Requirements (Word) ",
+        "text_level": 1,
+        "bbox": [
+          115,
+          355,
+          521,
+          375
+        ],
+        "page_idx": 2
+      },
+      {
+        "type": "text",
+        "text": "Your Word document should include: ",
+        "bbox": [
+          115,
+          394,
+          420,
+          407
+        ],
+        "page_idx": 2
+      },
+      {
+        "type": "list",
+        "sub_type": "text",
+        "list_items": [
+          "• Name / Student ID ",
+          "• Website link (URL) "
+        ],
+        "bbox": [
+          141,
+          428,
+          322,
+          468
+        ],
+        "page_idx": 2
+      },
+      {
+        "type": "page_number",
+        "text": "3 ",
+        "bbox": [
+          492,
+          938,
+          504,
+          950
+        ],
+        "page_idx": 2
+      }
+    ],
+    "doc_id": "doc-78660a5693a7fa1c582d501a5ea68042",
+    "mtime": 1770705815.5557303,
+    "parse_config": {
+      "parser": "mineru",
+      "parse_method": "auto"
+    },
+    "cached_at": 1770709201.430217,
+    "cache_version": "1.0",
+    "create_time": 1770709201,
+    "update_time": 1770709201,
+    "_id": "2365ea53aaecf1667b62aa68eb0d4655"
+  }
+}

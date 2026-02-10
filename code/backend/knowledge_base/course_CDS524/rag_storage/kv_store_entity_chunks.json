@@ -1,0 +1,47 @@
+{
+  "ORGANIZATION": {
+    "chunk_ids": [
+      "chunk-6bb21ac3b8517dc6164e1a946cf4937d"
+    ],
+    "count": 1,
+    "create_time": 1770709251,
+    "update_time": 1770709251,
+    "_id": "ORGANIZATION"
+  },
+  "HEADQUARTERED_IN": {
+    "chunk_ids": [
+      "chunk-6bb21ac3b8517dc6164e1a946cf4937d"
+    ],
+    "count": 1,
+    "create_time": 1770709251,
+    "update_time": 1770709251,
+    "_id": "HEADQUARTERED_IN"
+  },
+  "APPOINTED_AS": {
+    "chunk_ids": [
+      "chunk-6bb21ac3b8517dc6164e1a946cf4937d"
+    ],
+    "count": 1,
+    "create_time": 1770709251,
+    "update_time": 1770709251,
+    "_id": "APPOINTED_AS"
+  },
+  "World Health Organization": {
+    "chunk_ids": [
+      "chunk-6bb21ac3b8517dc6164e1a946cf4937d"
+    ],
+    "count": 1,
+    "create_time": 1770709251,
+    "update_time": 1770709251,
+    "_id": "World Health Organization"
+  },
+  "Dr. Tedros Adhanom Ghebreyesus": {
+    "chunk_ids": [
+      "chunk-6bb21ac3b8517dc6164e1a946cf4937d"
+    ],
+    "count": 1,
+    "create_time": 1770709251,
+    "update_time": 1770709251,
+    "_id": "Dr. Tedros Adhanom Ghebreyesus"
+  }
+}
