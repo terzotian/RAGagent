@@ -342,14 +342,29 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
                 <AIAvatar />
               )}
 
-              <div className={`message-bubble ${msg.role} shadow-sm`} style={{ maxWidth: '85%' }}>
-                {msg.role === 'assistant' ? (
-                   <div className="markdown-body">
-                      <ReactMarkdown>{msg.content}</ReactMarkdown>
-                   </div>
-                ) : (
-                  msg.content
-                )}
+              <div className={`message-bubble ${msg.role} shadow-sm`} style={{ maxWidth: '50%' }}>
+                {msg.role === 'assistant'
+                  ? (
+                    msg.content && msg.content.trim().length > 0
+                      ? (
+                        <div className="markdown-body">
+                          <ReactMarkdown>{msg.content}</ReactMarkdown>
+                        </div>
+                      )
+                      : (
+                        loading
+                          ? (
+                            <div className="typing-dots" role="status" aria-live="polite" aria-label="AI is thinking">
+                              <span className="typing-dot"></span>
+                              <span className="typing-dot"></span>
+                              <span className="typing-dot"></span>
+
+                            </div>
+                          )
+                          : null
+                        )
+                  )
+                  : msg.content}
 
                 {msg.references && msg.references.length > 0 && (
                   <div className="mt-3 pt-2 border-top small" style={{ borderColor: 'rgba(0,0,0,0.1)' }}>
@@ -381,17 +396,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
             </div>
           ))}
 
-          {loading && messages[messages.length - 1]?.role === 'user' && (
-            <div className="d-flex mb-4 justify-content-start">
-               <AIAvatar loading={true} />
-               <div className="message-bubble assistant bg-white">
-                  <div className="d-flex align-items-center gap-2 text-muted">
-                    <Spinner animation="grow" size="sm" />
-                    <span>Thinking...</span>
-                  </div>
-               </div>
-            </div>
-          )}
+
 
           <div ref={messagesEndRef} />
         </Container>

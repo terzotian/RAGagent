@@ -93,10 +93,6 @@ async def route_stream(current_question: str, previous_questions: List[str], lan
         generate_time = 0.0
 
     # 检索相关文档
-    # 使用传统检索
-    use_lightrag = False
-
-    # 聚合检索结果
     references = []
     search_time = 0.0
 
@@ -104,6 +100,52 @@ async def route_stream(current_question: str, previous_questions: List[str], lan
     unique_bases = list(set(bases))
     print(f"DEBUG: Searching across bases: {unique_bases}")
 
+    # 1. 尝试向量检索 (Vector Search)
+    try:
+        from backend.model.embedding import get_embedding
+        from backend.model.vector_store import query_documents
+
+        vector_start_time = time.time()
+        # Get query embedding
+        query_vec = get_embedding(search_query)
+
+        if query_vec:
+            for base in unique_bases:
+                # Query ChromaDB
+                results = query_documents(base, [query_vec], n_results=5)
+                if results and results['documents']:
+                    # Chroma returns list of lists
+                    docs = results['documents'][0]
+                    metas = results['metadatas'][0]
+                    distances = results['distances'][0]
+
+                    for i in range(len(docs)):
+                        # Distance to similarity conversion (approximate)
+                        # Chroma default is L2. Lower is better.
+                        # We need to normalize to a score or percentage.
+                        # Simple inversion: 1 / (1 + distance)
+                        dist = distances[i]
+                        # score = 1 / (1 + dist)
+                        # With cosine distance: 0=identical, 1=orthogonal, 2=opposite.
+                        score = max(0.0, 1.0 - dist)
+                        sim_percent = f"{score * 100:.1f}%"
+
+                        references.append({
+                            "content": docs[i],
+                            "file_name": metas[i].get("source", "unknown"),
+                            "similarity": sim_percent,
+                            "source": metas[i].get("original_file", "unknown")
+                        })
+            search_time += (time.time() - vector_start_time)
+            print(f"DEBUG: Vector search found {len(references)} results.")
+        else:
+            print("DEBUG: Failed to generate query embedding.")
+
+    except Exception as e:
+        print(f"Vector search error: {e}")
+
+    # 2. 始终执行传统检索 (Always perform Traditional Search - Hybrid Mode)
+    print("DEBUG: Performing traditional TF-IDF search for hybrid retrieval.")
     try:
         # 传统检索 (按顺序)
         for base in unique_bases:
@@ -114,16 +156,36 @@ async def route_stream(current_question: str, previous_questions: List[str], lan
                 for ref in refs:
                     if "source" in ref and "file_name" not in ref:
                         ref["file_name"] = ref["source"]
+                    # 传统检索没有 strict similarity，通常根据 match count
+                    # 这里我们可以给它一个较高的保底分，或者复用 search_documents 返回的分数（如果有）
+                    # 假设 refs 已经包含 'similarity' 字段 (通常是 "xx%")
                 references.extend(refs)
                 search_time += t
             else:
                 print(f"DEBUG: Base directory not found: {input_folder}")
     except Exception as e:
         print(f"Search error: {e}")
-        references = []
+        # references = [] # Do not clear, keep whatever we have
         search_time = 0.0
 
     # 对合并后的 references 按相似度降序排序
+    # 注意：此时 references 可能包含重复内容（既被向量搜到，又被 TF-IDF 搜到）
+    # 我们需要去重。
+    unique_refs = {}
+    for ref in references:
+        # 使用 content 作为唯一键，或者 file_name + content hash
+        key = ref.get("content", "")[:50] # 简易去重
+        if key not in unique_refs:
+            unique_refs[key] = ref
+        else:
+            # 如果已存在，保留分数更高的那个
+            current_score = _parse_similarity(unique_refs[key].get("similarity", "0%"))
+            new_score = _parse_similarity(ref.get("similarity", "0%"))
+            if new_score > current_score:
+                unique_refs[key] = ref
+
+    references = list(unique_refs.values())
+
     references.sort(key=lambda x: _parse_similarity(x.get("similarity", "0%")), reverse=True)
     # 截取前 5 个最相关的 (跨库去重)
     references = references[:5]
@@ -136,7 +198,7 @@ async def route_stream(current_question: str, previous_questions: List[str], lan
             "similarity": "100%"
         })
 
-    threshold = float(os.getenv("SIMILARITY_THRESHOLD", "0.01"))
+    threshold = float(os.getenv("SIMILARITY_THRESHOLD", "0.005"))
     max_score = 0.0
     for ref in references:
         if "similarity" in ref:

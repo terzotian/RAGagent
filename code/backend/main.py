@@ -698,11 +698,17 @@ async def upload_policy(
         file_size=file_size,
         file_type='policy',
         access_level='public',
-        base="lingnan_policies",
+        base="public",
         uploader_id=user_id
     )
     db.add(db_file)
     db.commit()
+
+    # Trigger ingestion (Async)
+    try:
+        await ingest_file("public", file_path)
+    except Exception as e:
+        print(f"Error indexing policy: {e}")
 
     return {"message": "Policy uploaded"}
 
@@ -740,6 +746,12 @@ async def upload_assignment(
     )
     db.add(db_file)
     db.commit()
+
+    # Trigger ingestion (Async)
+    try:
+        await ingest_file(f"user_{user_id}_private", file_path)
+    except Exception as e:
+        print(f"Error indexing assignment: {e}")
 
     return {"message": "Assignment uploaded"}
 

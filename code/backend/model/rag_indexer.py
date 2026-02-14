@@ -69,3 +69,37 @@ async def ingest_file(base: str, file_path: str):
             f.write(chunk + "\n\n")
 
     print(f"DEBUG: Successfully indexed {len(chunks)} segments to {output_path}")
+
+    # 4. 向量化并存入 ChromaDB (Vector Indexing)
+    try:
+        from backend.model.embedding import get_embedding
+        from backend.model.vector_store import add_documents
+
+        print(f"DEBUG: Starting vector indexing for {len(chunks)} chunks...")
+
+        docs = []
+        metadatas = []
+        ids = []
+        embeddings = []
+
+        for i, chunk in enumerate(chunks):
+            # Compute embedding
+            emb = get_embedding(chunk)
+            if emb:
+                docs.append(chunk)
+                # Store source filename in metadata
+                metadatas.append({"source": output_filename, "original_file": file_name})
+                # Unique ID: filename_chunk_index
+                ids.append(f"{file_name}_chunk_{i}")
+                embeddings.append(emb)
+            else:
+                print(f"Warning: Failed to get embedding for chunk {i}")
+
+        if docs:
+            add_documents(base, docs, metadatas, ids, embeddings)
+            print(f"DEBUG: Successfully added {len(docs)} vectors to collection '{base}'")
+
+    except ImportError:
+        print("Warning: Vector store modules not found. Skipping vector indexing.")
+    except Exception as e:
+        print(f"Error during vector indexing: {e}")
