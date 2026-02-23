@@ -467,20 +467,31 @@ async def stream_question(session_id: str, question_id: str, previous_questions:
     previous_questions_list = json.loads(previous_questions)
 
     # Determine user's accessible bases
-    accessible_bases = ["public"] # Always include public base
+    accessible_bases = ["public"]
     if user_id:
         user = db.query(DBUser).filter(DBUser.user_id == user_id).first()
         if user:
-            # Add user's major courses
-            if user.role == 'student' and user.major_code:
-                 courses = db.query(DBCourse).filter(DBCourse.major_code == user.major_code).all()
-                 for c in courses:
-                     accessible_bases.append(f"course_{c.course_code}")
-            # Add courses for teachers/admins
+            if user.role == 'student':
+                if user.major_code:
+                    courses = db.query(DBCourse).filter(DBCourse.major_code == user.major_code).all()
+                    for c in courses:
+                        accessible_bases.append(f"course_{c.course_code}")
+                accessible_bases.append(f"user_{user_id}_private")
             elif user.role in ['teacher', 'admin']:
-                 courses = db.query(DBCourse).all()
-                 for c in courses:
-                     accessible_bases.append(f"course_{c.course_code}")
+                courses = db.query(DBCourse).all()
+                for c in courses:
+                    accessible_bases.append(f"course_{c.course_code}")
+                assignment_bases = db.query(DBFile.base).filter(DBFile.file_type == 'student_assignment').distinct().all()
+                for b, in assignment_bases:
+                    accessible_bases.append(b)
+                knowledge_root = locate_path("knowledge_base")
+                if os.path.exists(knowledge_root):
+                    for name in os.listdir(knowledge_root):
+                        full_path = os.path.join(knowledge_root, name)
+                        if os.path.isdir(full_path) and name.startswith("course_"):
+                            accessible_bases.append(name)
+
+    accessible_bases = list(set(accessible_bases))
 
     base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
     # Auto-detect available model if not set or default
@@ -501,7 +512,7 @@ async def stream_question(session_id: str, question_id: str, previous_questions:
         except:
             pass
 
-    gen_iter, references = await route_stream(current_question, previous_questions_list, language, accessible_bases, temp_file_content=temp_content)
+    gen_iter, references = await route_stream(current_question, previous_questions_list, language, accessible_bases, temp_file_content=temp_content, user_id=user_id)
 
     async def event_generator():
         print(f"DEBUG: Starting event_generator for session {session_id}")
@@ -802,8 +813,23 @@ async def preview_file(
         file_name: str = Query(...),
         base: str = Query(...)
 ):
-    file_path = policy_file(base=base, filename=unquote(file_name))
-    if not os.path.exists(file_path):
+    decoded_name = unquote(file_name)
+    file_path = None
+
+    if base == "public":
+        file_path = policy_file(base=base, filename=decoded_name)
+    elif base.startswith("course_"):
+        file_path = course_file(base=base, filename=decoded_name)
+    elif base.startswith("user_") and base.endswith("_private"):
+        parts = base.split("_")
+        if len(parts) >= 3:
+            try:
+                user_id = int(parts[1])
+                file_path = user_assignment_file(user_id=user_id, filename=decoded_name)
+            except ValueError:
+                pass
+
+    if not file_path or not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File not found")
     return FileResponse(file_path)
 

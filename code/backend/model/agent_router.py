@@ -3,12 +3,29 @@ import json
 import time
 import requests
 import asyncio
+import re
 from typing import List, Dict, Tuple, Any
 from backend.model.ques_assemble import generate_search_query
 from backend.model.doc_search import search_documents, load_segments_from_folder
 # from backend.model.lightrag_search import search_documents_lightrag
 from backend.root_path import piece_dir
 from backend.model.rag_stream import stream_answer
+
+
+def _merge_mode(a: str, b: str) -> str:
+    if not a:
+        return b or ""
+    if not b or a == b:
+        return a
+    return "both"
+
+
+def _extract_course_bases_from_question(question: str) -> List[str]:
+    if not question:
+        return []
+    codes = set(re.findall(r"\bCDS\d{3}\b", question.upper()))
+    return [f"course_{code}" for code in codes]
+
 
 def _parse_similarity(s: Any) -> float:
     try:
@@ -40,8 +57,100 @@ def _classify_intent_ollama(query: str, base_url: str, model: str, language: str
                 return "GENERAL"
     except:
         pass
-    # 默认倾向于检索，避免漏掉信息
     return "PRIVATE"
+
+
+def _classify_private_type_ollama(query: str, base_url: str, model: str, language: str) -> str:
+    prompt_cn = "这个问题已经被判断为需要查询校内资料。请在以下类别中选择一个最合适的：COURSE（关于课程任务、项目、考试等）、STUDENT（关于某个学生自己提交的作业或表现）、POLICY（关于学费、规章制度、通用教学政策等）。只回答一个词：COURSE、STUDENT 或 POLICY。"
+    prompt_en = "This question requires internal knowledge. Classify it into exactly ONE of: COURSE (course tasks, projects, exams), STUDENT (a specific student's submitted work or performance), POLICY (tuition, regulations, general academic policies). Answer with ONE WORD: COURSE, STUDENT or POLICY."
+    prompt = prompt_cn if language.lower().startswith("zh") else prompt_en
+    data = {"model": model, "prompt": f"{prompt}\nQuestion: {query}\nAnswer:", "stream": False}
+    try:
+        r = requests.post(f"{base_url}/api/generate", json=data, timeout=20)
+        if r.status_code == 200:
+            try:
+                obj = r.json()
+                txt = obj.get("response", "").strip().upper()
+            except:
+                txt = r.text.strip().upper()
+            if "STUDENT" in txt:
+                return "STUDENT"
+            if "POLICY" in txt:
+                return "POLICY"
+            if "COURSE" in txt:
+                return "COURSE"
+    except:
+        pass
+    q = query.lower()
+    if re.search(r"\bcds\d{3}\b", q) or "assignment" in q or "project" in q or "exam" in q:
+        return "COURSE"
+    if "my assignment" in q or "my project" in q or "我提交" in q or "我的作业" in q:
+        return "STUDENT"
+    return "POLICY"
+
+
+def _build_base_priorities(private_type: str, bases: List[str], target_course_bases: List[str], user_id: int | None) -> Tuple[Dict[str, float], List[str]]:
+    priorities: Dict[str, float] = {}
+    priority_bases: List[str] = []
+    course_set = set(target_course_bases)
+    for b in bases:
+        p = 0.0
+        if b == "public":
+            kind = "public"
+        elif b.startswith("course_"):
+            kind = "course"
+        elif b.startswith("user_") and b.endswith("_private"):
+            kind = "user_private"
+        else:
+            kind = "other"
+        if private_type == "COURSE":
+            if b in course_set:
+                p = max(p, 0.4)
+            elif kind == "course":
+                p = max(p, 0.2)
+        elif private_type == "STUDENT":
+            if user_id is not None and b == f"user_{user_id}_private":
+                p = max(p, 0.5)
+            elif kind == "user_private":
+                p = max(p, 0.3)
+            if b in course_set:
+                p = max(p, 0.2)
+        elif private_type == "POLICY":
+            if kind == "public":
+                p = max(p, 0.4)
+            elif kind == "course":
+                p = max(p, 0.1)
+        if p > 0:
+            priorities[b] = p
+    if private_type == "COURSE":
+        priority_bases = list(course_set) if course_set else [b for b in bases if b.startswith("course_")]
+    elif private_type == "STUDENT":
+        if user_id is not None:
+            base_name = f"user_{user_id}_private"
+            if base_name in bases:
+                priority_bases.append(base_name)
+        if not priority_bases:
+            priority_bases = [b for b in bases if b.startswith("user_") and b.endswith("_private")]
+        priority_bases.extend([b for b in bases if b in course_set])
+    elif private_type == "POLICY":
+        if "public" in bases:
+            priority_bases = ["public"]
+    seen = set()
+    deduped = []
+    for b in priority_bases:
+        if b not in seen:
+            seen.add(b)
+            deduped.append(b)
+    return priorities, deduped
+
+
+def _effective_score(ref: Dict[str, Any], base_priorities: Dict[str, float]) -> float:
+    score = _parse_similarity(ref.get("similarity", "0%"))
+    base = ref.get("base")
+    if base in base_priorities and score > 0:
+        score *= 1.0 + base_priorities[base]
+    return score
+
 
 async def _ollama_stream(prompt: str, base_url: str, model: str):
     try:
@@ -62,7 +171,7 @@ async def _ollama_stream(prompt: str, base_url: str, model: str):
     except:
         return
 
-async def route_stream(current_question: str, previous_questions: List[str], language: str, bases: List[str], temp_file_content: str = None):
+async def route_stream(current_question: str, previous_questions: List[str], language: str, bases: List[str], temp_file_content: str = None, user_id: int | None = None):
     start_t = time.time()
 
     # 1. 优先进行意图识别 (Prioritize Intent Classification)
@@ -82,8 +191,9 @@ async def route_stream(current_question: str, previous_questions: List[str], lan
         gen = _ollama_stream(f"{prompt}\n{current_question}", base_url, model)
         return gen, []
 
-    # 2. 如果是 PRIVATE，则进行检索 (If PRIVATE, proceed to retrieval)
     print(f"DEBUG: Intent is PRIVATE. Starting retrieval.")
+    private_type = await asyncio.to_thread(_classify_private_type_ollama, current_question, base_url, model, language)
+    print(f"DEBUG: PRIVATE subtype is {private_type}.")
 
     try:
         search_query, assembled_question, generate_time = await generate_search_query(current_question, previous_questions)
@@ -92,15 +202,22 @@ async def route_stream(current_question: str, previous_questions: List[str], lan
         assembled_question = current_question
         generate_time = 0.0
 
-    # 检索相关文档
     references = []
     search_time = 0.0
 
-    # 确保 bases 列表唯一
     unique_bases = list(set(bases))
     print(f"DEBUG: Searching across bases: {unique_bases}")
 
-    # 1. 尝试向量检索 (Vector Search)
+    target_course_bases = _extract_course_bases_from_question(current_question)
+    if target_course_bases:
+        print(f"DEBUG: Detected course bases in question: {target_course_bases}")
+    base_priorities, priority_bases = _build_base_priorities(private_type, unique_bases, target_course_bases, user_id)
+    if base_priorities:
+        print(f"DEBUG: Base priorities: {base_priorities}, priority_bases={priority_bases}")
+
+    vector_only_count = 0
+    tfidf_only_count = 0
+    both_count = 0
     try:
         from backend.model.embedding import get_embedding
         from backend.model.vector_store import query_documents
@@ -132,9 +249,10 @@ async def route_stream(current_question: str, previous_questions: List[str], lan
 
                         references.append({
                             "content": docs[i],
-                            "file_name": metas[i].get("source", "unknown"),
+                            "base": base,
+                            "file_name": metas[i].get("original_file", metas[i].get("source", "unknown")),
                             "similarity": sim_percent,
-                            "source": metas[i].get("original_file", "unknown")
+                            "retrieval_mode": "vector"
                         })
             search_time += (time.time() - vector_start_time)
             print(f"DEBUG: Vector search found {len(references)} results.")
@@ -154,11 +272,12 @@ async def route_stream(current_question: str, previous_questions: List[str], lan
             if os.path.exists(input_folder):
                 refs, t = await search_documents(search_query, load_segments_from_folder(input_folder=input_folder))
                 for ref in refs:
-                    if "source" in ref and "file_name" not in ref:
+                    if "base" not in ref:
+                        ref["base"] = base
+                    if "file_name" not in ref and "source" in ref:
                         ref["file_name"] = ref["source"]
-                    # 传统检索没有 strict similarity，通常根据 match count
-                    # 这里我们可以给它一个较高的保底分，或者复用 search_documents 返回的分数（如果有）
-                    # 假设 refs 已经包含 'similarity' 字段 (通常是 "xx%")
+                    if "retrieval_mode" not in ref:
+                        ref["retrieval_mode"] = "tfidf"
                 references.extend(refs)
                 search_time += t
             else:
@@ -173,27 +292,54 @@ async def route_stream(current_question: str, previous_questions: List[str], lan
     # 我们需要去重。
     unique_refs = {}
     for ref in references:
-        # 使用 content 作为唯一键，或者 file_name + content hash
-        key = ref.get("content", "")[:50] # 简易去重
+        key = ref.get("content", "")[:50]
+        mode = ref.get("retrieval_mode", "")
         if key not in unique_refs:
             unique_refs[key] = ref
         else:
-            # 如果已存在，保留分数更高的那个
-            current_score = _parse_similarity(unique_refs[key].get("similarity", "0%"))
+            existing = unique_refs[key]
+            current_score = _parse_similarity(existing.get("similarity", "0%"))
             new_score = _parse_similarity(ref.get("similarity", "0%"))
+            merged_mode = _merge_mode(existing.get("retrieval_mode", ""), mode)
             if new_score > current_score:
+                ref["retrieval_mode"] = merged_mode
                 unique_refs[key] = ref
+            else:
+                existing["retrieval_mode"] = merged_mode
 
     references = list(unique_refs.values())
 
-    references.sort(key=lambda x: _parse_similarity(x.get("similarity", "0%")), reverse=True)
-    # 截取前 5 个最相关的 (跨库去重)
-    references = references[:5]
+    for ref in references:
+        mode = ref.get("retrieval_mode", "")
+        if mode == "vector":
+            vector_only_count += 1
+        elif mode == "tfidf":
+            tfidf_only_count += 1
+        elif mode == "both":
+            both_count += 1
+
+    references_sorted = sorted(references, key=lambda x: _effective_score(x, base_priorities), reverse=True)
+    top_k = 5
+    top = references_sorted[:top_k]
+    if priority_bases:
+        has_priority = any(ref.get("base") in priority_bases for ref in top)
+        if not has_priority:
+            candidate = next((ref for ref in references_sorted if ref.get("base") in priority_bases), None)
+            if candidate:
+                replace_idx = None
+                for i in range(len(top) - 1, -1, -1):
+                    if top[i].get("base") not in priority_bases:
+                        replace_idx = i
+                        break
+                if replace_idx is not None:
+                    top[replace_idx] = candidate
+    references = top
 
     # Add temp file content if present
     if temp_file_content:
         references.insert(0, {
             "content": temp_file_content,
+            "base": "temp",
             "file_name": "Uploaded Assignment/Document",
             "similarity": "100%"
         })
@@ -204,13 +350,21 @@ async def route_stream(current_question: str, previous_questions: List[str], lan
         if "similarity" in ref:
             max_score = max(max_score, _parse_similarity(ref["similarity"]))
 
-    print(f"DEBUG: Max score: {max_score}, Threshold: {threshold}, References count: {len(references)}")
+    print(f"DEBUG: Max score: {max_score}, Threshold: {threshold}, References count: {len(references)}, "
+          f"vector_only={vector_only_count}, tfidf_only={tfidf_only_count}, both={both_count}")
 
     # 3. 如果有高分结果，或者 intent 是 PRIVATE (即使用户认为它是private，但没搜到，我们也可以尝试用 RAG 风格回答，或者告诉用户没找到)
     # 这里的逻辑是：如果搜到了，就用 RAG。
     if max_score >= threshold and len(references) > 0:
         print("DEBUG: Entering RAG mode")
-        gen = stream_answer(assembled_question, generate_time, references, search_time, target_language=language)
+        gen = stream_answer(
+            assembled_question,
+            generate_time,
+            references,
+            search_time,
+            target_language=language,
+            private_type=private_type,
+        )
         return gen, references
 
     # 4. 如果搜不到结果 (Failover)

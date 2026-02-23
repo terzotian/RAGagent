@@ -24,3 +24,11 @@ def piece_file(base, filename: str):
 
 def piece_dir(base: str):
     return os.path.join(PROJECT_ROOT, "knowledge_base", base, "pieces")
+
+
+def course_file(base: str, filename: str):
+    return os.path.join(PROJECT_ROOT, "knowledge_base", base, "files", filename)
+
+
+def user_assignment_file(user_id: int, filename: str):
+    return os.path.join(PROJECT_ROOT, "knowledge_base", "users", str(user_id), "assignments", filename)

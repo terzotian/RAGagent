@@ -39,7 +39,8 @@ async def stream_ollama_query(prompt: str):
         yield f"Error connecting to Ollama: {str(e)}"
 
 async def stream_answer(assembled_question: str, generate_time: float, references: list[dict[str, str]],
-                        search_time: float, target_language: Literal['en', 'zh-cn', 'zh-tw'] = 'en'):
+                        search_time: float, target_language: Literal['en', 'zh-cn', 'zh-tw'] = 'en',
+                        private_type: str = "POLICY"):
     # Measure doc analysis time
     split_time = 0.0
     # Measure query generation time
@@ -53,15 +54,93 @@ async def stream_answer(assembled_question: str, generate_time: float, reference
     print(f"3. Document Search Time: {search_time:.2f}s")
     print(f"4. LLM Response Generation Time: {llm_time:.2f}s")
 
-    prompt = promt_select(target_language, assembled_question, references)
+    prompt = build_prompt(target_language, assembled_question, references, private_type)
 
     # 流式调用LLM (Switch to Ollama)
     async for chunk in stream_ollama_query(prompt):
         yield chunk
 
 
+def build_prompt(language: Literal['en', 'zh-cn', 'zh-tw'], assembled_question, references, private_type: str) -> str:
+    pt = (private_type or "").upper()
+    context_str = "\n\n".join([f"[{i + 1}] {ref['content']}" for i, ref in enumerate(references)])
+    if pt == "COURSE":
+        if language == "zh-cn":
+            return f"""你现在的角色是岭南大学课程与作业助手。
+请根据下方【参考资料】中的课程资料和作业说明，用自己的话概括和回答用户的问题，可以做合理的归纳总结，不要求原文有一模一样的句子。
+如果资料只涵盖部分信息，请先说明你能确定的部分，再说明哪些内容资料中没有明确写出。
+
+【参考资料】：
+{context_str}
+
+【用户问题】：
+{assembled_question}
+
+【你的回答】："""
+        if language == "zh-tw":
+            return f"""你現在的角色是嶺南大學課程與作業助手。
+請根據下方【參考資料】中的課程資料與作業說明，用自己的話概括並回答用戶的問題，可以做合理的歸納總結，不要求原文有一模一樣的句子。
+如果資料只涵蓋部分資訊，請先說明你能確定的部分，再說明哪些內容資料中沒有明確寫出。
+
+【參考資料】：
+{context_str}
+
+【用戶問題】：
+{assembled_question}
+
+【你的回答】："""
+        return f"""You are a course and assignment assistant for Lingnan University.
+Use the [References] about course outlines, lectures and assignment descriptions to answer the question.
+You may summarize and infer the intent and requirements even if there is no explicit one-sentence definition in the text.
+If the references only contain partial information, clearly state what can be inferred and which details are not explicitly specified.
+
+[References]:
+{context_str}
+
+[User Question]:
+{assembled_question}
+
+[Answer]:"""
+    if pt == "STUDENT":
+        if language == "zh-cn":
+            return f"""你现在的角色是老师，正在阅读学生的作业和课程要求。
+请基于【参考资料】中的学生作业内容和课程/作业说明，给出具体的分析和建议，可以进行合理的归纳总结。
+如果资料没有覆盖某些方面，请直接说明“资料中没有明确说明这一点”，不要凭空编造。
+
+【参考资料】：
+{context_str}
+
+【用户问题】：
+{assembled_question}
+
+【你的回答】："""
+        if language == "zh-tw":
+            return f"""你現在的角色是老師，正在閱讀學生的作業與課程要求。
+請根據【參考資料】中的學生作業內容與課程/作業說明，給出具體的分析與建議，可以進行合理的歸納總結。
+如果資料沒有涵蓋某些面向，請直接說明「資料中沒有明確說明這一點」，不要憑空編造。
+
+【參考資料】：
+{context_str}
+
+【用戶問題】：
+{assembled_question}
+
+【你的回答】："""
+        return f"""You are a course instructor reviewing a student's work and the corresponding course requirements.
+Use the [References] that include student submissions and assignment descriptions to analyze the question and provide concrete feedback.
+You may summarize and draw reasonable conclusions from the text, but do not invent rules or requirements that are not supported by the documents.
+
+[References]:
+{context_str}
+
+[User Question]:
+{assembled_question}
+
+[Answer]:"""
+    return promt_select(language, assembled_question, references)
+
+
 def promt_select(language: Literal['en', 'zh-cn', 'zh-tw'], assembled_question, references) -> str:
-    # Build context string
     context_str = "\n\n".join([f"[{i + 1}] {ref['content']}" for i, ref in enumerate(references)])
 
     if language == "zh-cn":
@@ -120,7 +199,7 @@ if __name__ == "__main__":
 
     async def main():
         async for token in stream_answer(assembled_question_test, generate_time_test, references_test, search_time_test,
-                                         language_test):
+                                         language_test, "POLICY"):
             print(token, end='', flush=True)
         print("\n\n流式调用测试完成")
 

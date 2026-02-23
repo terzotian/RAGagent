@@ -69,7 +69,7 @@ async def search_documents(search_query, document_segments, top_k=5):
       - top_k: 返回相关片段的数量（默认5个）。
 
     输出:
-      - results: 每个结果包含 'content', 'source' 以及相似度 'similarity' 分数。
+      - results: 每个结果包含 'content', 'base', 'file_name' 以及相似度 'similarity' 分数。
     """
     start_search = time.time()
 
@@ -109,9 +109,12 @@ async def search_documents(search_query, document_segments, top_k=5):
         similarity_str = f"{new_percent:.1f}%"
 
         if orig_percent > 1:
+            segment_path = document_segments[idx]['source']
+            base, original_file = source_finding(segment_path)
             results.append({
                 'content': document_segments[idx]['content'],
-                'source': source_finding(document_segments[idx]['source']),
+                'base': base,
+                'file_name': original_file,
                 'similarity': similarity_str
             })
 
@@ -119,8 +122,21 @@ async def search_documents(search_query, document_segments, top_k=5):
     return results, search_time
 
 
-def source_finding(segment: str) -> str:
-    return segment.replace("pieces", "policies").removesuffix(".txt")
+def source_finding(segment: str):
+    parts = segment.split(os.sep)
+    try:
+        kb_idx = parts.index("knowledge_base")
+    except ValueError:
+        return None, None
+    if kb_idx + 1 >= len(parts):
+        return None, None
+    base = parts[kb_idx + 1]
+    filename_txt = parts[-1]
+    if filename_txt.endswith(".txt"):
+        original_file = filename_txt[:-4]
+    else:
+        original_file = filename_txt
+    return base, original_file
 
 
 if __name__ == "__main__":
