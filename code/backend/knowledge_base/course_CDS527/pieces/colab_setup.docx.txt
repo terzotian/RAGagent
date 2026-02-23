@@ -1,0 +1,50 @@
+--- Segment 1 ---
+Google Colab Getting Started Guide
+
+For the course hands-on sessions, participants can choose to run the exercises from their own installation of Python or use Google Colaboratory notebooks. These instructions are for the Google Colabatory notebooks. Google Colaboratory allows you to execute Python in a browser without configuring Python in your local system. The Python code is run from a notebook environment similar to Jupyter notebooks with execution and text cells. For a general introduction to Colaboratory, see:
+
+What is Colaboratory? https://colab. research. google. com/notebooks/intro. ipynb 
+
+Overview of Colaboratory Features https://colab.
+
+--- Segment 2 ---
+com/notebooks/intro. ipynb 
+
+Overview of Colaboratory Features https://colab. research. google. com/notebooks/basic_features_overview. ipynb
+
+
+Course Colaboratory Instructions
+
+You will need: 
+A Google account: https://www. google. com/account/about/
+1 GB storage available in Google Drive for the files that will be downloaded for the hands-on sessions. Note that Google accounts come with 15 GB of free storage, but if your personal account has insufficient storage left, then you can create a new Google account. Launching the Google Notebook 
+Login in to your Google account where you have saved the notebooks.
+
+--- Segment 3 ---
+Note that Google accounts come with 15 GB of free storage, but if your personal account has insufficient storage left, then you can create a new Google account. Launching the Google Notebook 
+Login in to your Google account where you have saved the notebooks. Go to your Google drive: https://drive. google. com/drive/my-drive 
+Click on Colab Notebooks directory 
+Click on the Google notebook. Running the Notebooks 
+For the setup notebooks, you should run the entire notebook at once: 
+1) Click on the Runtime menu item 
+2) Select Run all For the hands-on activities notebooks, you should step through each cell individually by clicking on the play button (right-facing triangle to the left of each cell). Be sure to run all the initialization cells before the exercise cells. Install library:
+Every time you start a new exercise, you need to have the required library installed. So you may put all the required libraries in the beginning of the file. Useful Colab Top Menu items  
+File -> Save 	Saves the file to your Google Drive 
+Edit -> Clear all outputs 	Clears the output from all cells 
+Runtime -> Run all 	Run all the cells.
+
+--- Segment 4 ---
+So you may put all the required libraries in the beginning of the file. Useful Colab Top Menu items  
+File -> Save 	Saves the file to your Google Drive 
+Edit -> Clear all outputs 	Clears the output from all cells 
+Runtime -> Run all 	Run all the cells. Can be run multiple times. Runtime -> Factory Reset Runtime 	Completely resets the notebook back to its original state and only useful if the notebook gets into an odd state. It does not affect the files that have been downloaded to your drive. Table of contents – the 3 orange horizontal lines at the top left; clicking on them shows/hides the Table of contents. Closing the browser window stops the Colab instance. Save local file copy
+If you need to store a local copy of your exercise. You can click on the following. Mount Drive
+Suppose you have some data stored in your Google Drive.
+
+--- Segment 5 ---
+You can click on the following. Mount Drive
+Suppose you have some data stored in your Google Drive. Now you will load this data in Colab with some modification. Suppose you have a “wordCount. txt” file stored in the directory: test/. You will mount drive like this (remember to click “allow” . Open the above URL in your browser. You will be asked to login to your Google account. Now, you will see the following screen. You will need to grant file access permission.
+
+--- Segment 6 ---
+Now, you will see the following screen. You will need to grant file access permission.
+

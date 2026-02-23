@@ -1,0 +1,28 @@
+--- Segment 1 ---
+CDS524 Assignment 1 - Reinforcement Learning Game Design
+Project Overview:
+In this project, you will use Q-learning, a reinforcement learning algorithm, to design and implement your own game. The game can be any type of game you choose, from simple grid-based games to more complex simulations. The goal is to apply Q-learning to create a game where an agent (controlled by the algorithm) learns to make optimal decisions based on rewards and penalties. Project Requirements:
+Game Design:
+You must design a game with a clear objective and set of rules. The game should have a state space (all possible configurations of the game) and an action space (all possible actions the agent can take). The game should have a reward function that provides positive rewards for achieving the objective and negative rewards for undesirable actions or states. Q-Learning Implementation:
+You must implement the Q-learning algorithm in a programming language you are comfortable with (e. g. , Python). The algorithm should be able to learn a policy (a mapping from states to actions) that maximizes the cumulative reward over time.
+
+--- Segment 2 ---
+, Python). The algorithm should be able to learn a policy (a mapping from states to actions) that maximizes the cumulative reward over time. You should use techniques such as epsilon-greedy exploration, learning rate, and discount factor to balance exploration and exploitation. Game Interaction:
+You should create a user interface (UI) for your game that allows the agent to interact with the environment. The UI should display the current state of the game, the agent's actions, and any rewards or penalties received. You can use libraries or frameworks such as Pygame, Tkinter to create the UI and game environment. Documentation and Presentation:
+You should document your game design, Q-learning implementation, and evaluation results in a written report. You should also prepare a video presentation to demonstrate your game and explain the Q-learning algorithm, the challenges you faced, and the solutions you implemented. Project Suggestions:
+Grid-Based Games: Design simple grid-based games such as Tic-Tac-Toe, the Grid World problem, or a maze-solving game. Board Games: Implement classic board games such as Chess, Checkers, or Go, and use Q-learning to create an AI opponent.
+
+--- Segment 3 ---
+Project Suggestions:
+Grid-Based Games: Design simple grid-based games such as Tic-Tac-Toe, the Grid World problem, or a maze-solving game. Board Games: Implement classic board games such as Chess, Checkers, or Go, and use Q-learning to create an AI opponent. Simulation Games: You can design simulation games such as a traffic simulation, a resource management game, or a city-building game. Action Games: For high grade wanted students, you can design action games such as a simple platformer or a shooting game, and use Q-learning to create an AI-controlled enemy or player character. Deliverables
+A Google Colab (or equivalent) with your code and in-line explanations. A brief report (1000-1500 words) evaluating the performance of your work. Github repo
+Youtube Demo Video
+
+Submission Details: 
+You must ensure that all your project files used for this task and the report sit in a directory called “Assignment 1 – Your Name”. All files are required to be uploaded and a link to the “Assignment 1” directory submitted to Moodle. Please make sure that unit Instructor and TA have access to the folder. A link to the demo video of your app running must be submitted.
+
+--- Segment 4 ---
+Please make sure that unit Instructor and TA have access to the folder. A link to the demo video of your app running must be submitted. It would be great if you could submit your GitHub link. This is an individual assignment, and you should submit it by 8 pm, 3 March 2026. Reference 
+https://github. com/KI-cheng/QlearningTankWar
+Tetris-deep-Q-learning-pytorch
+

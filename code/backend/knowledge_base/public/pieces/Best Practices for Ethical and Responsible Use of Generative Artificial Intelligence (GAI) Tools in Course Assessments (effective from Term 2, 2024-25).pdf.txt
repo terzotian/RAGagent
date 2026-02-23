@@ -1,0 +1,175 @@
+--- Segment 1 ---
+1 
+ Lingnan University  
+ 
+Best Practices for Ethical and Responsible Use of 
+Generative Artificial Intelligence ( GAI) Tools in  
+Course Assessments  
+1. Introduction  
+To enhance the overall learning experience for our students, Lingnan University has decided 
+to allow the use of ChatGPT and other GAI tools from the 2023 -24 academic year. However, 
+users should use these tools responsibly and ethically, and  fully understand their potential and 
+limitations. Upholding academic integrity is of utmost importance to all students. This 
+document outlines the principles, practices, and actions that teaching staff  and students need to 
+be aware of /take regarding the implications of u sing GAI tools in course assessments. Students 
+are encouraged to consult  with their teaching staff  if they have any questions. 2. Academic  Integrity  
+Students  are reminded  that the University ’s examination  and coursework  regulations  apply  to 
+all of their submitted work. Lingnan University has a clear policy  on plagiarism under 
+Academic Integrity. Below are the relevant  academic regulations of the University:  
+ 
+•  Regulations Governing Undergraduate (UG) Studies  (for UG students  only)  
+•  Regulations Governing Research Postgraduate (RPg) Studies  (for RPg students  only)  
+•  Regulations Governing Taught Doctoral/Master’s Degree Programmes  (for TPg 
+students  only)  
+•  Regulations Governing University Examinations and Course Work  
+•  Regulations Governing Discipline of  Students  
+ 
+You may also refer to Chapters 3 -4 of the  Academic Quality Assurance (AQA) Manual  for 
+details.
+
+--- Segment 2 ---
+Lingnan University has a clear policy  on plagiarism under 
+Academic Integrity. Below are the relevant  academic regulations of the University:  
+ 
+•  Regulations Governing Undergraduate (UG) Studies  (for UG students  only)  
+•  Regulations Governing Research Postgraduate (RPg) Studies  (for RPg students  only)  
+•  Regulations Governing Taught Doctoral/Master’s Degree Programmes  (for TPg 
+students  only)  
+•  Regulations Governing University Examinations and Course Work  
+•  Regulations Governing Discipline of  Students  
+ 
+You may also refer to Chapters 3 -4 of the  Academic Quality Assurance (AQA) Manual  for 
+details. 3. General Principle on How GAI Tools Should be Used in Each  Course  
+To ensure consistency and to help students understand the course requirements, the respective 
+teaching staff  is responsible for informing students  at the beginning of each term  of the course 
+assessment requiremen ts and which assignment s may not use GAI tools. Students are allowed 
+to use these tools . Teaching staff has the discretion with Department and Programme’s 
+endorsement not to allow students to use these tools , which  depend on the nature and the 
+objectives of the course assessment tasks  and other reasons. . The general principle is as follows:  
+ 
+ Types of Assessment  General Principle  
+Course  Assignment  and 
+Assessment (Open book)  Unless otherwise specified by the teaching staff , GAI  
+tools are allowed to be used by students. Course Assessment (Closed 
+book) & Final Examination  
+(Closed book)  Unless otherwise specified by teaching staff, GAI tools are 
+allowed  to be used by students. 4.
+
+--- Segment 3 ---
+Course Assessment (Closed 
+book) & Final Examination  
+(Closed book)  Unless otherwise specified by teaching staff, GAI tools are 
+allowed  to be used by students. 4. Declaration  
+Students should declare  their use of GAI tools and reflect on the process. Students should 
+indicate which GAI  tools  they have used  and explain  how the materials  generated  have  been  
+incorporated  into their submitted work. Submitted assessments should include the declaration  
+(shown below)  (Monash  University, n. d. ). Suggested format  Example  
+I acknowledge the use of [1. insert 
+GAI system(s) and link] to [2. specific  use of GAI].
+
+--- Segment 4 ---
+insert 
+GAI system(s) and link] to [2. specific  use of GAI]. I entered the 
+following prompts: [3. a list of 
+prompts]. The output from the GAI 
+was [4. An e xplanation of  use]. I acknowledge the use of [1] ChatGPT 
+(https://chatgpt. ln. edu. hk/ ) to [2] generate the 
+research  information  for this assessment.
+
+--- Segment 5 ---
+edu. hk/ ) to [2] generate the 
+research  information  for this assessment. I entered 
+the following prompts: [3] “Write a 50 -word 
+academic summary of Lingnan University using 
+an academic style with references and in -text 
+citations. ”  The output  from  the GAI was 
+[4] adapted and modified for the final response. 5. How to Cite GAI Tools   
+Students should check their course assessment requirements to see whether an additional 
+citation and referenc ing of the generated material is required. They should also reference the 
+GAI-generated  materials  in their work  using  accepted  academic  conventions  (e. g. preferably 
+APA or Harvard style,  etc. ).
+
+--- Segment 6 ---
+preferably 
+APA or Harvard style,  etc. ). Students may refer to the following webpage for details:  
+ 
+• APA style  https://apastyle. apa. org/blog/how -to-cite-chatgpt  
+• MLA style  https://style. mla. org/citing -generative -ai/ 
+• Harvard  style  
+ https:/ /www. c itewrite. qut. edu.
+
+--- Segment 7 ---
+qut. edu. au/cite/examples/harvard/harvard_internet_ai. html  
+• Others  https://www. library. ln. edu. hk/en/research/publish/citation  
+ 
+ 
+ 6. Actions for Academic  Units  
+Academic units should regularly review their course assessment requirements in order to 
+maximi se the benefits of using GAI tools in teaching and learning , and revi se assessment 
+requirements accordingly. Academic units should also ensure that the teaching staff  explain the 
+course assessment requirements at the beginning of each term.
+
+--- Segment 8 ---
+Actions for Academic  Units  
+Academic units should regularly review their course assessment requirements in order to 
+maximi se the benefits of using GAI tools in teaching and learning , and revi se assessment 
+requirements accordingly. Academic units should also ensure that the teaching staff  explain the 
+course assessment requirements at the beginning of each term. 7. Equitable  Access  
+Teaching staff  are responsible for ensuring  that all students have access to the designated GAI 
+tool (e. g. Poe, ChatGPT, etc. ) if they specify  its use. 8. Other Ethical  Considerations  
+• Transparency and informed consent. Students can choose not to use GAI tools if they have 
+concerns about data privacy or are uncomfortable  with GAI-generated  elements.
+
+--- Segment 9 ---
+Other Ethical  Considerations  
+• Transparency and informed consent. Students can choose not to use GAI tools if they have 
+concerns about data privacy or are uncomfortable  with GAI-generated  elements. • Data privacy and protection. Secure  platforms  should  be used to conduct assessments and 
+adher e to appropriate privacy  and data protection  protocols. Student  data used by GAI 
+algorithms should be anonymi sed and not associated with specific individuals. Student  data 
+should be stored and managed in accordance with best practices to prevent unauthorised access, 
+data breaches, and  misuse. • Fairness and avoiding biases. Academic units should regularly monitor and evaluat e GAI-
+generated  content to ensure its accuracy and quality. Adjustments should also be made to ensure 
+that students  do not experienc e unfair advantages or disadvantages as a result of the use of GAI 
+tools (Goode,  2019). • Continuous professional development.
+
+--- Segment 10 ---
+Adjustments should also be made to ensure 
+that students  do not experienc e unfair advantages or disadvantages as a result of the use of GAI 
+tools (Goode,  2019). • Continuous professional development. It is essential for academics to keep abreast of  the 
+latest developments in GAI technology, ethical considerations, and responsible assessment 
+practices. Participation  in workshops,  seminars,  or training  programmes  focus ed on the ethical 
+and responsible use of GAI tools in education is encouraged for Heads  of 
+Departments/Programme Directors and teaching staff  (Ali et al. , 2021). Regular review and revision of the above document will be conducted to keep pace with the 
+accelerated growth of GAI, technological advances, and the overall student learning 
+experience. Updated  in October 2024  
+ 
+ 
+ 
+ References:  
+ 
+Ali, M. , Bountouridis, D. , Clark, J. , et al.
+
+--- Segment 11 ---
+, Clark, J. , et al. (2021). Ethical Guidelines for Educational AI 
+Sourcing and Deployment . UNESCO . Goode, J. (2019). JHU Guidelines and Best Practices for AI -Enabled Online Education . Johns 
+Hopkins University . Lingnan U niversity  (n.
+
+--- Segment 12 ---
+Johns 
+Hopkins University . Lingnan U niversity  (n. d. ) . Assessment guidelines for Lingnan University (Section 12) . Retrieved from: https://www. ln. edu. hk/reg/f/page/40807/313170/assgud. pdf  
+Monash U niversity (n.
+
+--- Segment 13 ---
+hk/reg/f/page/40807/313170/assgud. pdf  
+Monash U niversity (n. d . ) Policy and practice guidance around acceptable and  responsible 
+use of  AI Technologies . Retrieved from:  
+ https://www. monash. edu/learning -teaching/teachhq/Teaching -practices/artificial - 
+ intelligence/policy -and-practice -guidance -around -acceptable -and-responsible -use-of- 
+ai-technologies#tabs  3254796 -01 
+UNESCO (2020). Artificial Intelligence in Education: Guidance for Policy -Makers . United 
+Nations Educational, Scientific and Cultural Organization .
+
+--- Segment 14 ---
+United 
+Nations Educational, Scientific and Cultural Organization .
+
