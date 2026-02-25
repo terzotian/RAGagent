@@ -10,6 +10,7 @@ from backend.model.doc_search import search_documents, load_segments_from_folder
 # from backend.model.lightrag_search import search_documents_lightrag
 from backend.root_path import piece_dir
 from backend.model.rag_stream import stream_answer
+from backend.model.llm_service import llm_service
 
 
 def _merge_mode(a: str, b: str) -> str:
@@ -39,23 +40,26 @@ def _classify_intent_ollama(query: str, base_url: str, model: str, language: str
     prompt_cn = "请判断这个问题是否需要查询学校内部政策、课程资料或作业文档。如果是，请务必回答 PRIVATE；如果是普通闲聊或通用知识，回答 GENERAL。只回答一个词。"
     prompt_en = "Determine if this question requires retrieving internal university policies, courses, or assignments. If yes, reply PRIVATE. If it is chitchat or general knowledge, reply GENERAL. Reply with ONE WORD only."
     prompt = prompt_cn if language.lower().startswith("zh") else prompt_en
-    data = {"model": model, "prompt": f"{prompt}\nQuestion: {query}\nAnswer:", "stream": False}
-    try:
-        r = requests.post(f"{base_url}/api/generate", json=data, timeout=20)
-        if r.status_code == 200:
-            try:
-                obj = r.json()
-                txt = obj.get("response", "").strip().upper()
-            except:
-                txt = r.text.strip().upper()
 
-            # 只要包含 PRIVATE 就优先认为是 PRIVATE
-            if "PRIVATE" in txt:
-                return "PRIVATE"
-            # 只有明确说 GENERAL 且不含 PRIVATE 才算 GENERAL
-            if "GENERAL" in txt:
-                return "GENERAL"
-    except:
+    try:
+        # Use LLM Service (Gemini Priority -> Ollama Fallback)
+        # Intent classification is a "router" task, so we use the standard Gemini API key (provider="gemini")
+        txt = llm_service.call_llm(
+            prompt=f"{prompt}\nQuestion: {query}\nAnswer:",
+            task_type="fast",
+            fallback_model=model,
+            fallback_base_url=base_url,
+            provider="gemini"
+        ).strip().upper()
+
+        # 只要包含 PRIVATE 就优先认为是 PRIVATE
+        if "PRIVATE" in txt:
+            return "PRIVATE"
+        # 只有明确说 GENERAL 且不含 PRIVATE 才算 GENERAL
+        if "GENERAL" in txt:
+            return "GENERAL"
+    except Exception as e:
+        print(f"Error in intent classification: {e}")
         pass
     return "PRIVATE"
 
@@ -64,23 +68,28 @@ def _classify_private_type_ollama(query: str, base_url: str, model: str, languag
     prompt_cn = "这个问题已经被判断为需要查询校内资料。请在以下类别中选择一个最合适的：COURSE（关于课程任务、项目、考试等）、STUDENT（关于某个学生自己提交的作业或表现）、POLICY（关于学费、规章制度、通用教学政策等）。只回答一个词：COURSE、STUDENT 或 POLICY。"
     prompt_en = "This question requires internal knowledge. Classify it into exactly ONE of: COURSE (course tasks, projects, exams), STUDENT (a specific student's submitted work or performance), POLICY (tuition, regulations, general academic policies). Answer with ONE WORD: COURSE, STUDENT or POLICY."
     prompt = prompt_cn if language.lower().startswith("zh") else prompt_en
-    data = {"model": model, "prompt": f"{prompt}\nQuestion: {query}\nAnswer:", "stream": False}
+
     try:
-        r = requests.post(f"{base_url}/api/generate", json=data, timeout=20)
-        if r.status_code == 200:
-            try:
-                obj = r.json()
-                txt = obj.get("response", "").strip().upper()
-            except:
-                txt = r.text.strip().upper()
-            if "STUDENT" in txt:
-                return "STUDENT"
-            if "POLICY" in txt:
-                return "POLICY"
-            if "COURSE" in txt:
-                return "COURSE"
-    except:
+        # Use LLM Service (Gemini Priority -> Ollama Fallback)
+        # Subtype classification is also a router task.
+        txt = llm_service.call_llm(
+            prompt=f"{prompt}\nQuestion: {query}\nAnswer:",
+            task_type="fast",
+            fallback_model=model,
+            fallback_base_url=base_url,
+            provider="gemini"
+        ).strip().upper()
+
+        if "STUDENT" in txt:
+            return "STUDENT"
+        if "POLICY" in txt:
+            return "POLICY"
+        if "COURSE" in txt:
+            return "COURSE"
+    except Exception as e:
+        print(f"Error in subtype classification: {e}")
         pass
+
     q = query.lower()
     if re.search(r"\bcds\d{3}\b", q) or "assignment" in q or "project" in q or "exam" in q:
         return "COURSE"
@@ -152,23 +161,18 @@ def _effective_score(ref: Dict[str, Any], base_priorities: Dict[str, float]) -> 
     return score
 
 
-async def _ollama_stream(prompt: str, base_url: str, model: str):
+async def _llm_stream(prompt: str, base_url: str, model: str, provider: str = "auto"):
+    """
+    Stream response from LLM (Gemini or Ollama fallback).
+    """
     try:
-        with requests.post(f"{base_url}/api/generate", json={"model": model, "prompt": prompt, "stream": True}, stream=True, timeout=300) as r:
-            if r.status_code != 200:
-                return
-            for line in r.iter_lines():
-                if not line:
-                    await asyncio.sleep(0)
-                    continue
-                try:
-                    obj = json.loads(line.decode("utf-8"))
-                    chunk = obj.get("response")
-                    if chunk:
-                        yield chunk
-                except:
-                    await asyncio.sleep(0)
-    except:
+        # call_llm_stream is a synchronous generator.
+        # We iterate over it and yield to asyncio loop to keep it responsive.
+        for chunk in llm_service.call_llm_stream(prompt, task_type="fast", fallback_model=model, fallback_base_url=base_url, provider=provider):
+            yield chunk
+            await asyncio.sleep(0)
+    except Exception as e:
+        print(f"Stream error: {e}")
         return
 
 async def route_stream(current_question: str, previous_questions: List[str], language: str, bases: List[str], temp_file_content: str = None, user_id: int | None = None):
@@ -188,7 +192,8 @@ async def route_stream(current_question: str, previous_questions: List[str], lan
         prompt_cn = "请直接回答用户的问题："
         prompt_en = "Answer the user's question directly:"
         prompt = prompt_cn if language.lower().startswith("zh") else prompt_en
-        gen = _ollama_stream(f"{prompt}\n{current_question}", base_url, model)
+        # General chat uses Gemini (Flash)
+        gen = _llm_stream(f"{prompt}\n{current_question}", base_url, model, provider="gemini")
         return gen, []
 
     print(f"DEBUG: Intent is PRIVATE. Starting retrieval.")
@@ -357,6 +362,7 @@ async def route_stream(current_question: str, previous_questions: List[str], lan
     # 这里的逻辑是：如果搜到了，就用 RAG。
     if max_score >= threshold and len(references) > 0:
         print("DEBUG: Entering RAG mode")
+        # RAG answering uses Vertex AI (Pro)
         gen = stream_answer(
             assembled_question,
             generate_time,
@@ -364,6 +370,7 @@ async def route_stream(current_question: str, previous_questions: List[str], lan
             search_time,
             target_language=language,
             private_type=private_type,
+            provider="vertex"
         )
         return gen, references
 
@@ -377,7 +384,7 @@ async def route_stream(current_question: str, previous_questions: List[str], lan
     prompt_cn = "并未在知识库中找到相关文档，请尝试利用你的通用知识回答（请告知用户未找到校内信息，请不要编造）："
     prompt_en = "No relevant documents found in knowledge base. Please answer using general knowledge (warn user no internal info found):"
     prompt = prompt_cn if language.lower().startswith("zh") else prompt_en
-    # Use await for stream wrapper if needed, but _ollama_stream is async gen, so just calling it is fine.
-    # But wait, did we use model from env? Yes.
-    gen = _ollama_stream(f"{prompt}\n{current_question}", base_url, model)
+    # Use await for stream wrapper if needed, but _llm_stream is async gen, so just calling it is fine.
+    # Fallback chat uses Gemini (Flash)
+    gen = _llm_stream(f"{prompt}\n{current_question}", base_url, model, provider="gemini")
     return gen, []

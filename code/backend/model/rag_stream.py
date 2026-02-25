@@ -4,43 +4,11 @@ import requests
 from typing import Literal
 import asyncio
 
-async def stream_ollama_query(prompt: str):
-    base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
-    model = os.getenv("OLLAMA_GEN_MODEL", "qwen3:8b")
-
-    try:
-        # Note: requests.post is blocking. In a high-concurrency production env, use aiohttp.
-        # For this local setup, it's acceptable, but we add asyncio.sleep(0) to yield control during iteration.
-        with requests.post(
-            f"{base_url}/api/generate",
-            json={"model": model, "prompt": prompt, "stream": True},
-            stream=True,
-            timeout=300
-        ) as r:
-            if r.status_code != 200:
-                yield f"Error: Ollama returned status {r.status_code}"
-                return
-
-            for line in r.iter_lines():
-                if not line:
-                    continue
-                try:
-                    obj = json.loads(line.decode("utf-8"))
-                    chunk = obj.get("response")
-                    if chunk:
-                        yield chunk
-                    if obj.get("done"):
-                        break
-                except:
-                    pass
-                # Yield control to event loop
-                await asyncio.sleep(0)
-    except Exception as e:
-        yield f"Error connecting to Ollama: {str(e)}"
+from backend.model.llm_service import llm_service
 
 async def stream_answer(assembled_question: str, generate_time: float, references: list[dict[str, str]],
                         search_time: float, target_language: Literal['en', 'zh-cn', 'zh-tw'] = 'en',
-                        private_type: str = "POLICY"):
+                        private_type: str = "POLICY", provider: str = "vertex"):
     # Measure doc analysis time
     split_time = 0.0
     # Measure query generation time
@@ -56,9 +24,23 @@ async def stream_answer(assembled_question: str, generate_time: float, reference
 
     prompt = build_prompt(target_language, assembled_question, references, private_type)
 
-    # 流式调用LLM (Switch to Ollama)
-    async for chunk in stream_ollama_query(prompt):
-        yield chunk
+    # Use LLM Service (Gemini Priority -> Ollama Fallback)
+    # We use "complex" task type for RAG answers to use Gemini Pro if available
+    base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+    model = os.getenv("OLLAMA_GEN_MODEL", "qwen3:8b")
+    
+    try:
+        for chunk in llm_service.call_llm_stream(
+            prompt=prompt, 
+            task_type="complex", 
+            fallback_model=model, 
+            fallback_base_url=base_url,
+            provider=provider
+        ):
+            yield chunk
+            await asyncio.sleep(0)
+    except Exception as e:
+        yield f"Error generating answer: {str(e)}"
 
 
 def build_prompt(language: Literal['en', 'zh-cn', 'zh-tw'], assembled_question, references, private_type: str) -> str:

@@ -12,7 +12,6 @@ import markdown as md_lib
 import mammoth
 
 import sys
-import os
 
 # Environment Setup
 try:
@@ -30,7 +29,6 @@ from fastapi.responses import StreamingResponse, HTMLResponse, PlainTextResponse
 from pydantic import BaseModel, Field
 from typing import List, Dict
 from datetime import datetime, timezone
-from fastapi.responses import StreamingResponse
 
 from backend.model.doc_analysis import split, read_file
 from backend.model.agent_router import route_stream
@@ -48,7 +46,7 @@ from backend.root_path import PIECES_DIR, locate_path, policy_file, piece_file, 
 # 数据库配置
 # MySQL (Old): DATABASE_URL = "mysql+mysqlconnector://root:TTZZ3388@localhost:3306/LURAG"
 # PostgreSQL (New):
-DATABASE_URL = "postgresql://postgres:TTZZ3388@localhost:5432/LURAG"
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:TTZZ3388@localhost:5432/LURAG")
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
