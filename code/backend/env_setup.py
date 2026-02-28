@@ -11,38 +11,44 @@ def setup_environment():
     - LibreOffice: For document conversion
     - Project root: For module resolution
     """
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    project_root = os.path.dirname(current_dir)
+    # Define key directories with clear names
+    # current_dir: .../code/backend
+    backend_dir = os.path.dirname(os.path.abspath(__file__))
+    # code_dir: .../code (Parent of backend, acting as package root)
+    code_dir = os.path.dirname(backend_dir)
+    # repo_root: .../AgenticRAG (Git repository root)
+    repo_root = os.path.dirname(code_dir)
 
-    # Load .env file explicitly from backend directory
-    backend_env = os.path.join(current_dir, ".env")
-    load_dotenv(backend_env)
-    print(f"DEBUG: Loaded env from {backend_env}")
+    # 1. Load .env file (Prioritize backend/.env)
+    backend_env = os.path.join(backend_dir, ".env")
+    repo_env = os.path.join(repo_root, ".env")
 
-    # Fallback: Load from project root if not found in backend
-    project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_dir)))
-    if not os.path.exists(backend_env):
-        root_env = os.path.join(project_root, ".env")
-        load_dotenv(root_env)
-        print(f"DEBUG: Loaded env from {root_env}")
+    if os.path.exists(backend_env):
+        load_dotenv(backend_env)
+        print(f"DEBUG: Loaded env from {backend_env}")
+    elif os.path.exists(repo_env):
+        load_dotenv(repo_env)
+        print(f"DEBUG: Loaded env from {repo_env}")
+    else:
+        print("WARNING: No .env file found in backend or repo root.")
 
+    # 2. Configure Python Path
+    # Add 'code' directory to sys.path to allow 'from backend...' imports
+    # This is the most standard way to structure imports
+    if code_dir not in sys.path:
+        sys.path.insert(0, code_dir)
+        print(f"DEBUG: Added {code_dir} to sys.path")
+
+    # Add repo_root only if absolutely necessary for scripts outside 'code'
+    # but generally 'code' dir is enough for backend modules.
+    if repo_root not in sys.path:
+         sys.path.insert(1, repo_root) # Insert at 1 to keep code_dir higher priority
+
+    # 3. Configure LibreOffice Path
     soffice_path = "/Applications/LibreOffice.app/Contents/MacOS"
     if soffice_path not in os.environ.get("PATH", ""):
         os.environ["PATH"] = os.environ.get("PATH", "") + os.pathsep + soffice_path
 
-    if project_root not in sys.path:
-        sys.path.insert(0, project_root)
-
-    # project_root is 'code/backend'
-    # we need to add 'code' directory to sys.path to allow 'from backend...'
-
-    # current_dir = code/backend
-    # parent = code
-    code_dir = os.path.dirname(current_dir)
-
-    if code_dir not in sys.path:
-        sys.path.insert(0, code_dir)
-        print(f"DEBUG: Added {code_dir} to sys.path")
 
 
 # Cloud Run environment sets K_SERVICE.
