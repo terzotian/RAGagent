@@ -14,8 +14,17 @@ def setup_environment():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(current_dir)
 
-    # Load .env file explicitly
-    load_dotenv(os.path.join(project_root, ".env"))
+    # Load .env file explicitly from backend directory
+    backend_env = os.path.join(current_dir, ".env")
+    load_dotenv(backend_env)
+    print(f"DEBUG: Loaded env from {backend_env}")
+
+    # Fallback: Load from project root if not found in backend
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_dir)))
+    if not os.path.exists(backend_env):
+        root_env = os.path.join(project_root, ".env")
+        load_dotenv(root_env)
+        print(f"DEBUG: Loaded env from {root_env}")
 
     soffice_path = "/Applications/LibreOffice.app/Contents/MacOS"
     if soffice_path not in os.environ.get("PATH", ""):
@@ -23,6 +32,17 @@ def setup_environment():
 
     if project_root not in sys.path:
         sys.path.insert(0, project_root)
+
+    # project_root is 'code/backend'
+    # we need to add 'code' directory to sys.path to allow 'from backend...'
+
+    # current_dir = code/backend
+    # parent = code
+    code_dir = os.path.dirname(current_dir)
+
+    if code_dir not in sys.path:
+        sys.path.insert(0, code_dir)
+        print(f"DEBUG: Added {code_dir} to sys.path")
 
 
 # Cloud Run environment sets K_SERVICE.
