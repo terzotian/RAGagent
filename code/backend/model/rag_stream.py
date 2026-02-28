@@ -28,12 +28,12 @@ async def stream_answer(assembled_question: str, generate_time: float, reference
     # We use "complex" task type for RAG answers to use Gemini Pro if available
     base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
     model = os.getenv("OLLAMA_GEN_MODEL", "qwen3:8b")
-    
+
     try:
         for chunk in llm_service.call_llm_stream(
-            prompt=prompt, 
-            task_type="complex", 
-            fallback_model=model, 
+            prompt=prompt,
+            task_type="complex",
+            fallback_model=model,
             fallback_base_url=base_url,
             provider=provider
         ):
@@ -49,8 +49,12 @@ def build_prompt(language: Literal['en', 'zh-cn', 'zh-tw'], assembled_question, 
     if pt == "COURSE":
         if language == "zh-cn":
             return f"""你现在的角色是岭南大学课程与作业助手。
-请根据下方【参考资料】中的课程资料和作业说明，用自己的话概括和回答用户的问题，可以做合理的归纳总结，不要求原文有一模一样的句子。
-如果资料只涵盖部分信息，请先说明你能确定的部分，再说明哪些内容资料中没有明确写出。
+请根据下方【参考资料】中的课程资料和作业说明回答用户问题。
+请严格按照以下结构输出回答：
+
+1. **核心结论**：直接回答用户问题的关键点。
+2. **详细依据**：结合参考资料中的具体内容（如作业要求、课程大纲章节等）进行解释。
+3. **补充说明/缺失信息**：如果资料不完整，说明哪些信息是推断的，或者哪些信息资料中未包含。
 
 【参考资料】：
 {context_str}
@@ -61,8 +65,12 @@ def build_prompt(language: Literal['en', 'zh-cn', 'zh-tw'], assembled_question, 
 【你的回答】："""
         if language == "zh-tw":
             return f"""你現在的角色是嶺南大學課程與作業助手。
-請根據下方【參考資料】中的課程資料與作業說明，用自己的話概括並回答用戶的問題，可以做合理的歸納總結，不要求原文有一模一樣的句子。
-如果資料只涵蓋部分資訊，請先說明你能確定的部分，再說明哪些內容資料中沒有明確寫出。
+請根據下方【參考資料】中的課程資料與作業說明回答用戶問題。
+請嚴格按照以下結構輸出回答：
+
+1. **核心結論**：直接回答用戶問題的關鍵點。
+2. **詳細依據**：結合參考資料中的具體內容（如作業要求、課程大綱章節等）進行解釋。
+3. **補充說明/缺失資訊**：如果資料不完整，說明哪些資訊是推斷的，或者哪些資訊資料中未包含。
 
 【參考資料】：
 {context_str}
@@ -73,8 +81,11 @@ def build_prompt(language: Literal['en', 'zh-cn', 'zh-tw'], assembled_question, 
 【你的回答】："""
         return f"""You are a course and assignment assistant for Lingnan University.
 Use the [References] about course outlines, lectures and assignment descriptions to answer the question.
-You may summarize and infer the intent and requirements even if there is no explicit one-sentence definition in the text.
-If the references only contain partial information, clearly state what can be inferred and which details are not explicitly specified.
+Please structure your answer as follows:
+
+1. **Core Conclusion**: Directly answer the key point of the user's question.
+2. **Detailed Basis**: Explain using specific content from the references (e.g., assignment requirements, course sections).
+3. **Note/Missing Info**: If information is incomplete, state what is inferred or missing from the documents.
 
 [References]:
 {context_str}
@@ -86,8 +97,12 @@ If the references only contain partial information, clearly state what can be in
     if pt == "STUDENT":
         if language == "zh-cn":
             return f"""你现在的角色是老师，正在阅读学生的作业和课程要求。
-请基于【参考资料】中的学生作业内容和课程/作业说明，给出具体的分析和建议，可以进行合理的归纳总结。
-如果资料没有覆盖某些方面，请直接说明“资料中没有明确说明这一点”，不要凭空编造。
+请基于【参考资料】中的学生作业内容和课程/作业说明，给出具体的分析和建议。
+请严格按照以下结构输出回答：
+
+1. **核心结论**：直接回答用户问题的关键点。
+2. **详细分析**：结合参考资料中的具体内容进行解释。
+3. **建议/缺失信息**：如果资料不完整，说明哪些信息是推断的，或者哪些信息资料中未包含。
 
 【参考资料】：
 {context_str}
@@ -98,8 +113,12 @@ If the references only contain partial information, clearly state what can be in
 【你的回答】："""
         if language == "zh-tw":
             return f"""你現在的角色是老師，正在閱讀學生的作業與課程要求。
-請根據【參考資料】中的學生作業內容與課程/作業說明，給出具體的分析與建議，可以進行合理的歸納總結。
-如果資料沒有涵蓋某些面向，請直接說明「資料中沒有明確說明這一點」，不要憑空編造。
+請基於【參考資料】中的學生作業內容與課程/作業說明，給出具體的分析與建議。
+請嚴格按照以下結構輸出回答：
+
+1. **核心結論**：直接回答用戶問題的關鍵點。
+2. **詳細分析**：結合參考資料中的具體內容進行解釋。
+3. **建議/缺失資訊**：如果資料不完整，說明哪些資訊是推斷的，或者哪些資訊資料中未包含。
 
 【參考資料】：
 {context_str}
@@ -110,7 +129,11 @@ If the references only contain partial information, clearly state what can be in
 【你的回答】："""
         return f"""You are a course instructor reviewing a student's work and the corresponding course requirements.
 Use the [References] that include student submissions and assignment descriptions to analyze the question and provide concrete feedback.
-You may summarize and draw reasonable conclusions from the text, but do not invent rules or requirements that are not supported by the documents.
+Please structure your answer as follows:
+
+1. **Core Conclusion**: Directly answer the key point of the user's question.
+2. **Detailed Analysis**: Explain using specific content from the references.
+3. **Suggestion/Missing Info**: If information is incomplete, state what is inferred or missing from the documents.
 
 [References]:
 {context_str}
@@ -128,8 +151,11 @@ def promt_select(language: Literal['en', 'zh-cn', 'zh-tw'], assembled_question, 
     if language == "zh-cn":
         return f"""你现在的角色是岭南大学政策问答助手。
 请务必根据下方的【参考资料】来回答用户的问题。
-如果在参考资料中找到了答案，请在回答中相应位置标注引用来源，格式为 [1], [2]。
-如果参考资料中没有相关信息，请明确告知用户未找到相关政策，不要编造答案。
+请严格按照以下结构输出回答：
+
+1. **核心结论**：直接回答用户问题的关键点。
+2. **详细依据**：结合参考资料中的具体内容进行解释，并在相应位置标注引用来源，格式为 [1], [2]。
+3. **补充说明/缺失信息**：如果资料不完整，说明哪些信息是推断的，或者哪些信息资料中未包含。
 
 【参考资料】：
 {context_str}
@@ -141,8 +167,11 @@ def promt_select(language: Literal['en', 'zh-cn', 'zh-tw'], assembled_question, 
     elif language == "zh-tw":
         return f"""你現在的角色是嶺南大學政策問答助手。
 請務必根據下方的【參考資料】來回答用戶的問題。
-如果在參考資料中找到了答案，請在回答中相應位置標註引用來源，格式為 [1], [2]。
-如果參考資料中沒有相關資訊，請明確告知用戶未找到相關政策，不要編造答案。
+請嚴格按照以下結構輸出回答：
+
+1. **核心結論**：直接回答用戶問題的關鍵點。
+2. **詳細依據**：結合參考資料中的具體內容進行解釋，並在相應位置標註引用來源，格式為 [1], [2]。
+3. **補充說明/缺失資訊**：如果資料不完整，說明哪些資訊是推斷的，或者哪些資訊資料中未包含。
 
 【參考資料】：
 {context_str}
@@ -155,9 +184,11 @@ def promt_select(language: Literal['en', 'zh-cn', 'zh-tw'], assembled_question, 
     # English default
     return f"""You are a helpful assistant for Lingnan University.
 Please answer the user's question STRICTLY based on the provided [References] below.
-- If the information is in the references, answer the question and cite the source number like [1], [2] at the end of the sentence.
-- If the references do not contain the answer, say "I cannot find the answer in the provided policy documents."
-- Do not use your general knowledge to answer if it's not in the documents.
+Please structure your answer as follows:
+
+1. **Core Conclusion**: Directly answer the key point of the user's question.
+2. **Detailed Basis**: Explain using specific content from the references, citing source numbers like [1], [2] at the end of sentences.
+3. **Note/Missing Info**: If information is incomplete, state what is inferred or missing from the documents.
 
 [References]:
 {context_str}

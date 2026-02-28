@@ -92,23 +92,10 @@ async def search_documents(search_query, document_segments, top_k=5):
 
     results = []
     for idx in top_indices:
-        # 原始相似度转换成百分比
-        orig_percent = similarities[idx] * 100
+        raw_percent = similarities[idx] * 100
+        similarity_str = f"{raw_percent:.1f}%"
 
-        # 根据规则修改相似度数值
-        if orig_percent < 10:
-            new_percent = orig_percent
-        elif orig_percent < 30:
-            new_percent = orig_percent * 2
-        elif orig_percent < 50:
-            new_percent = orig_percent + 50
-        else:  # orig_percent >= 50
-            new_percent = 90 + (orig_percent * 0.1)
-
-        # 格式化结果（保留一位小数，若小数点后为0可按需调整）
-        similarity_str = f"{new_percent:.1f}%"
-
-        if orig_percent > 1:
+        if raw_percent > 1:  # Filter noise
             segment_path = document_segments[idx]['source']
             base, original_file = source_finding(segment_path)
             results.append({

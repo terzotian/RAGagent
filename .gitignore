@@ -1,3 +1,23 @@
+# Local development secrets
+.secrets/
+.auth/
+.local_config/
+.local_data/
+
+# Legacy runtime data paths (should not be used anymore)
+code/backend/knowledge_base/
+code/backend/avatars/
+code/backend/data/temp_uploads/
+
+# Vendored/accidentally committed dependencies (should not be versioned)
+libs/
+code/libs/
+
+# Credentials (never commit)
+rag-project-*.json
+*service_account*.json
+*credentials*.json
+
 # Mac builtin
 .DS_Store
 **/.DS_Store
@@ -66,6 +86,10 @@ cover/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+
+# Local databases / runtime artifacts
+*.db
+local.db
 
 # Flask stuff:
 instance/
@@ -175,5 +199,6 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+node_modules
 node_modules
 node_modules

@@ -6,6 +6,7 @@ import json
 import shutil
 import uuid
 from urllib.parse import unquote
+from contextlib import asynccontextmanager
 
 import uvicorn
 import markdown as md_lib
@@ -31,105 +32,53 @@ from typing import List, Dict
 from datetime import datetime, timezone
 
 from backend.model.doc_analysis import split, read_file
-from backend.model.agent_router import route_stream
+from backend.model.agent_router import route_stream, generate_follow_up_questions
 from backend.model.rag_indexer import ingest_file
-from sqlalchemy import create_engine, Column, String, Text, Integer, TIMESTAMP, func, LargeBinary, text, orm, Index, Enum as SQLEnum
-from sqlalchemy.orm import sessionmaker, Session
-from sqlalchemy.dialects.postgresql import JSONB as JSON
+from sqlalchemy.orm import Session
+from sqlalchemy import func
 from passlib.context import CryptContext
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
 from backend.model.ques_assemble import generate_search_query
 from backend.model.doc_search import search_documents, load_segments_from_folder
-from backend.root_path import PIECES_DIR, locate_path, policy_file, piece_file, piece_dir
+from backend.root_path import (
+    PIECES_DIR,
+    KB_ROOT,
+    locate_path,
+    policy_file,
+    course_file,
+    piece_file,
+    piece_dir,
+    user_assignment_file,
+    resolve_storage_path,
+    uploads_dir,
+    avatars_dir,
+)
 
-# 数据库配置
-# MySQL (Old): DATABASE_URL = "mysql+mysqlconnector://root:TTZZ3388@localhost:3306/LURAG"
-# PostgreSQL (New):
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:TTZZ3388@localhost:5432/LURAG")
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# Database & Models
+from backend.database.connection import get_db, engine, SessionLocal, Base
+from backend.database.models import DBSession, DBQuestion, DBMajor, DBCourse, DBFile, DBUser
 
-Base = orm.declarative_base()
-
-
-# 数据库模型
-class DBSession(Base):
-    __tablename__ = "sessions"
-    session_id = Column(String(28), primary_key=True)
-    user_id = Column(Integer, nullable=True)
-    title = Column(String(255), nullable=True)
-    created_at = Column(TIMESTAMP, server_default=func.now())
-    last_activity = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
-
-
-class DBQuestion(Base):
-    __tablename__ = "questions"
-    session_id = Column(String(28), primary_key=True)
-    question_id = Column(String(28), primary_key=True)
-    previous_questions = Column(JSON)
-    current_question = Column(Text)
-    answer = Column(Text)
-    references = Column(JSON)  # 更新字段名
-    rating = Column(Integer)
-    created_at = Column(TIMESTAMP, server_default=func.now())
+# Schemas
+from backend.schemas.chat import QuestionRequest, QuestionResponse, FeedbackRequest, FeedbackResponse
+from backend.schemas.user import UserRegister, UserLogin, UserUpdate, PasswordUpdate
 
 
-class DBMajor(Base):
-    __tablename__ = "majors"
-    code = Column(String(20), primary_key=True)  # AIBA, DS, ADS
-    name = Column(String(100), nullable=False)   # MSc in AIBA
-    department = Column(String(100), nullable=False, default="Data Science")
-
-class DBCourse(Base):
-    __tablename__ = "courses"
-    course_code = Column(String(20), primary_key=True) # CDS524
-    name = Column(String(100), nullable=False)
-    major_code = Column(String(20), nullable=False) # FK -> majors.code
-
-class DBFile(Base):
-    __tablename__ = "files"
-    file_id = Column(Integer, primary_key=True, autoincrement=True)
-    file_name = Column(String(255), nullable=False)
-    file_path = Column(String(512), nullable=False)
-    file_size = Column(String(28), nullable=True)
-    file_type = Column(String(20), nullable=False) # policy, course_ppt, course_rubric, student_assignment
-    access_level = Column(String(20), nullable=False, default='internal') # public, internal, private
-
-    # Context
-    base = Column(String(28), nullable=False, default="lingnan") # Legacy support
-    related_course_code = Column(String(20), nullable=True) # FK -> courses.course_code
-
-    # Ownership
-    uploader_id = Column(Integer, nullable=True) # FK -> users.user_id
-
-    uploaded_at = Column(TIMESTAMP, server_default=func.now())
-    description = Column(Text, nullable=True)
-
-class DBUser(Base):
-    __tablename__ = "users"
-    user_id = Column(Integer, primary_key=True, autoincrement=True)
-    account = Column(String(50), unique=True, nullable=False)
-    password_hash = Column(String(255), nullable=False)
-    nickname = Column(String(50), nullable=False)
-    role = Column(String(20), nullable=False, default='student') # student, teacher, admin
-    major_code = Column(String(20), nullable=True) # AIBA, DS...
-    avatar_path = Column(String(255), nullable=True)
-    created_at = Column(TIMESTAMP, server_default=func.now())
+AUTO_CREATE_TABLES = os.getenv("AUTO_CREATE_TABLES", "1").strip().lower() not in {"0", "false", "no"}
 
 
-Base.metadata.create_all(bind=engine)
-try:
-    with engine.connect() as conn:
-        conn.execute(text("ALTER TABLE users ALTER COLUMN user_id ADD GENERATED BY DEFAULT AS IDENTITY"))
-        seq_name = conn.execute(text("SELECT pg_get_serial_sequence('users','user_id')")).scalar()
-        if seq_name:
-            conn.execute(text(f"SELECT setval('{seq_name}', COALESCE((SELECT MAX(user_id) FROM users), 1))"))
-        conn.commit()
-except Exception:
-    pass
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    if AUTO_CREATE_TABLES:
+        Base.metadata.create_all(bind=engine)
+    yield
 
-app = FastAPI()
+
+app = FastAPI(lifespan=lifespan)
+
+# DEBUG: Print Database URL
+from backend.database.connection import DATABASE_URL
+print(f"\n[INFO] Backend starting with DATABASE_URL: {DATABASE_URL}\n")
 
 # CORS配置
 from fastapi.middleware.cors import CORSMiddleware
@@ -140,101 +89,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-# 依赖项
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-# 数据模型
-class QuestionRequest(BaseModel):
-    session_id: str = Field(..., min_length=6)
-    question_id: str = Field(..., min_length=10)
-    previous_questions: List[str] = []
-    current_question: str = Field(..., min_length=1)
-
-
-class QuestionResponse(BaseModel):
-    session_id: str
-    question_id: str
-    answer: str
-    references: List[Dict[str, str]]
-
-
-class FeedbackRequest(BaseModel):
-    session_id: str
-    question_id: str
-    rating: int = Field(..., ge=1, le=10)
-
-
-class FeedbackResponse(BaseModel):
-    session_id: str
-    question_id: str
-
-
-import re
-from pydantic import BaseModel, Field, field_validator
-
-class UserRegister(BaseModel):
-    account: str = Field(..., description="Phone number (digits only)")
-    password: str = Field(..., description="6-digit password")
-    nickname: str = Field(..., description="Nickname (English or Chinese)")
-    role: str = Field(..., description="student, teacher, or admin")
-    major_code: str = Field(None, description="Major code (e.g. AIBA)")
-
-    @field_validator('account')
-    @classmethod
-    def validate_account(cls, v):
-        if not re.match(r'^\d{11}$', v):
-            raise ValueError('Account must be an 11-digit phone number')
-        return v
-
-    @field_validator('password')
-    @classmethod
-    def validate_password(cls, v):
-        if not re.match(r'^\d{6}$', v):
-            raise ValueError('Password must be exactly 6 digits')
-        return v
-
-    @field_validator('nickname')
-    @classmethod
-    def validate_nickname(cls, v):
-        if not re.match(r'^[\u4e00-\u9fa5a-zA-Z]+$', v):
-            raise ValueError('Nickname must contain only English or Chinese characters')
-        return v
-
-
-class UserLogin(BaseModel):
-    account: str
-    password: str
-
-
-class UserUpdate(BaseModel):
-    nickname: str = Field(..., description="Nickname")
-    major_code: str = Field(None, description="Major code")
-
-    @field_validator('nickname')
-    @classmethod
-    def validate_nickname(cls, v):
-        if not re.match(r'^[\u4e00-\u9fa5a-zA-Z]+$', v):
-            raise ValueError('Nickname must contain only English or Chinese characters')
-        return v
-
-class PasswordUpdate(BaseModel):
-    old_password: str
-    new_password: str = Field(..., description="6-digit password")
-
-    @field_validator('new_password')
-    @classmethod
-    def validate_password(cls, v):
-        if not re.match(r'^\d{6}$', v):
-            raise ValueError('Password must be exactly 6 digits')
-        return v
 
 @app.get("/api/v1/users/{user_id}")
 async def get_user_profile(user_id: int, db: Session = Depends(get_db)):
@@ -291,14 +145,14 @@ async def upload_avatar(user_id: int, file: UploadFile = File(...), db: Session 
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # Create avatars directory
-    avatars_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "avatars")
-    os.makedirs(avatars_dir, exist_ok=True)
+    # Create avatars directory (runtime data under .local_data)
+    avatars_root = avatars_dir()
+    os.makedirs(avatars_root, exist_ok=True)
 
     # Save file
     file_ext = os.path.splitext(file.filename)[1]
     filename = f"user_{user_id}_{int(datetime.now().timestamp())}{file_ext}"
-    file_path = os.path.join(avatars_dir, filename)
+    file_path = os.path.join(avatars_root, filename)
 
     content = await file.read()
     with open(file_path, "wb") as f:
@@ -306,7 +160,7 @@ async def upload_avatar(user_id: int, file: UploadFile = File(...), db: Session 
 
     # Delete old avatar if exists
     if user.avatar_path:
-        old_path = os.path.join(avatars_dir, os.path.basename(user.avatar_path))
+        old_path = os.path.join(avatars_root, os.path.basename(user.avatar_path))
         if os.path.exists(old_path):
             try:
                 os.remove(old_path)
@@ -322,8 +176,8 @@ async def upload_avatar(user_id: int, file: UploadFile = File(...), db: Session 
 
 @app.get("/api/v1/avatars/{filename}")
 async def get_avatar(filename: str):
-    avatars_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "avatars")
-    file_path = os.path.join(avatars_dir, filename)
+    avatars_root = avatars_dir()
+    file_path = os.path.join(avatars_root, filename)
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="Avatar not found")
     return FileResponse(file_path)
@@ -422,7 +276,7 @@ async def admin_reset_password(account: str = Query(...), new_password: str = Qu
 @app.post("/api/v1/chat/upload_temp")
 async def upload_temp_file(file: UploadFile = File(...)):
     # Create temp directory
-    temp_dir = locate_path("data", "temp_uploads")
+    temp_dir = uploads_dir("temp_uploads")
     os.makedirs(temp_dir, exist_ok=True)
 
     # Generate unique ID
@@ -451,7 +305,7 @@ async def stream_question(session_id: str, question_id: str, previous_questions:
 
     temp_content = None
     if temp_file_id:
-        temp_dir = locate_path("data", "temp_uploads")
+        temp_dir = uploads_dir("temp_uploads")
         # Security check: ensure temp_file_id is just a filename, not a path
         temp_file_id = os.path.basename(temp_file_id)
         file_path = os.path.join(temp_dir, temp_file_id)
@@ -482,7 +336,7 @@ async def stream_question(session_id: str, question_id: str, previous_questions:
                 assignment_bases = db.query(DBFile.base).filter(DBFile.file_type == 'student_assignment').distinct().all()
                 for b, in assignment_bases:
                     accessible_bases.append(b)
-                knowledge_root = locate_path("knowledge_base")
+                knowledge_root = KB_ROOT
                 if os.path.exists(knowledge_root):
                     for name in os.listdir(knowledge_root):
                         full_path = os.path.join(knowledge_root, name)
@@ -510,10 +364,37 @@ async def stream_question(session_id: str, question_id: str, previous_questions:
         except:
             pass
 
-    gen_iter, references = await route_stream(current_question, previous_questions_list, language, accessible_bases, temp_file_content=temp_content, user_id=user_id)
+    # --- Fetch conversation history from DB for context-aware query rewriting ---
+    conversation_history = []
+    try:
+        recent_qas = db.query(DBQuestion).filter(
+            DBQuestion.session_id == session_id
+        ).order_by(DBQuestion.created_at.desc()).limit(3).all()
+        for qa in reversed(recent_qas):  # oldest first
+            conversation_history.append({
+                "question": qa.current_question,
+                "answer": (qa.answer or "")[:500]  # Truncate long answers
+            })
+        if conversation_history:
+            print(f"DEBUG: Loaded {len(conversation_history)} previous Q&A turns for context")
+    except Exception as e:
+        print(f"Error fetching conversation history: {e}")
+
+    gen_iter, references, rewritten_query, search_scope = await route_stream(
+        current_question, previous_questions_list, language, accessible_bases,
+        temp_file_content=temp_content, user_id=user_id,
+        conversation_history=conversation_history
+    )
 
     async def event_generator():
         print(f"DEBUG: Starting event_generator for session {session_id}")
+
+        # Send reasoning data first
+        if rewritten_query:
+            yield f"data: {json.dumps({'rewritten_query': rewritten_query})}\n\n"
+        if search_scope:
+            yield f"data: {json.dumps({'search_scope': search_scope})}\n\n"
+
         full_answer = ""
         try:
             async for token in gen_iter:
@@ -531,6 +412,16 @@ async def stream_question(session_id: str, question_id: str, previous_questions:
         print("DEBUG: Stream finished, sending references")
         # 发送引用文献消息，字段名为 references
         yield f"data: {json.dumps({'references': references})}\n\n"
+
+        # Generate and send follow-up questions
+        follow_up_questions = []
+        try:
+            if full_answer and len(full_answer) > 20:
+                follow_up_questions = await generate_follow_up_questions(current_question, full_answer, language)
+                if follow_up_questions:
+                    yield f"data: {json.dumps({'follow_up_questions': follow_up_questions})}\n\n"
+        except Exception as e:
+            print(f"Error generating follow-up questions: {e}")
 
         # Save to DB
         print(f"DEBUG: Saving to DB. Session: {session_id}, User: {user_id}", flush=True)
@@ -584,6 +475,9 @@ async def stream_question(session_id: str, question_id: str, previous_questions:
                     current_question=current_question,
                     answer=full_answer,
                     references=references,
+                    rewritten_question=rewritten_query,
+                    search_scope=search_scope,
+                    follow_up_questions=follow_up_questions,
                     rating=None
                 )
                 db.add(db_question)
@@ -624,7 +518,7 @@ async def list_courses(user_id: int = Query(None), db: Session = Depends(get_db)
 async def list_course_files(code: str, db: Session = Depends(get_db)):
     files = db.query(DBFile).filter(
         DBFile.related_course_code == code,
-        DBFile.file_type.in_(['course_ppt', 'course_rubric'])
+        DBFile.file_type.in_(['course_ppt', 'course_rubric', 'course_material'])
     ).all()
     return {"files": files}
 
@@ -651,8 +545,8 @@ async def upload_course_file(
     # Define path
     # 修正：将路径保存到 course_{code}/files 下，而不是 courses/{code}
     # 保持与 base 命名一致：base="course_{code}"
-    # save_dir = locate_path("knowledge_base", "courses", code)
-    save_dir = locate_path("knowledge_base", f"course_{code}", "files")
+    # save_dir = locate_path("courses", code)
+    save_dir = locate_path(f"course_{code}", "files")
     os.makedirs(save_dir, exist_ok=True)
     file_path = os.path.join(save_dir, file.filename)
 
@@ -674,6 +568,7 @@ async def upload_course_file(
 
     # Trigger ingestion (Async)
     try:
+        # ingest_file expects absolute path or resolvable path
         await ingest_file(f"course_{code}", file_path)
     except Exception as e:
         print(f"Error indexing file: {e}")
@@ -694,7 +589,7 @@ async def upload_policy(
     size_kb = len(content) / 1024
     file_size = f"{size_kb:.1f}KB" if size_kb < 1024 else f"{size_kb / 1024:.1f}MB"
 
-    save_dir = locate_path("knowledge_base", "public", "policies")
+    save_dir = locate_path("public", "policies")
     os.makedirs(save_dir, exist_ok=True)
     file_path = os.path.join(save_dir, file.filename)
 
@@ -736,7 +631,7 @@ async def upload_assignment(
     size_kb = len(content) / 1024
     file_size = f"{size_kb:.1f}KB" if size_kb < 1024 else f"{size_kb / 1024:.1f}MB"
 
-    save_dir = locate_path("knowledge_base", "users", str(user_id), "assignments")
+    save_dir = locate_path("users", str(user_id), "assignments")
     os.makedirs(save_dir, exist_ok=True)
     file_path = os.path.join(save_dir, file.filename)
 
@@ -765,7 +660,7 @@ async def upload_assignment(
     return {"message": "Assignment uploaded"}
 
 @app.delete("/api/v1/files/{file_id}")
-async def delete_file(
+async def delete_file_by_id(
     file_id: int,
     user_id: int = Query(...),
     db: Session = Depends(get_db)
@@ -786,7 +681,7 @@ async def delete_file(
         # Teachers can delete course files (assuming they manage the course)
         # For simplicity, allowing teachers to delete any course file for now,
         # or strictly their own uploads. Let's go with their own uploads or course files.
-        if file.file_type in ['course_ppt', 'course_rubric']:
+        if file.file_type in ['course_ppt', 'course_rubric', 'course_material']:
              can_delete = True
     elif user.role == 'student':
         # Students can only delete their own assignments
@@ -796,9 +691,28 @@ async def delete_file(
     if not can_delete:
         raise HTTPException(status_code=403, detail="Permission denied")
 
-    # Delete from disk
-    if os.path.exists(file.file_path):
-        os.remove(file.file_path)
+    # Delete from disk (stored path may be legacy)
+    resolved_path = resolve_storage_path(file.file_path)
+    if resolved_path and os.path.exists(resolved_path):
+        os.remove(resolved_path)
+
+    # Delete pieces (traditional ingestion output)
+    try:
+        pieces_path = os.path.join(piece_dir(base=file.base), f"{file.file_name}.txt")
+        if os.path.exists(pieces_path):
+            os.remove(pieces_path)
+    except Exception as e:
+        print(f"Warning: failed to delete pieces for file_id={file.file_id}: {e}")
+
+    # Delete vectors (pgvector)
+    try:
+        from backend.model.vector_store import delete_documents_for_file
+
+        deleted_vectors = delete_documents_for_file(collection_name=file.base, original_file=file.file_name)
+        if deleted_vectors:
+            print(f"DEBUG: Deleted {deleted_vectors} vectors for file_id={file.file_id}")
+    except Exception as e:
+        print(f"Warning: failed to delete vectors for file_id={file.file_id}: {e}")
 
     db.delete(file)
     db.commit()
@@ -833,49 +747,26 @@ async def preview_file(
 
 
 @app.delete("/api/v1/files")
-async def delete_file(
+async def delete_file_legacy(
         base: str = Query(...),
         file_name: str = Query(...),
+        user_id: int = Query(...),
         db: Session = Depends(get_db)
 ):
-    # 查找数据库记录
+    """Legacy delete endpoint.
+
+    Keeps compatibility for callers that only know (base, file_name),
+    but routes through the authoritative delete-by-id flow.
+    """
     existing = (
         db.query(DBFile)
         .filter(DBFile.base == base, DBFile.file_name == file_name)
         .first()
     )
-
     if not existing:
         raise HTTPException(status_code=404, detail="File not found in database")
 
-    # 构造文件路径
-    policy_path = policy_file(base=base, filename=file_name)
-
-    deleted_path = os.path.basename(policy_path)
-    file_base, _ = os.path.splitext(deleted_path)
-    output_format = "txt"
-    pieces_path_1 = os.path.join(piece_dir(base=base), f"{file_base}_segmented.{output_format}")
-    deleted_piece_path = policy_path.replace("policies", "pieces")
-    pieces_path_2 = os.path.join(piece_dir(base=base), f"{deleted_piece_path}.{output_format}")
-
-    # 删除 policy 文件
-    if os.path.exists(policy_path):
-        os.remove(policy_path)
-
-    # 删除 pieces 文件
-    if os.path.exists(pieces_path_1):
-        os.remove(pieces_path_1)
-    if os.path.exists(pieces_path_2):
-        os.remove(pieces_path_2)
-    # 删除数据库记录
-    db.delete(existing)
-    db.commit()
-
-    return {
-        "base": base,
-        "file_name": file_name,
-        "message": "File and related data deleted successfully"
-    }
+    return await delete_file_by_id(file_id=existing.file_id, user_id=user_id, db=db)
 
 
 @app.post("/api/v1/feedback", response_model=FeedbackResponse)

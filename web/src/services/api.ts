@@ -193,6 +193,9 @@ export const streamAnswer = async (params: {
     temp_file_id?: string | null;
     onToken: (token: string) => void;
     onReferences: (refs: Reference[]) => void;
+    onRewrittenQuery?: (query: string) => void;
+    onSearchScope?: (scope: string[]) => void;
+    onFollowUpQuestions?: (questions: string[]) => void;
     onDone: () => void;
     onError: () => void;
 }) => {
@@ -238,7 +241,11 @@ export const streamAnswer = async (params: {
             const chunk = decoder.decode(value, { stream: true });
             buffer += chunk;
             const lines = buffer.split('\n\n');
-            buffer = lines.pop() || ''; // Keep the incomplete part
+            // Keep the last part if it doesn't end with \n\n (it might be incomplete)
+            // But if the buffer ends with \n\n, lines will have an empty string at the end.
+            // Let's handle buffer correctly.
+            // Logic: split by \n\n, the last element is the new buffer.
+            buffer = lines.pop() || ''; 
 
             for (const line of lines) {
                 if (line.startsWith('data: ')) {
@@ -246,7 +253,7 @@ export const streamAnswer = async (params: {
 
                     if (dataStr === '[DONE]') {
                         params.onDone();
-                        return controller; // Return controller but we are done
+                        return controller; 
                     }
 
                     try {
@@ -255,21 +262,27 @@ export const streamAnswer = async (params: {
                             params.onToken(data.token);
                         } else if (data.references) {
                             params.onReferences(data.references);
+                        } else if (data.rewritten_query && params.onRewrittenQuery) {
+                            params.onRewrittenQuery(data.rewritten_query);
+                        } else if (data.search_scope && params.onSearchScope) {
+                            params.onSearchScope(data.search_scope);
+                        } else if (data.follow_up_questions && params.onFollowUpQuestions) {
+                            params.onFollowUpQuestions(data.follow_up_questions);
                         } else if (data.error) {
-                            console.error('Stream error from server:', data.error);
+                            console.error("Stream error:", data.error);
                             params.onError();
                         }
                     } catch (e) {
-                        console.error('Error parsing event data:', e);
+                        console.error("Error parsing JSON:", e);
                     }
                 }
             }
         }
     } catch (error: any) {
         if (error.name === 'AbortError') {
-            console.log('Stream aborted by user');
+            console.log('Stream aborted');
         } else {
-            console.error('Stream failed:', error);
+            console.error('Stream error:', error);
             params.onError();
         }
     }

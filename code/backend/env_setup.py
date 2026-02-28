@@ -1,26 +1,21 @@
 import sys
 import os
+from dotenv import load_dotenv
 
 
 def setup_environment():
     """
-    Configure environment variables and python path for local dependencies.
+    Configure environment variables and python path for local development.
     Includes:
-    - code/libs: For local python packages
-    - code/libs/bin: For local binaries
+    - Load .env from project root
     - LibreOffice: For document conversion
     - Project root: For module resolution
     """
     current_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(current_dir)
-    libs_path = os.path.join(project_root, "libs")
 
-    if libs_path not in sys.path:
-        sys.path.insert(0, libs_path)
-
-    libs_bin_path = os.path.join(libs_path, "bin")
-    if libs_bin_path not in os.environ.get("PATH", ""):
-        os.environ["PATH"] = os.environ.get("PATH", "") + os.pathsep + libs_bin_path
+    # Load .env file explicitly
+    load_dotenv(os.path.join(project_root, ".env"))
 
     soffice_path = "/Applications/LibreOffice.app/Contents/MacOS"
     if soffice_path not in os.environ.get("PATH", ""):
@@ -30,5 +25,9 @@ def setup_environment():
         sys.path.insert(0, project_root)
 
 
-if not os.getenv("DISABLE_LOCAL_LIBS"):
+# Cloud Run environment sets K_SERVICE.
+# We should NOT run setup_environment() in Cloud Run because:
+# 1. Local libs paths (/Applications/LibreOffice, etc.) don't exist
+# 2. It might cause permission errors or path confusion
+if not os.getenv("DISABLE_LOCAL_LIBS") and not os.getenv("K_SERVICE"):
     setup_environment()

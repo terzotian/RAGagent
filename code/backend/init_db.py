@@ -2,11 +2,15 @@ import os
 import sys
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
+from passlib.context import CryptContext
 
 # Add project root to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from backend.main import Base, DBMajor, DBCourse, DATABASE_URL
+from backend.database.models import Base, DBMajor, DBCourse, DBUser
+from backend.database.connection import DATABASE_URL
+
+pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
 def init_db():
     engine = create_engine(DATABASE_URL)
@@ -40,6 +44,18 @@ def init_db():
 
     for c in courses:
         session.merge(c)
+
+    print("Populating Default User...")
+    existing_admin = session.query(DBUser).filter(DBUser.account == "admin").first()
+    if not existing_admin:
+        admin_user = DBUser(
+            account="admin",
+            password_hash=pwd_context.hash("admin"),
+            nickname="Admin User",
+            role="admin",
+            major_code="AIBA",
+        )
+        session.add(admin_user)
 
     session.commit()
     print("Database initialization complete.")

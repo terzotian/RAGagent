@@ -48,11 +48,10 @@ async def ingest_file(base: str, file_path: str):
             chunks = [content[i:i+500] for i in range(0, len(content), 400)]
 
     # 3. 保存片段
-    # 目标目录：backend/knowledge_base/{base}/pieces/
+    # 目标目录：.local_data/knowledge_base/{base}/pieces/
     # doc_search.py 会读取这个目录下的所有文件
 
     # 获取 pieces 目录路径
-    # piece_dir 是一个函数，返回 Path 对象
     save_dir = piece_dir(base=base)
     os.makedirs(save_dir, exist_ok=True)
 
@@ -70,7 +69,7 @@ async def ingest_file(base: str, file_path: str):
 
     print(f"DEBUG: Successfully indexed {len(chunks)} segments to {output_path}")
 
-    # 4. 向量化并存入 ChromaDB (Vector Indexing)
+    # 4. 向量化并存入 Postgres (Vector Indexing)
     try:
         from backend.model.embedding import get_embedding
         from backend.model.vector_store import add_documents
@@ -84,7 +83,13 @@ async def ingest_file(base: str, file_path: str):
 
         for i, chunk in enumerate(chunks):
             # Compute embedding
-            emb = get_embedding(chunk)
+            # Use Vertex AI text-embedding-004 (768 dims)
+            emb = get_embedding(chunk, model="text-embedding-004")
+
+            if not emb:
+                 print(f"Warning: Failed to get embedding for chunk {i}")
+                 continue
+
             if emb:
                 docs.append(chunk)
                 # Store source filename in metadata
@@ -92,8 +97,6 @@ async def ingest_file(base: str, file_path: str):
                 # Unique ID: filename_chunk_index
                 ids.append(f"{file_name}_chunk_{i}")
                 embeddings.append(emb)
-            else:
-                print(f"Warning: Failed to get embedding for chunk {i}")
 
         if docs:
             add_documents(base, docs, metadatas, ids, embeddings)

@@ -33,6 +33,7 @@
     "python.analysis.ignore": [
         "web"
     ],
+    "python.defaultInterpreterPath": "/Applications/anaconda3/envs/rag-agentic/bin/python3",
     "python-envs.defaultEnvManager": "ms-python.python:conda",
     "python-envs.defaultPackageManager": "ms-python.python:conda",
     "python-envs.pythonProjects": []

@@ -7,6 +7,9 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
   references?: Reference[];
+  rewritten_query?: string;
+  search_scope?: string[];
+  follow_up_questions?: string[];
 }
 
 interface ChatSession {
@@ -207,6 +210,33 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
           return prev;
         });
       },
+      onRewrittenQuery: (query) => {
+        setMessages(prev => {
+          const last = prev[prev.length - 1];
+          if (last.role === 'assistant') {
+            return [...prev.slice(0, -1), { ...last, rewritten_query: query }];
+          }
+          return prev;
+        });
+      },
+      onSearchScope: (scope) => {
+        setMessages(prev => {
+          const last = prev[prev.length - 1];
+          if (last.role === 'assistant') {
+            return [...prev.slice(0, -1), { ...last, search_scope: scope }];
+          }
+          return prev;
+        });
+      },
+      onFollowUpQuestions: (questions) => {
+        setMessages(prev => {
+          const last = prev[prev.length - 1];
+          if (last.role === 'assistant') {
+            return [...prev.slice(0, -1), { ...last, follow_up_questions: questions }];
+          }
+          return prev;
+        });
+      },
       onDone: () => {
         setLoading(false);
         abortControllerRef.current = null;
@@ -342,7 +372,22 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
                 <AIAvatar />
               )}
 
-              <div className={`message-bubble ${msg.role} shadow-sm`} style={{ maxWidth: '50%' }}>
+              <div className={`message-bubble ${msg.role} shadow-sm`} style={{ maxWidth: '75%' }}>
+                {msg.role === 'assistant' && (msg.rewritten_query || (msg.search_scope && msg.search_scope.length > 0)) && (
+                    <div className="mb-3 p-2 bg-light border rounded small" style={{ fontSize: '0.85rem' }}>
+                        {msg.rewritten_query && (
+                            <div className="mb-1 text-muted">
+                                <strong>🧠 Understanding:</strong> {msg.rewritten_query}
+                            </div>
+                        )}
+                        {msg.search_scope && msg.search_scope.length > 0 && (
+                            <div className="text-muted">
+                                <strong>🔍 Scope:</strong> {msg.search_scope.map(s => s.replace('course_', 'Course ').replace('public', 'Public Policies')).join(', ')}
+                            </div>
+                        )}
+                    </div>
+                )}
+
                 {msg.role === 'assistant'
                   ? (
                     msg.content && msg.content.trim().length > 0
@@ -377,6 +422,29 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
                       ))}
                     </ul>
                   </div>
+                )}
+
+                {msg.follow_up_questions && msg.follow_up_questions.length > 0 && (
+                    <div className="mt-3 pt-2 border-top">
+                        <div className="small fw-bold text-muted mb-2">✨ Suggested Questions:</div>
+                        <div className="d-flex flex-wrap gap-2">
+                            {msg.follow_up_questions.map((q, idx) => (
+                                <Button
+                                    key={idx}
+                                    variant="outline-secondary"
+                                    size="sm"
+                                    className="text-start text-truncate"
+                                    style={{ fontSize: '0.8rem', maxWidth: '100%' }}
+                                    onClick={() => {
+                                        setInput(q);
+                                        if(textareaRef.current) textareaRef.current.focus();
+                                    }}
+                                >
+                                    {q}
+                                </Button>
+                            ))}
+                        </div>
+                    </div>
                 )}
               </div>
 

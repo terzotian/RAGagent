@@ -1,8 +1,13 @@
 import os
+import sys
 import asyncio
-from backend.model.agent_router import _classify_intent_ollama
+
+# Add current directory to sys.path to ensure backend modules can be imported
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from backend.model.embedding import get_embedding
 from backend.model.vector_store import query_documents
+from backend.model.agent_router import _planner_agent
 
 async def debug():
     query = "How can I pay my tuition fee?"
@@ -13,37 +18,50 @@ async def debug():
     model = os.getenv("OLLAMA_GEN_MODEL", "qwen3:8b")
     language = "en"
 
-    print("DEBUG: Testing Intent Classification...")
-    intent = _classify_intent_ollama(query, base_url, model, language)
+    print("DEBUG: Testing Master Planner...")
+    plan = await _planner_agent(query, base_url, model, language, conversation_history=None)
+    print(f"DEBUG: Plan: {plan}")
     print(f"DEBUG: Intent result: {intent}")
 
-    if intent != "PRIVATE":
-        print("CRITICAL WARNING: Intent classified as GENERAL. Retrieval will be skipped!")
+    if intent != "PRIVATE" and intent != "POLICY": # POLICY is also a valid intent for retrieval
+         # Note: _classify_intent_ollama returns PRIVATE or GENERAL.
+         # _classify_private_type_ollama returns COURSE/STUDENT/POLICY.
+         # But here we only call intent classification.
+         pass
 
     # 2. Test Vector Retrieval
-    print("\nDEBUG: Testing Vector Retrieval...")
-    vec = get_embedding(query)
+    print("\nDEBUG: Testing Vector Retrieval (pgvector)...")
+    # Use Vertex embedding if available, otherwise fallback to Ollama nomic-embed-text
+    vec = get_embedding(query, model="text-embedding-004")
+
     if not vec:
         print("CRITICAL ERROR: Failed to get embedding from Ollama.")
         return
 
-    print(f"DEBUG: Embedding generated (len={len(vec)}). Querying ChromaDB 'public' collection...")
+    print(f"DEBUG: Embedding generated (len={len(vec)}). Querying pgvector 'public' collection...")
 
     results = query_documents("public", [vec], n_results=5)
 
-    if not results or not results['documents']:
-        print("CRITICAL ERROR: No documents returned from ChromaDB.")
+    if not results:
+        print("CRITICAL ERROR: No documents returned from pgvector.")
     else:
-        docs = results['documents'][0]
-        distances = results['distances'][0]
-        metas = results['metadatas'][0]
+        # Check structure of results from pgvector implementation
+        # The implementation returns a list of Row objects or similar if not formatted exactly like Chroma
+        # query_documents in vector_store.py returns:
+        # { 'ids': [...], 'distances': [...], 'metadatas': [...], 'documents': [...] }
+
+        docs = results.get('documents', [[]])[0]
+        distances = results.get('distances', [[]])[0]
+        metas = results.get('metadatas', [[]])[0]
 
         print(f"DEBUG: Found {len(docs)} documents.")
         for i in range(len(docs)):
             dist = distances[i]
-            score = 1 / (1 + dist)
+            # Cosine distance: 0 is identical, 1 is opposite (for normalized vectors)
+            # Similarity = 1 - distance
+            score = 1 - dist
             print(f"--- Result {i+1} ---")
-            print(f"Source: {metas[i].get('source')}")
+            print(f"Source: {metas[i].get('source', 'Unknown')}")
             print(f"Distance: {dist}")
             print(f"Calculated Score: {score}")
             print(f"Content Preview: {docs[i][:100]}...")

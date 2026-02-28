@@ -1,0 +1,6 @@
+{
+  "include": ["code", "scripts"],
+  "extraPaths": ["code"],
+  "reportMissingImports": true,
+  "typeCheckingMode": "off"
+}

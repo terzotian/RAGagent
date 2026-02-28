@@ -1,0 +1,17 @@
+services:
+  db:
+    image: ankane/pgvector:v0.5.1 # Based on PostgreSQL 15
+    container_name: rag-postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: lurag
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: always
+
+volumes:
+  postgres_data:

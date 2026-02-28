@@ -7,7 +7,7 @@ python-multipart
 markdown
 mammoth
 requests
-chromadb
+pgvector
 scikit-learn
 nltk
 python-docx
@@ -15,6 +15,6 @@ PyPDF2
 beautifulsoup4
 sumy
 langdetect
-googletrans==4.0.0rc1
-google-generativeai
+deep-translator
+python-dotenv
 google-cloud-aiplatform
