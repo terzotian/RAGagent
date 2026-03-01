@@ -43,7 +43,7 @@ const Layout: React.FC = () => {
       <Navbar
         variant="light"
         expand="lg"
-        className="border-bottom shadow-sm py-3 navbar-gradient"
+        className="border-bottom py-3 navbar-gradient glass-inset-highlight"
         style={{ zIndex: 10, minHeight: '110px' }}
       >
         <Container fluid>
@@ -149,7 +149,7 @@ const Layout: React.FC = () => {
 
       <div
         className="flex-grow-1 position-relative"
-        style={{ backgroundColor: '#f7f7f8', overflow: 'auto' }}
+        style={{ overflow: 'auto' }}
       >
         <div key={location.pathname} className="route-view page-enter h-100">
           <Routes>

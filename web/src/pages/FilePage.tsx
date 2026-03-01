@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, ListGroup, Table, Button, Badge, Modal, Form, Spinner, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Card, ListGroup, Table, Button, Badge, Modal, Form, Spinner, Alert, InputGroup } from 'react-bootstrap';
 import { fileApi } from '../services/api';
 import type { FileItem, Major, Course, User } from '../services/api';
 import { AxiosError } from 'axios';
+import ReactMarkdown from 'react-markdown';
 
 interface FilePageProps {
   user: User | null;
@@ -24,6 +25,18 @@ const FilePage: React.FC<FilePageProps> = ({ user }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showSidebar, setShowSidebar] = useState(true);
+    const [search, setSearch] = useState('');
+    const [appliedSearch, setAppliedSearch] = useState('');
+    const [isFiltering, setIsFiltering] = useState(false);
+
+    // Preview Modal State
+    const [showPreview, setShowPreview] = useState(false);
+    const [previewFile, setPreviewFile] = useState<FileItem | null>(null);
+    const [previewKind, setPreviewKind] = useState<'pdf' | 'image' | 'text' | 'markdown' | 'unsupported'>('unsupported');
+    const [previewObjectUrl, setPreviewObjectUrl] = useState<string | null>(null);
+    const [previewText, setPreviewText] = useState<string>('');
+    const [previewLoading, setPreviewLoading] = useState(false);
+    const [previewError, setPreviewError] = useState<string | null>(null);
 
   // Upload Modal State
   const [showUpload, setShowUpload] = useState(false);
@@ -51,6 +64,22 @@ const FilePage: React.FC<FilePageProps> = ({ user }) => {
       fetchPolicies();
     }
   }, [activeTab]);
+
+    // Reset search when switching list context
+    useEffect(() => {
+        setSearch('');
+        setAppliedSearch('');
+    }, [activeTab, selectedCourse?.course_code]);
+
+    // Debounce search so results don't jump too fast
+    useEffect(() => {
+        setIsFiltering(true);
+        const id = window.setTimeout(() => {
+            setAppliedSearch(search);
+            setIsFiltering(false);
+        }, 180);
+        return () => window.clearTimeout(id);
+    }, [search]);
 
   useEffect(() => {
     if (selectedMajor) {
@@ -111,6 +140,83 @@ const FilePage: React.FC<FilePageProps> = ({ user }) => {
     }
   };
 
+    const searchQuery = appliedSearch.trim().toLowerCase();
+    const filteredFiles = searchQuery
+        ? files.filter((f) => (f.file_name || '').toLowerCase().includes(searchQuery))
+        : files;
+
+    const getPreviewKind = (fileName: string) => {
+        const name = (fileName || '').toLowerCase();
+        const ext = name.includes('.') ? name.split('.').pop() || '' : '';
+
+        if (ext === 'pdf') return 'pdf' as const;
+        if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'].includes(ext)) return 'image' as const;
+        if (ext === 'md') return 'markdown' as const;
+        if (['txt', 'log', 'csv', 'json'].includes(ext)) return 'text' as const;
+        return 'unsupported' as const;
+    };
+
+    const inferBase = (file: FileItem) => {
+        // Policies are stored under KB_ROOT/public/policies; legacy DB rows may carry base='lingnan'
+        // which would break /files/preview branching on the backend.
+        if (activeTab === 'policies' || file.file_type === 'policy') return 'public';
+        if (file.base) return file.base;
+        if (selectedCourse?.course_code) return `course_${selectedCourse.course_code}`;
+        return 'public';
+    };
+
+    const closePreview = () => {
+        setShowPreview(false);
+        setPreviewLoading(false);
+        setPreviewError(null);
+        setPreviewText('');
+        setPreviewFile(null);
+        setPreviewKind('unsupported');
+        if (previewObjectUrl) {
+            URL.revokeObjectURL(previewObjectUrl);
+            setPreviewObjectUrl(null);
+        }
+    };
+
+    const handlePreview = async (file: FileItem) => {
+        const kind = getPreviewKind(file.file_name);
+        setPreviewFile(file);
+        setPreviewKind(kind);
+        setPreviewError(null);
+        setPreviewText('');
+
+        if (previewObjectUrl) {
+            URL.revokeObjectURL(previewObjectUrl);
+            setPreviewObjectUrl(null);
+        }
+
+        setShowPreview(true);
+
+        if (kind === 'unsupported') {
+            return;
+        }
+
+        setPreviewLoading(true);
+        try {
+            const base = inferBase(file);
+            const blob = await fileApi.preview(base, file.file_name);
+
+            if (kind === 'pdf' || kind === 'image') {
+                const url = URL.createObjectURL(blob);
+                setPreviewObjectUrl(url);
+            } else {
+                const text = await blob.text();
+                setPreviewText(text);
+            }
+        } catch (err: unknown) {
+            console.error(err);
+            const e = err as { response?: { data?: { detail?: string } } };
+            setPreviewError(e.response?.data?.detail || 'Failed to preview file');
+        } finally {
+            setPreviewLoading(false);
+        }
+    };
+
   // --- Handlers ---
   const handleDelete = async (fileId: number) => {
     if (!user) return;
@@ -165,7 +271,7 @@ const FilePage: React.FC<FilePageProps> = ({ user }) => {
     <div className="d-flex h-100 w-100 overflow-hidden">
       {/* Sidebar Navigation */}
       <div
-        className="bg-light border-end d-flex flex-column"
+                className="d-flex flex-column glass-surface-strong glass-inset-highlight glass-sidebar"
         style={{
             width: showSidebar ? '300px' : '0px',
             transition: 'width 0.3s ease',
@@ -173,7 +279,7 @@ const FilePage: React.FC<FilePageProps> = ({ user }) => {
             flexShrink: 0
         }}
       >
-         <div className="p-3 border-bottom bg-white d-flex justify-content-between align-items-center">
+         <div className="p-3 border-bottom d-flex justify-content-between align-items-center glass-surface-strong glass-inset-highlight">
             <h5 className="mb-0 fw-bold" style={{ color: '#B71C1C' }}>Navigation</h5>
              <Button variant="link" size="sm" className="p-0 text-secondary" onClick={() => setShowSidebar(false)}>
                  <span style={{ fontSize: '1.2rem' }}>&times;</span>
@@ -277,7 +383,7 @@ const FilePage: React.FC<FilePageProps> = ({ user }) => {
       {/* Main Content */}
       <div className="flex-grow-1 d-flex flex-column h-100 overflow-hidden">
         {/* Header Bar */}
-        <div className="p-3 border-bottom bg-white d-flex align-items-center justify-content-between shadow-sm" style={{ zIndex: 10 }}>
+                <div className="p-3 border-bottom d-flex align-items-center justify-content-between glass-surface-strong glass-inset-highlight" style={{ zIndex: 10 }}>
             <div className="d-flex align-items-center">
                  {!showSidebar && (
                     <Button
@@ -297,29 +403,61 @@ const FilePage: React.FC<FilePageProps> = ({ user }) => {
                 </h4>
             </div>
 
-            {canUpload() && (activeTab === 'policies' || selectedCourse) && (
-                <Button
-                    variant="danger"
-                    onClick={() => setShowUpload(true)}
-                    style={{ backgroundColor: '#B71C1C', borderColor: '#B71C1C', transition: 'all 0.3s ease' }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#D32F2F';
-                        e.currentTarget.style.transform = 'translateY(-2px)';
-                        e.currentTarget.style.boxShadow = '0 4px 8px rgba(183, 28, 28, 0.3)';
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = '#B71C1C';
-                        e.currentTarget.style.transform = 'translateY(0)';
-                        e.currentTarget.style.boxShadow = 'none';
-                    }}
-                >
-                    Upload File
-                </Button>
-            )}
+                        {(activeTab === 'policies' || selectedCourse) && (
+                            <div className="d-flex align-items-center gap-2">
+                                <InputGroup style={{ width: 'clamp(220px, 28vw, 360px)' }}>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Search filename"
+                                        value={search}
+                                        onChange={(e) => setSearch(e.target.value)}
+                                        size="sm"
+                                        className="glass-surface"
+                                        style={{ fontSize: '0.9rem' }}
+                                        aria-label="Search filename"
+                                    />
+                                    {search.trim().length > 0 && (
+                                        <Button
+                                            variant="light"
+                                            size="sm"
+                                            className="btn-glass"
+                                            onClick={() => {
+                                                setSearch('');
+                                                setAppliedSearch('');
+                                                setIsFiltering(false);
+                                            }}
+                                            title="Clear"
+                                        >
+                                            &times;
+                                        </Button>
+                                    )}
+                                </InputGroup>
+
+                                {canUpload() && (
+                                        <Button
+                                                variant="danger"
+                                                onClick={() => setShowUpload(true)}
+                                                style={{ backgroundColor: '#B71C1C', borderColor: '#B71C1C', transition: 'all 0.3s ease' }}
+                                                onMouseEnter={(e) => {
+                                                        e.currentTarget.style.backgroundColor = '#D32F2F';
+                                                        e.currentTarget.style.transform = 'translateY(-2px)';
+                                                        e.currentTarget.style.boxShadow = '0 4px 8px rgba(183, 28, 28, 0.3)';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                        e.currentTarget.style.backgroundColor = '#B71C1C';
+                                                        e.currentTarget.style.transform = 'translateY(0)';
+                                                        e.currentTarget.style.boxShadow = 'none';
+                                                }}
+                                        >
+                                                Upload File
+                                        </Button>
+                                )}
+                            </div>
+                        )}
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-grow-1 overflow-auto p-4 bg-light">
+        <div className="flex-grow-1 overflow-auto p-4">
              <Container fluid>
                 {loading ? (
                     <div className="text-center py-5"><Spinner animation="border" variant="danger" /></div>
@@ -333,7 +471,7 @@ const FilePage: React.FC<FilePageProps> = ({ user }) => {
                                 {majors.map(major => (
                                     <Col key={major.code}>
                                         <Card
-                                            className="h-100 shadow-sm border-0 hover-card"
+                                            className="h-100 shadow-sm border-0 hover-card glass-surface"
                                             style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
                                             onClick={() => setSelectedMajor(major)}
                                             onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
@@ -357,7 +495,7 @@ const FilePage: React.FC<FilePageProps> = ({ user }) => {
                                 {courses.map(course => (
                                     <Col key={course.course_code}>
                                         <Card
-                                            className="h-100 shadow-sm border-0 hover-card"
+                                            className="h-100 shadow-sm border-0 hover-card glass-surface"
                                             style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
                                             onClick={() => setSelectedCourse(course)}
                                             onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
@@ -377,21 +515,36 @@ const FilePage: React.FC<FilePageProps> = ({ user }) => {
 
                         {/* View: File Table */}
                         {(activeTab === 'policies' || selectedCourse) && (
-                        <Card className="shadow-sm border-0">
-                            <Table hover responsive className="mb-0 align-middle">
+                        <Card className="shadow-sm border-0 glass-surface rounded-4 overflow-hidden">
+                            <Table
+                              hover
+                              responsive
+                              className={`mb-0 align-middle${isFiltering ? ' table-filtering' : ''}`}
+                              style={{ tableLayout: 'fixed' }}
+                            >
                                 <thead className="bg-light">
                                     <tr>
-                                        <th className="border-0">File Name</th>
+                                        <th className="border-0" style={{ width: '46%' }}>File Name</th>
                                         <th className="border-0">Type</th>
                                         <th className="border-0">Size</th>
-                                        <th className="border-0">Uploaded At</th>
+                                        <th className="border-0">Uploaded</th>
                                         {user && <th className="border-0">Actions</th>}
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {files.length > 0 ? files.map(file => (
+                                    {filteredFiles.length > 0 ? filteredFiles.map(file => (
                                         <tr key={file.file_id}>
-                                            <td className="fw-medium">{file.file_name}</td>
+                                                                                        <td className="fw-medium">
+                                                                                            <Button
+                                                                                                variant="link"
+                                                                                                className="p-0 fw-semibold text-reset text-decoration-none text-truncate d-block w-100"
+                                                                                                style={{ textAlign: 'left' }}
+                                                                                                onClick={() => handlePreview(file)}
+                                                                                                title="Preview"
+                                                                                            >
+                                                                                                {file.file_name}
+                                                                                            </Button>
+                                                                                        </td>
                                             <td>
                                                 <Badge bg="light" text="dark" className="border">{file.file_type}</Badge>
                                             </td>
@@ -414,9 +567,9 @@ const FilePage: React.FC<FilePageProps> = ({ user }) => {
                                         </tr>
                                     )) : (
                                         <tr>
-                                            <td colSpan={5} className="text-center py-5 text-muted">
+                                            <td colSpan={user ? 5 : 4} className="text-center py-5 text-muted">
                                                 <div className="mb-2" style={{ fontSize: '2rem' }}>📭</div>
-                                                No files found in this category.
+                                                {search.trim().length > 0 ? 'No files match your search.' : 'No files found in this category.'}
                                             </td>
                                         </tr>
                                     )}
@@ -474,6 +627,73 @@ const FilePage: React.FC<FilePageProps> = ({ user }) => {
             </Modal.Footer>
         </Form>
       </Modal>
+
+            {/* Preview Modal */}
+            <Modal show={showPreview} onHide={closePreview} centered size="xl">
+                <Modal.Header closeButton className="border-0">
+                    <Modal.Title className="fw-bold text-truncate">
+                        Preview: {previewFile?.file_name}
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {previewLoading && (
+                        <div className="text-center py-5">
+                            <Spinner animation="border" variant="danger" />
+                        </div>
+                    )}
+
+                    {!previewLoading && previewError && (
+                        <Alert variant="danger">{previewError}</Alert>
+                    )}
+
+                    {!previewLoading && !previewError && previewKind === 'unsupported' && (
+                        <Alert variant="secondary">
+                            This file type is not supported for preview yet. Please download to view.
+                        </Alert>
+                    )}
+
+                    {!previewLoading && !previewError && previewKind === 'pdf' && previewObjectUrl && (
+                        <iframe
+                            src={previewObjectUrl}
+                            title="PDF Preview"
+                            className="w-100 rounded-4 border-0"
+                            style={{ height: '70vh' }}
+                        />
+                    )}
+
+                    {!previewLoading && !previewError && previewKind === 'image' && previewObjectUrl && (
+                        <div className="text-center">
+                            <img
+                                src={previewObjectUrl}
+                                alt={previewFile?.file_name || 'Preview'}
+                                className="img-fluid rounded-4"
+                                style={{ maxHeight: '70vh' }}
+                            />
+                        </div>
+                    )}
+
+                    {!previewLoading && !previewError && previewKind === 'markdown' && (
+                        <div className="markdown-body">
+                            <ReactMarkdown>{previewText}</ReactMarkdown>
+                        </div>
+                    )}
+
+                    {!previewLoading && !previewError && previewKind === 'text' && (
+                        <pre
+                            className="glass-surface rounded-4 p-3 mb-0"
+                            style={{
+                                whiteSpace: 'pre-wrap',
+                                wordBreak: 'break-word',
+                            }}
+                        >
+                            {previewText}
+                        </pre>
+                    )}
+                </Modal.Body>
+                <Modal.Footer className="border-0">
+                    <Button variant="light" onClick={closePreview}>Close</Button>
+                </Modal.Footer>
+            </Modal>
     </div>
   );
 

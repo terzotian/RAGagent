@@ -106,10 +106,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onHide, onLoginSuccess }) =
     <Modal show={show} onHide={onHide} centered contentClassName="auth-modal-content">
       <style>{`
         .auth-modal-content {
-          background: rgba(255, 255, 255, 0.85);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+          background: var(--glass-bg-strong);
+          backdrop-filter: blur(calc(var(--glass-blur) + 2px));
+          -webkit-backdrop-filter: blur(calc(var(--glass-blur) + 2px));
+          border: 1px solid var(--glass-border);
+          box-shadow: var(--shadow-2);
           border-radius: 15px;
         }
         .auth-nav .nav-link {

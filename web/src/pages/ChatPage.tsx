@@ -271,7 +271,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
     <div className="d-flex h-100 w-100 overflow-hidden">
       {/* Sidebar */}
       <div
-        className="bg-light border-end d-flex flex-column"
+        className="d-flex flex-column glass-surface-strong glass-inset-highlight glass-sidebar"
         style={{
             width: showSidebar ? '280px' : '0px',
             overflow: 'hidden',
@@ -279,7 +279,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
             flexShrink: 0
         }}
       >
-        <div className="p-3 border-bottom d-flex justify-content-between align-items-center bg-white">
+        <div className="p-3 border-bottom d-flex justify-content-between align-items-center glass-surface-strong glass-inset-highlight">
            <span className="fw-bold" style={{ color: 'var(--primary-color)', fontSize: '1.25rem' }}>History</span>
            <Button variant="link" size="sm" className="p-0 text-secondary text-decoration-none" onClick={() => setShowSidebar(false)}>
              <span style={{ fontSize: '1.2rem' }}>&times;</span>
@@ -331,7 +331,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
                    </ListGroup>
                </div>
            ) : (
-               <div className="text-center text-muted small mt-5 p-3 bg-white rounded border border-dashed">
+               <div className="text-center text-muted small mt-5 p-3 rounded border border-dashed glass-surface-strong">
                  Log in to view and save your chat history.
                </div>
            )}
@@ -344,9 +344,9 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
         {!showSidebar && (
           <Button
             variant="light"
-            className="position-absolute top-0 start-0 m-3 shadow-sm z-3 border d-flex align-items-center justify-content-center btn-dynamic"
+            className="position-absolute top-0 start-0 m-3 z-3 d-flex align-items-center justify-content-center btn-dynamic btn-glass"
             onClick={() => setShowSidebar(true)}
-            style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.9)' }}
+            style={{ width: '40px', height: '40px', borderRadius: '50%' }}
             title="Show History"
           >
             <span style={{ fontSize: '1.2rem' }}>☰</span>
@@ -374,7 +374,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ user, base, language }) => {
 
               <div className={`message-bubble ${msg.role} shadow-sm`} style={{ maxWidth: '75%' }}>
                 {msg.role === 'assistant' && (msg.rewritten_query || (msg.search_scope && msg.search_scope.length > 0)) && (
-                    <div className="mb-3 p-2 bg-light border rounded small" style={{ fontSize: '0.85rem' }}>
+                  <div className="mb-3 p-2 glass-subtle small" style={{ fontSize: '0.85rem' }}>
                         {msg.rewritten_query && (
                             <div className="mb-1 text-muted">
                                 <strong>🧠 Understanding:</strong> {msg.rewritten_query}

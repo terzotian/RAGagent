@@ -71,8 +71,8 @@ const ProfileForm: React.FC<{
     <Container className="py-5">
       <Row className="justify-content-center">
         <Col md={8}>
-          <Card className="shadow-sm border-0 rounded-lg">
-            <Card.Header className="bg-white border-0 pt-4 pb-0">
+          <Card className="shadow-sm border-0 rounded-lg glass-surface">
+            <Card.Header className="border-0 pt-4 pb-0 glass-surface-strong glass-inset-highlight">
               <h3 className="text-center mb-0">User Profile</h3>
             </Card.Header>
             <Card.Body className="p-4">

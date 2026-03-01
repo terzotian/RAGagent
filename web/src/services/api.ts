@@ -45,6 +45,7 @@ export interface FileItem {
   file_size: string;
   file_type: string;
   access_level: string;
+  base?: string;
   uploaded_at: string;
   uploader_id?: number;
 }
@@ -245,7 +246,7 @@ export const streamAnswer = async (params: {
             // But if the buffer ends with \n\n, lines will have an empty string at the end.
             // Let's handle buffer correctly.
             // Logic: split by \n\n, the last element is the new buffer.
-            buffer = lines.pop() || ''; 
+            buffer = lines.pop() || '';
 
             for (const line of lines) {
                 if (line.startsWith('data: ')) {
@@ -253,7 +254,7 @@ export const streamAnswer = async (params: {
 
                     if (dataStr === '[DONE]') {
                         params.onDone();
-                        return controller; 
+                        return controller;
                     }
 
                     try {

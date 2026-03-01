@@ -3,12 +3,37 @@
   line-height: 1.5;
   font-weight: 400;
 
-  --bs-body-bg: #f7f7f8;
+  /* ===== App Theme Tokens (Light / Glass) ===== */
+  --bs-body-bg: transparent;
+
+  --app-bg-0: #fafafb;
+  --app-bg-1: #f3f4f7;
+
+  --text-0: #0f172a;
+  --text-1: rgba(15, 23, 42, 0.72);
+
+  --glass-bg: rgba(255, 255, 255, 0.62);
+  --glass-bg-strong: rgba(255, 255, 255, 0.78);
+  --glass-border: rgba(255, 255, 255, 0.65);
+  --glass-border-weak: rgba(15, 23, 42, 0.10);
+  --glass-blur: 12px;
+
+  --shadow-1: 0 10px 30px rgba(15, 23, 42, 0.10);
+  --shadow-2: 0 18px 45px rgba(15, 23, 42, 0.12);
+
+  /* Background texture controls (Fabric / Stitch-like) */
+  --bg-texture-opacity: 0.08;
+  --bg-texture-contrast: 1.06;
+  --bg-texture-saturate: 1.06;
+
   --chat-bubble-user: #B71C1C;
   --chat-bubble-ai: #ffffff;
   --primary-color: #B71C1C;
   --primary-hover-color: #D32F2F;
   --primary-light-color: #FFEBEE;
+
+  /* Backward compat: used by HeroText */
+  --lingnan-red: var(--primary-color);
 }
 
 /* 覆盖 Bootstrap 默认 Primary 颜色变量 */
@@ -43,8 +68,124 @@
 
 body {
   margin: 0;
-  background-color: var(--bs-body-bg);
-  color: #333;
+  background:
+    radial-gradient(900px 420px at 18% 12%, rgba(183, 28, 28, 0.22) 0%, rgba(183, 28, 28, 0) 62%),
+    radial-gradient(980px 560px at 78% 78%, rgba(183, 28, 28, 0.09) 0%, rgba(183, 28, 28, 0) 62%),
+    radial-gradient(820px 520px at 86% 24%, rgba(15, 23, 42, 0.04) 0%, rgba(15, 23, 42, 0) 55%),
+    linear-gradient(180deg, var(--app-bg-0) 0%, var(--app-bg-1) 100%);
+  color: var(--text-0);
+}
+
+/* Ensure the app content renders above background texture layers */
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+/* Fabric-like background texture (Stitch vibe, medium strength) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+
+  /* A subtle weave (crosshatch) + a soft fiber noise layer */
+  background-image:
+    url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='240'%20height='240'%20viewBox='0%200%20240%20240'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.85'%20numOctaves='2'%20stitchTiles='stitch'/%3E%3CfeColorMatrix%20type='matrix'%20values='1%200%200%200%200%200%201%200%200%200%200%200%201%200%200%200%200%200%200.35%200'/%3E%3C/filter%3E%3Crect%20width='240'%20height='240'%20filter='url(%23n)'%20opacity='0.55'/%3E%3C/svg%3E"),
+    repeating-linear-gradient(
+      45deg,
+      rgba(15, 23, 42, 0.06) 0px,
+      rgba(15, 23, 42, 0.06) 1px,
+      rgba(255, 255, 255, 0) 1px,
+      rgba(255, 255, 255, 0) 7px
+    ),
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.08) 0px,
+      rgba(255, 255, 255, 0.08) 1px,
+      rgba(255, 255, 255, 0) 1px,
+      rgba(255, 255, 255, 0) 8px
+    );
+
+  background-size: 340px 340px, 260px 260px, 280px 280px;
+  background-position: 0 0, 0 0, 8px 4px;
+
+  opacity: var(--bg-texture-opacity);
+  mix-blend-mode: soft-light;
+  filter: contrast(var(--bg-texture-contrast)) saturate(var(--bg-texture-saturate));
+}
+
+/* Extra fine grain for sharper "fabric" feel (kept subtle) */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+
+  background-image:
+    url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='160'%20height='160'%20viewBox='0%200%20160%20160'%3E%3Cfilter%20id='g'%3E%3CfeTurbulence%20type='turbulence'%20baseFrequency='1.6'%20numOctaves='1'%20stitchTiles='stitch'/%3E%3CfeColorMatrix%20type='matrix'%20values='1%200%200%200%200%200%201%200%200%200%200%200%201%200%200%200%200%200%200.22%200'/%3E%3C/filter%3E%3Crect%20width='160'%20height='160'%20filter='url(%23g)'%20opacity='0.35'/%3E%3C/svg%3E");
+  background-size: 220px 220px;
+
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before,
+  body::after {
+    filter: none;
+  }
+}
+
+/* ===== Reusable Glass Surfaces ===== */
+.glass-surface {
+  background: var(--glass-bg) !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--shadow-1) !important;
+  backdrop-filter: blur(var(--glass-blur)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+}
+
+.glass-surface-strong {
+  background: var(--glass-bg-strong) !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--shadow-2) !important;
+  backdrop-filter: blur(calc(var(--glass-blur) + 2px)) !important;
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur) + 2px)) !important;
+}
+
+.glass-inset-highlight {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    var(--shadow-1);
+}
+
+/* Sidebar glass: slightly stronger so it reads like the glass buttons */
+.glass-sidebar {
+  position: relative;
+  border-radius: 0;
+  overflow: hidden;
+  backdrop-filter: blur(calc(var(--glass-blur) + 6px)) !important;
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur) + 6px)) !important;
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.14) !important;
+  border: 1px solid rgba(255, 255, 255, 0.72) !important;
+}
+
+.glass-sidebar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.20) 35%, rgba(255, 255, 255, 0.06) 100%);
+  pointer-events: none;
+}
+
+.glass-sidebar > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* 覆盖 Bootstrap 的默认滚动条 */
@@ -99,7 +240,7 @@ body {
 
 /* Input Area Wrapper Transition */
 .input-area-wrapper {
-  background: linear-gradient(180deg, rgba(247,247,248,0) 0%, rgba(247,247,248,1) 20%);
+  background: transparent;
   padding-top: 2rem;
   padding-bottom: 2rem;
   transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); /* 弹性动画 */
@@ -107,6 +248,30 @@ body {
   left: 0;
   right: 0;
   z-index: 100;
+}
+
+/* In chat mode, only the area behind the input (centered) gets the backdrop */
+.input-area-wrapper.chat-mode {
+  position: absolute;
+}
+
+.input-area-wrapper.chat-mode::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 2rem;
+  bottom: 2rem;
+  width: clamp(720px, 85vw, 980px);
+  border-radius: 1.5rem;
+  background: linear-gradient(180deg, rgba(250,250,251,0) 0%, rgba(243,244,247,0.96) 22%, rgba(243,244,247,1) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.input-area-wrapper.chat-mode > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* 初始状态：居中 */
@@ -148,18 +313,21 @@ body {
 }
 
 .message-bubble.user {
-  background-color: var(--chat-bubble-user);
+  background: linear-gradient(135deg, rgba(183, 28, 28, 0.86) 0%, rgba(211, 47, 47, 0.74) 100%);
   color: white;
   border-bottom-right-radius: 0.25rem;
-  box-shadow: 0 4px 15px rgba(183, 28, 28, 0.25); /* 红色系阴影 */
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 10px 26px rgba(183, 28, 28, 0.16);
 }
 
 .message-bubble.assistant {
-  background-color: var(--chat-bubble-ai);
-  color: #1a202c;
+  background: var(--glass-bg);
+  color: var(--text-0);
   border-bottom-left-radius: 0.25rem;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: var(--shadow-1);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
 }
 
 .typing-dots {
@@ -214,23 +382,44 @@ body {
 }
 
 .modern-input-group {
-  background: rgba(255, 255, 255, 0.95); /* 增加透明度 */
-  backdrop-filter: blur(10px); /* 毛玻璃效果 */
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(calc(var(--glass-blur) + 2px));
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur) + 2px));
   border-radius: 1.5rem;
-  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.15); /* 更高级的阴影 */
-  border: 1px solid rgba(255,255,255,0.5);
+  box-shadow: var(--shadow-2);
+  border: 1px solid var(--glass-border);
   padding: 0.5rem;
   padding-bottom: 3rem;
-  transition: all 0.3s ease;
+  transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, transform 0.25s ease;
   position: relative;
   display: flex;
   flex-direction: column;
 }
 
+/* Chat mode: idle input is more translucent; on focus it becomes whiter */
+.input-area-wrapper.chat-mode .modern-input-group {
+  background: rgba(255, 255, 255, 0.44);
+  border-color: rgba(255, 255, 255, 0.66);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.62),
+    0 18px 54px rgba(15, 23, 42, 0.12);
+}
+
 .modern-input-group:focus-within {
-  box-shadow: 0 15px 40px -10px rgba(0,0,0,0.2);
-  border-color: var(--primary-color);
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.14);
+  border-color: rgba(183, 28, 28, 0.40);
   transform: translateY(-2px); /* 聚焦时轻微上浮 */
+}
+
+.input-area-wrapper.chat-mode .modern-input-group:focus-within {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.86) 0%,
+    rgba(255, 255, 255, 0.78) 55%,
+    rgba(255, 255, 255, 0.74) 100%
+  );
+  border-color: rgba(183, 28, 28, 0.40);
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.16);
 }
 
 .modern-textarea {
@@ -239,6 +428,11 @@ body {
   resize: none;
   background: transparent;
   padding: 0.75rem 1rem;
+  color: var(--text-0);
+}
+
+.modern-textarea::placeholder {
+  color: rgba(15, 23, 42, 0.48);
 }
 
 .modern-textarea:focus {
@@ -303,8 +497,30 @@ body {
 }
 
 .list-group-item:hover {
-  background-color: rgba(0,0,0,0.03);
+  background-color: rgba(255, 255, 255, 0.35);
   transform: translateX(4px);
+}
+
+/* Glass buttons (for small icon / toggle buttons) */
+.btn-glass {
+  background: var(--glass-bg-strong) !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--shadow-1) !important;
+  backdrop-filter: blur(var(--glass-blur)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+}
+
+.btn-glass:hover {
+  background: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Subtle glass blocks used inside assistant bubbles */
+.glass-subtle {
+  background: rgba(255, 255, 255, 0.50);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 0.75rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 /* 底部免责声明固定 */
@@ -317,7 +533,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(180deg, rgba(247,247,248,0) 0%, rgba(247,247,248,1) 60%);
+  background: linear-gradient(180deg, rgba(250,250,251,0) 0%, rgba(243,244,247,1) 60%);
 }
 .navbar-brand-dynamic {
   transition: transform 0.2s ease, filter 0.2s ease;
@@ -360,7 +576,23 @@ body {
 
 /* 导航栏背景渐变 - 白色到红色透明度 */
 .navbar-gradient {
-  background: linear-gradient(90deg, #ffffff 0%, #ffffff 30%, rgba(183, 28, 28, 0.2) 65%, rgba(183, 28, 28, 0.5) 100%) !important;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.96) 0%,
+      rgba(255, 255, 255, 0.94) 48%,
+      rgba(255, 255, 255, 0.76) 68%,
+      rgba(183, 28, 28, 0.18) 86%,
+      rgba(183, 28, 28, 0.30) 100%
+    ) !important;
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-bottom: 1px solid var(--glass-border);
+}
+
+/* Navbar: keep the inset highlight, but dial back the outer shadow */
+.navbar-gradient.glass-inset-highlight {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 
 /* 自定义下拉菜单 Toggle 按钮 */
@@ -417,8 +649,10 @@ body {
   margin-top: 12px !important;
   animation: dropdownFadeIn 0.2s ease forwards;
   min-width: 160px;
-  background-color: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(10px);
+  background: var(--glass-bg) !important;
+  border: 1px solid var(--glass-border) !important;
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
 }
 
 @keyframes dropdownFadeIn {
@@ -492,7 +726,10 @@ body {
 }
 
 .markdown-body pre {
-  background-color: #f1f5f9;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-radius: 0.5rem;
   padding: 1rem;
   margin: 0.75rem 0;
@@ -510,4 +747,13 @@ body {
 .markdown-body pre code {
   background-color: transparent;
   padding: 0;
+}
+
+/* File list search: subtle transition so filtering doesn't feel too jumpy */
+.table-filtering tbody {
+  opacity: 0.72;
+}
+
+table tbody {
+  transition: opacity 160ms ease;
 }
