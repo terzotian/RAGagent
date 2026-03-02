@@ -405,14 +405,13 @@ const FilePage: React.FC<FilePageProps> = ({ user }) => {
 
                         {(activeTab === 'policies' || selectedCourse) && (
                             <div className="d-flex align-items-center gap-2">
-                                <InputGroup style={{ width: 'clamp(220px, 28vw, 360px)' }}>
+                                <InputGroup className="file-search" style={{ width: 'clamp(220px, 28vw, 360px)' }}>
                                     <Form.Control
                                         type="text"
                                         placeholder="Search filename"
                                         value={search}
                                         onChange={(e) => setSearch(e.target.value)}
-                                        size="sm"
-                                        className="glass-surface"
+                                        className="file-search-input"
                                         style={{ fontSize: '0.9rem' }}
                                         aria-label="Search filename"
                                     />
@@ -558,6 +557,21 @@ const FilePage: React.FC<FilePageProps> = ({ user }) => {
                                                             size="sm"
                                                             onClick={() => handleDelete(file.file_id)}
                                                             className="rounded-pill px-3"
+                                                            style={{ color: '#B71C1C', borderColor: '#B71C1C', transition: 'all 0.3s ease' }}
+                                                            onMouseEnter={(e) => {
+                                                                e.currentTarget.style.backgroundColor = '#D32F2F';
+                                                                e.currentTarget.style.borderColor = '#D32F2F';
+                                                                e.currentTarget.style.color = '#fff';
+                                                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                                                e.currentTarget.style.boxShadow = '0 4px 8px rgba(183, 28, 28, 0.3)';
+                                                            }}
+                                                            onMouseLeave={(e) => {
+                                                                e.currentTarget.style.backgroundColor = 'transparent';
+                                                                e.currentTarget.style.borderColor = '#B71C1C';
+                                                                e.currentTarget.style.color = '#B71C1C';
+                                                                e.currentTarget.style.transform = 'translateY(0)';
+                                                                e.currentTarget.style.boxShadow = 'none';
+                                                            }}
                                                         >
                                                             Delete
                                                         </Button>

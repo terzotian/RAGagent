@@ -188,6 +188,69 @@ body::after {
   z-index: 1;
 }
 
+/* ===== FilePage Search Input (Uiverse-like) ===== */
+
+/* Make the input + clear button look like ONE control.
+   Apply outline/background to the InputGroup container to avoid overlap artifacts with outline-offset. */
+.file-search.input-group {
+  align-items: center;
+  border-radius: 10px;
+  outline: 2px solid var(--primary-color);
+  outline-offset: 3px;
+  background-color: #e2e2e2;
+  padding: 2px;
+  transition: 0.25s;
+}
+
+/* Bootstrap InputGroup defaults to overlapping adjacent controls with negative margins.
+   Disable that within this scoped component so the outline remains clean. */
+.file-search.input-group > :not(:first-child) {
+  margin-left: 0 !important;
+}
+
+.file-search.input-group:focus-within {
+  outline-offset: 5px;
+  background-color: #fff;
+}
+
+.file-search .file-search-input.form-control {
+  border: 0;
+  background: transparent;
+  height: 32px;
+  padding: 6px 12px;
+  box-shadow: none;
+}
+
+.file-search .file-search-input.form-control:focus {
+  box-shadow: none;
+}
+
+.file-search .file-search-input.form-control::placeholder {
+  color: rgba(15, 23, 42, 0.55);
+}
+
+/* Keep the clear (×) button aligned and prevent "bleed-through" with the input outline */
+.file-search .btn-glass {
+  height: 32px;
+  width: 32px;
+  padding: 0;
+  border-radius: 8px;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.file-search .btn-glass:hover {
+  background: rgba(183, 28, 28, 0.10) !important;
+}
+
+.file-search .btn-glass:active {
+  background: rgba(183, 28, 28, 0.16) !important;
+}
+
 /* 覆盖 Bootstrap 的默认滚动条 */
 ::-webkit-scrollbar {
   width: 8px;
