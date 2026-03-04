@@ -251,6 +251,186 @@ body::after {
   background: rgba(183, 28, 28, 0.16) !important;
 }
 
+/* ===== Auth Modal (Login / Register) ===== */
+.auth-dialog {
+  max-width: 380px;
+}
+
+.auth-card {
+  background: linear-gradient(
+    0deg,
+    #ffffff 0%,
+    color-mix(in srgb, var(--primary-light-color) 45%, #ffffff) 100%
+  ) !important;
+  border-radius: 40px !important;
+  border: 5px solid #ffffff !important;
+  box-shadow: var(--shadow-2) !important;
+}
+
+.auth-body {
+  padding-top: 8px !important;
+}
+
+.auth-heading {
+  text-align: center;
+  font-weight: 900;
+  font-size: 30px;
+  color: var(--primary-color);
+  letter-spacing: 0.2px;
+  margin-bottom: 12px;
+}
+
+/* Bottom switch link */
+.auth-card .auth-switch {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(15, 23, 42, 0.60);
+}
+
+.auth-card .auth-link.btn {
+  padding: 0 !important;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--primary-color) !important;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.auth-card .auth-link.btn:hover {
+  color: var(--primary-hover-color) !important;
+}
+
+/* Form typography */
+.auth-card .auth-label {
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+/* Role / Major choice groups (replace dropdowns) */
+.auth-card .auth-choice-group {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.auth-card .auth-choice-group.auth-choice-group--stack {
+  grid-template-columns: 1fr;
+}
+
+.auth-card .auth-choice {
+  width: 100%;
+  border: 2px solid rgba(15, 23, 42, 0.10);
+  border-radius: 18px;
+  padding: 10px 12px;
+  background-color: #ffffff;
+  box-shadow: var(--shadow-1);
+  color: var(--text-0);
+  font-weight: 900;
+  font-size: 13px;
+  line-height: 1.1;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.auth-card .auth-choice:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--primary-color) 35%, rgba(15, 23, 42, 0.10));
+}
+
+.auth-card .auth-choice:active {
+  transform: translateY(0px);
+}
+
+.auth-card .auth-choice:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary-color) 35%, #ffffff);
+  outline-offset: 2px;
+}
+
+.auth-card .auth-choice.is-selected {
+  border-color: var(--primary-color);
+  background-color: color-mix(in srgb, var(--primary-light-color) 55%, #ffffff);
+}
+
+.auth-card .auth-choice.auth-choice--stack {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  text-align: left;
+  padding: 12px 14px;
+}
+
+.auth-card .auth-choice-title {
+  font-weight: 900;
+  font-size: 13px;
+  color: var(--text-0);
+}
+
+.auth-card .auth-choice-sub {
+  font-weight: 900;
+  font-size: 12px;
+  color: rgba(15, 23, 42, 0.55);
+}
+
+/* Inputs: scoped + use !important because Bootstrap is imported after index.css */
+.auth-card .auth-input.form-control,
+.auth-card .auth-input.form-select {
+  width: 100%;
+  background-color: #ffffff !important;
+  border: none !important;
+  border-radius: 20px !important;
+  padding: 12px 16px !important;
+  box-shadow: var(--shadow-1) !important;
+  border-inline: 2px solid transparent !important;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+/* Keep the native/Bootstrap select caret visible and avoid text overlapping it */
+.auth-card .auth-input.form-select {
+  cursor: pointer;
+  padding-right: 44px !important;
+}
+
+.auth-card .auth-input.form-control::placeholder {
+  color: rgba(15, 23, 42, 0.45);
+}
+
+.auth-card .auth-input.form-control:focus,
+.auth-card .auth-input.form-select:focus {
+  outline: none !important;
+  box-shadow: var(--shadow-1) !important;
+  border-inline: 2px solid var(--primary-color) !important;
+}
+
+.auth-card .auth-error {
+  border-radius: 16px;
+}
+
+/* Submit button */
+.auth-card .auth-submit {
+  width: 100%;
+  font-weight: 800;
+  border: none !important;
+  border-radius: 20px !important;
+  padding-block: 14px;
+  background: linear-gradient(45deg, var(--primary-color) 0%, var(--primary-hover-color) 100%) !important;
+  box-shadow: var(--shadow-1) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-card .auth-submit:hover {
+  transform: scale(1.03);
+  box-shadow: var(--shadow-2) !important;
+}
+
+.auth-card .auth-submit:active {
+  transform: scale(0.97);
+  box-shadow: var(--shadow-1) !important;
+}
+
 /* 覆盖 Bootstrap 的默认滚动条 */
 ::-webkit-scrollbar {
   width: 8px;
@@ -575,6 +755,319 @@ body::after {
 
 .btn-glass:hover {
   background: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* ===== Profile Page (Sticker / Light Cartoon, scoped) ===== */
+.profile-page .profile-card {
+  border-radius: 28px !important;
+  overflow: hidden;
+}
+
+.profile-page .profile-card-header {
+  background: transparent !important;
+}
+
+.profile-page .profile-title {
+  font-weight: 900;
+  letter-spacing: 0.2px;
+  color: var(--primary-color);
+}
+
+.profile-page .profile-card-body {
+  padding-top: 18px !important;
+}
+
+.profile-page .profile-header {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.profile-page .profile-avatar-area {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+
+/* Avatar stack (inspired by provided stack/card/image) */
+.profile-page .profile-avatar-stack {
+  width: 160px;
+  transition: transform 0.25s ease;
+}
+
+.profile-page .profile-avatar-stack:hover {
+  transform: rotate(5deg);
+}
+
+.profile-page .profile-avatar-stack:hover .profile-avatar-card::before {
+  transform: translateY(-2%) rotate(-4deg);
+}
+
+.profile-page .profile-avatar-stack:hover .profile-avatar-card::after {
+  transform: translateY(2%) rotate(4deg);
+}
+
+.profile-page .profile-avatar-card {
+  aspect-ratio: 3 / 2;
+  border: 2px solid rgba(15, 23, 42, 0.14);
+  background-color: #ffffff;
+  position: relative;
+  transition: transform 0.15s ease;
+  padding: 10% 10% 16% 10%;
+  border-radius: 20px;
+}
+
+.profile-page .profile-avatar-card::before,
+.profile-page .profile-avatar-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 2px solid rgba(15, 23, 42, 0.14);
+  background-color: #ffffff;
+  transform-origin: center center;
+  z-index: -1;
+  transition: transform 0.15s ease;
+  border-radius: 20px;
+}
+
+.profile-page .profile-avatar-card::before {
+  transform: translateY(-2%) rotate(-6deg);
+}
+
+.profile-page .profile-avatar-card::after {
+  transform: translateY(2%) rotate(6deg);
+}
+
+.profile-page .profile-avatar-image {
+  width: 100%;
+  border: 2px solid rgba(15, 23, 42, 0.14);
+  background-color: color-mix(in srgb, var(--primary-light-color) 22%, #eeeeee);
+  aspect-ratio: 1 / 1;
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.profile-page .profile-avatar-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-page .profile-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  font-size: 44px;
+  color: var(--primary-color);
+  background: linear-gradient(
+    0deg,
+    #ffffff 0%,
+    color-mix(in srgb, var(--primary-light-color) 40%, #ffffff) 100%
+  );
+}
+
+.profile-page .profile-avatar-actions .btn {
+  border-radius: 14px;
+  font-weight: 800;
+}
+
+.profile-page .profile-summary {
+  min-width: 0;
+}
+
+.profile-page .profile-name {
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--text-0);
+  line-height: 1.1;
+}
+
+.profile-page .profile-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.profile-page .profile-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: var(--shadow-1);
+  font-weight: 800;
+  font-size: 12px;
+  color: rgba(15, 23, 42, 0.72);
+}
+
+.profile-page .profile-chip--accent {
+  border-color: rgba(183, 28, 28, 0.25);
+  background: color-mix(in srgb, var(--primary-light-color) 45%, #ffffff);
+  color: var(--primary-color);
+}
+
+.profile-page .profile-sections {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.profile-page .profile-section-card {
+  position: relative;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.70);
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  box-shadow: var(--shadow-1);
+  padding: 16px 16px 14px 16px;
+}
+
+.profile-page .profile-section-title {
+  font-weight: 900;
+  color: var(--primary-color);
+  letter-spacing: 0.2px;
+  margin-bottom: 10px;
+}
+
+.profile-page .profile-section-card .form-control,
+.profile-page .profile-section-card .form-select {
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background-color: #ffffff;
+}
+
+.profile-page .profile-section-card .form-control:focus,
+.profile-page .profile-section-card .form-select:focus {
+  border-color: rgba(183, 28, 28, 0.35);
+  box-shadow: 0 0 0 0.2rem rgba(183, 28, 28, 0.12);
+}
+
+/* Section buttons: compact, right-aligned */
+.profile-page .profile-section-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+
+/* Button system (scoped) */
+.profile-page .profile-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 16px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.2px;
+  padding: 10px 14px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.profile-page .profile-btn:active {
+  transform: translateY(0px);
+}
+
+.profile-page .profile-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-1);
+}
+
+/* Primary: red themed, slightly richer than default bootstrap */
+.profile-page .profile-btn.btn-primary {
+  border: none !important;
+  background: linear-gradient(45deg, var(--primary-color) 0%, var(--primary-hover-color) 100%) !important;
+}
+
+.profile-page .profile-btn.btn-primary:hover {
+  box-shadow: var(--shadow-2);
+}
+
+/* Avatar button: lighter outline */
+.profile-page .profile-btn--avatar.btn {
+  border-width: 2px;
+}
+
+/* Bottom actions: compact and side-by-side */
+.profile-page .profile-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.profile-page .profile-actions .profile-btn {
+  padding: 10px 12px;
+}
+
+.profile-page .profile-btn--danger.btn-outline-danger {
+  border-color: rgba(183, 28, 28, 0.55) !important;
+  color: var(--primary-color) !important;
+  background: rgba(255, 255, 255, 0.70);
+}
+
+.profile-page .profile-btn--danger.btn-outline-danger:hover {
+  background: color-mix(in srgb, var(--primary-light-color) 55%, #ffffff) !important;
+  border-color: var(--primary-color) !important;
+}
+
+.profile-page .profile-btn--secondary.btn-outline-secondary {
+  border-color: rgba(15, 23, 42, 0.25) !important;
+  color: rgba(15, 23, 42, 0.75) !important;
+  background: rgba(255, 255, 255, 0.70);
+}
+
+.profile-page .profile-btn--secondary.btn-outline-secondary:hover {
+  border-color: rgba(15, 23, 42, 0.35) !important;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+@media (max-width: 767.98px) {
+  .profile-page .profile-header {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .profile-page .profile-meta {
+    justify-content: center;
+  }
+
+  .profile-page .profile-section-actions {
+    justify-content: center;
+  }
+
+  .profile-page .profile-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .profile-page .profile-actions .profile-btn {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-page .profile-avatar-stack,
+  .profile-page .profile-avatar-card,
+  .profile-page .profile-avatar-card::before,
+  .profile-page .profile-avatar-card::after {
+    transition: none;
+  }
+
+  .profile-page .profile-avatar-stack:hover {
+    transform: none;
+  }
 }
 
 /* Subtle glass blocks used inside assistant bubbles */

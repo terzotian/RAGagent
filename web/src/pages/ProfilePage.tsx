@@ -68,37 +68,38 @@ const ProfileForm: React.FC<{
   };
 
   return (
-    <Container className="py-5">
+    <Container className="py-5 profile-page">
       <Row className="justify-content-center">
         <Col md={8}>
-          <Card className="shadow-sm border-0 rounded-lg glass-surface">
-            <Card.Header className="border-0 pt-4 pb-0 glass-surface-strong glass-inset-highlight">
-              <h3 className="text-center mb-0">User Profile</h3>
+          <Card className="shadow-sm border-0 glass-surface profile-card">
+            <Card.Header className="border-0 pt-4 pb-0 glass-surface-strong glass-inset-highlight profile-card-header">
+              <h3 className="text-center mb-0 profile-title">User Profile</h3>
             </Card.Header>
-            <Card.Body className="p-4">
+            <Card.Body className="p-4 profile-card-body">
               {message && <Alert variant={message.type} onClose={() => setMessage(null)} dismissible>{message.text}</Alert>}
 
-              <div className="text-center mb-4">
-                <div className="position-relative d-inline-block">
-                  {user.avatar_path ? (
-                    <Image
-                      src={getAvatarUrl(user.avatar_path)}
-                      roundedCircle
-                      width={120}
-                      height={120}
-                      className="border"
-                      style={{ objectFit: 'cover' }}
-                    />
-                  ) : (
-                    <div
-                      className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto"
-                      style={{ width: '120px', height: '120px', fontSize: '3rem' }}
-                    >
-                      {user.nickname.charAt(0).toUpperCase()}
+              <div className="profile-header">
+                <div className="profile-avatar-area">
+                  <div className="profile-avatar-stack" aria-hidden="true">
+                    <div className="profile-avatar-card">
+                      <div className="profile-avatar-image">
+                        {user.avatar_path ? (
+                          <Image
+                            src={getAvatarUrl(user.avatar_path)}
+                            alt="User avatar"
+                            className="profile-avatar-img"
+                          />
+                        ) : (
+                          <div className="profile-avatar-fallback">
+                            {user.nickname.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  )}
-                  <div className="mt-2">
-                    <Form.Label htmlFor="avatar-upload" className="btn btn-sm btn-outline-primary mb-0">
+                  </div>
+
+                  <div className="profile-avatar-actions">
+                      <Form.Label htmlFor="avatar-upload" className="btn btn-sm btn-outline-primary mb-0 profile-btn profile-btn--avatar">
                       Change Avatar
                     </Form.Label>
                     <Form.Control
@@ -110,103 +111,114 @@ const ProfileForm: React.FC<{
                     />
                   </div>
                 </div>
+
+                <div className="profile-summary">
+                  <div className="profile-name">{user.nickname}</div>
+                  <div className="profile-meta">
+                    <span className="profile-chip">{user.account}</span>
+                    <span className="profile-chip profile-chip--accent">{user.role}</span>
+                  </div>
+                </div>
               </div>
 
-              <Form onSubmit={handleProfileUpdate}>
-                <Row>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Account (Phone)</Form.Label>
-                      <Form.Control type="text" value={user.account} disabled />
-                    </Form.Group>
-                  </Col>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Nickname</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={formData.nickname}
-                        onChange={(e) => setFormData({...formData, nickname: e.target.value})}
-                      />
-                    </Form.Group>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Role</Form.Label>
-                      <Form.Control type="text" value={formData.role} disabled />
-                    </Form.Group>
-                  </Col>
-                  {formData.role === 'student' && (
-                    <Col md={6}>
-                      <Form.Group className="mb-3">
-                        <Form.Label>Major</Form.Label>
-                        <Form.Select
-                          value={formData.major_code}
-                          onChange={(e) => setFormData({...formData, major_code: e.target.value})}
-                        >
-                          <option value="AIBA">MSc in AIBA</option>
-                          <option value="DS">MSc in Data Science</option>
-                          <option value="ADS">MSc in Applied Data Science</option>
-                        </Form.Select>
-                      </Form.Group>
-                    </Col>
-                  )}
-                </Row>
-                <div className="d-grid mb-4">
-                  <Button variant="primary" type="submit">
-                    Save Profile Changes
+              <div className="profile-sections">
+                <div className="profile-section-card">
+                  <div className="profile-section-title">Profile</div>
+                  <Form onSubmit={handleProfileUpdate}>
+                    <Row>
+                      <Col md={6}>
+                        <Form.Group className="mb-3">
+                          <Form.Label>Account (Phone)</Form.Label>
+                          <Form.Control type="text" value={user.account} disabled />
+                        </Form.Group>
+                      </Col>
+                      <Col md={6}>
+                        <Form.Group className="mb-3">
+                          <Form.Label>Nickname</Form.Label>
+                          <Form.Control
+                            type="text"
+                            value={formData.nickname}
+                            onChange={(e) => setFormData({ ...formData, nickname: e.target.value })}
+                          />
+                        </Form.Group>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col md={6}>
+                        <Form.Group className="mb-3">
+                          <Form.Label>Role</Form.Label>
+                          <Form.Control type="text" value={formData.role} disabled />
+                        </Form.Group>
+                      </Col>
+                      {formData.role === 'student' && (
+                        <Col md={6}>
+                          <Form.Group className="mb-3">
+                            <Form.Label>Major</Form.Label>
+                            <Form.Select
+                              value={formData.major_code}
+                              onChange={(e) => setFormData({ ...formData, major_code: e.target.value })}
+                            >
+                              <option value="AIBA">MSc in AIBA</option>
+                              <option value="DS">MSc in Data Science</option>
+                              <option value="ADS">MSc in Applied Data Science</option>
+                            </Form.Select>
+                          </Form.Group>
+                        </Col>
+                      )}
+                    </Row>
+                    <div className="profile-section-actions">
+                      <Button variant="primary" type="submit" className="profile-btn profile-btn--primary">
+                        Save Profile Changes
+                      </Button>
+                    </div>
+                  </Form>
+                </div>
+
+                <div className="profile-section-card">
+                  <div className="profile-section-title">Security</div>
+                  <Form onSubmit={handlePasswordUpdate}>
+                    <Row>
+                      <Col md={6}>
+                        <Form.Group className="mb-3">
+                          <Form.Label>Old Password</Form.Label>
+                          <Form.Control
+                            type="password"
+                            value={passData.oldPassword}
+                            onChange={(e) => setPassData({ ...passData, oldPassword: e.target.value })}
+                            required
+                          />
+                        </Form.Group>
+                      </Col>
+                      <Col md={6}>
+                        <Form.Group className="mb-3">
+                          <Form.Label>New Password (6 digits)</Form.Label>
+                          <Form.Control
+                            type="password"
+                            value={passData.newPassword}
+                            onChange={(e) => setPassData({ ...passData, newPassword: e.target.value })}
+                            required
+                            pattern="\d{6}"
+                            title="Password must be exactly 6 digits"
+                          />
+                        </Form.Group>
+                      </Col>
+                    </Row>
+                    <div className="profile-section-actions">
+                      <Button variant="primary" type="submit" className="profile-btn profile-btn--primary">
+                        Update Password
+                      </Button>
+                    </div>
+                  </Form>
+                </div>
+
+                <div className="profile-actions">
+                  <Button variant="outline-danger" onClick={onLogout} className="profile-btn profile-btn--danger">
+                    Log Out
+                  </Button>
+                  <Button variant="outline-secondary" onClick={onSwitchAccount} className="profile-btn profile-btn--secondary">
+                    Switch Account
                   </Button>
                 </div>
-              </Form>
-
-              <hr className="my-4" />
-
-              <h5 className="mb-3">Change Password</h5>
-              <Form onSubmit={handlePasswordUpdate}>
-                <Row>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Old Password</Form.Label>
-                      <Form.Control
-                        type="password"
-                        value={passData.oldPassword}
-                        onChange={(e) => setPassData({...passData, oldPassword: e.target.value})}
-                        required
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>New Password (6 digits)</Form.Label>
-                      <Form.Control
-                        type="password"
-                        value={passData.newPassword}
-                        onChange={(e) => setPassData({...passData, newPassword: e.target.value})}
-                        required
-                        pattern="\d{6}"
-                        title="Password must be exactly 6 digits"
-                      />
-                    </Form.Group>
-                  </Col>
-                </Row>
-                <div className="d-grid">
-                  <Button variant="warning" type="submit">
-                    Update Password
-                  </Button>
-                </div>
-              </Form>
-
-              <hr className="my-4" />
-
-              <div className="d-grid gap-2">
-                <Button variant="outline-danger" onClick={onLogout}>
-                  Log Out
-                </Button>
-                <Button variant="outline-secondary" onClick={onSwitchAccount}>
-                  Switch Account
-                </Button>
               </div>
 
             </Card.Body>

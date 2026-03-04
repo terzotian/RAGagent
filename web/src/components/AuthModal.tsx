@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Button, Form, Nav, Alert, Spinner } from 'react-bootstrap';
+import { Modal, Button, Form, Alert, Spinner } from 'react-bootstrap';
 import { api } from '../services/api';
 import type { User } from '../services/api';
 
@@ -24,6 +24,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onHide, onLoginSuccess }) =
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const setField = (name: 'role' | 'major_code', value: string) => {
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -103,63 +107,25 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onHide, onLoginSuccess }) =
   };
 
   return (
-    <Modal show={show} onHide={onHide} centered contentClassName="auth-modal-content">
-      <style>{`
-        .auth-modal-content {
-          background: var(--glass-bg-strong);
-          backdrop-filter: blur(calc(var(--glass-blur) + 2px));
-          -webkit-backdrop-filter: blur(calc(var(--glass-blur) + 2px));
-          border: 1px solid var(--glass-border);
-          box-shadow: var(--shadow-2);
-          border-radius: 15px;
-        }
-        .auth-nav .nav-link {
-          color: #666;
-          border: none;
-          background: transparent;
-          font-weight: 600;
-          transition: all 0.3s ease;
-        }
-        .auth-nav .nav-link.active {
-          color: #0d6efd;
-          background: transparent;
-          border-bottom: 2px solid #0d6efd;
-        }
-        .avant-garde-btn {
-          background: linear-gradient(45deg, #0d6efd, #0dcaf0);
-          border: none;
-          transition: transform 0.2s;
-        }
-        .avant-garde-btn:hover {
-          transform: scale(1.02);
-          background: linear-gradient(45deg, #0b5ed7, #0aa2c0);
-        }
-      `}</style>
-      <Modal.Header closeButton className="border-0">
-        <Nav className="w-100 justify-content-center auth-nav" variant="tabs" activeKey={mode}>
-          <Nav.Item>
-            <Nav.Link eventKey="login" onClick={() => setMode('login')}>Login</Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link eventKey="register" onClick={() => setMode('register')}>Register</Nav.Link>
-          </Nav.Item>
-        </Nav>
-      </Modal.Header>
-      <Modal.Body className="px-4 pb-4">
-        {error && <Alert variant="danger" className="py-2 text-center">{error}</Alert>}
+    <Modal show={show} onHide={onHide} centered dialogClassName="auth-dialog" contentClassName="auth-card">
+      <Modal.Header closeButton className="border-0 pb-0" />
+      <Modal.Body className="px-4 pb-4 auth-body">
+        <div className="auth-heading">{mode === 'login' ? 'Sign In' : 'Create Account'}</div>
+        {error && <Alert variant="danger" className="py-2 text-center auth-error">{error}</Alert>}
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">
-            <Form.Label>Account</Form.Label>
+            <Form.Label className="auth-label">Account</Form.Label>
             <Form.Control
               name="account"
               value={formData.account}
               onChange={handleChange}
               placeholder="Enter your account"
               required
+              className="auth-input"
             />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>Password</Form.Label>
+            <Form.Label className="auth-label">Password</Form.Label>
             <Form.Control
               type="password"
               name="password"
@@ -167,38 +133,91 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onHide, onLoginSuccess }) =
               onChange={handleChange}
               placeholder="Enter password"
               required
+              className="auth-input"
             />
           </Form.Group>
 
           {mode === 'register' && (
             <>
               <Form.Group className="mb-3">
-                <Form.Label>Nickname</Form.Label>
+                <Form.Label className="auth-label">Nickname</Form.Label>
                 <Form.Control
                   name="nickname"
                   value={formData.nickname}
                   onChange={handleChange}
                   placeholder="Display name"
                   required
+                  className="auth-input"
                 />
               </Form.Group>
               <Form.Group className="mb-3">
-                <Form.Label>Role</Form.Label>
-                <Form.Select name="role" value={formData.role} onChange={handleChange}>
-                  <option value="student">Student</option>
-                  <option value="teacher">Teacher</option>
-                  <option value="admin">Admin</option>
-                </Form.Select>
+                <Form.Label className="auth-label">Role</Form.Label>
+                <div className="auth-choice-group" role="radiogroup" aria-label="Role">
+                  <button
+                    type="button"
+                    className={`auth-choice ${formData.role === 'student' ? 'is-selected' : ''}`}
+                    role="radio"
+                    aria-checked={formData.role === 'student'}
+                    onClick={() => setField('role', 'student')}
+                  >
+                    Student
+                  </button>
+                  <button
+                    type="button"
+                    className={`auth-choice ${formData.role === 'teacher' ? 'is-selected' : ''}`}
+                    role="radio"
+                    aria-checked={formData.role === 'teacher'}
+                    onClick={() => setField('role', 'teacher')}
+                  >
+                    Teacher
+                  </button>
+                  <button
+                    type="button"
+                    className={`auth-choice ${formData.role === 'admin' ? 'is-selected' : ''}`}
+                    role="radio"
+                    aria-checked={formData.role === 'admin'}
+                    onClick={() => setField('role', 'admin')}
+                  >
+                    Admin
+                  </button>
+                </div>
               </Form.Group>
 
               {formData.role === 'student' && (
                 <Form.Group className="mb-3">
-                    <Form.Label>Major</Form.Label>
-                    <Form.Select name="major_code" value={formData.major_code} onChange={handleChange}>
-                    <option value="AIBA">MSc in AIBA</option>
-                    <option value="DS">MSc in Data Science</option>
-                    <option value="ADS">MSc in Applied Data Science</option>
-                    </Form.Select>
+                    <Form.Label className="auth-label">Major</Form.Label>
+                    <div className="auth-choice-group auth-choice-group--stack" role="radiogroup" aria-label="Major">
+                      <button
+                        type="button"
+                        className={`auth-choice auth-choice--stack ${formData.major_code === 'AIBA' ? 'is-selected' : ''}`}
+                        role="radio"
+                        aria-checked={formData.major_code === 'AIBA'}
+                        onClick={() => setField('major_code', 'AIBA')}
+                      >
+                        <span className="auth-choice-title">MSc in AIBA</span>
+                        <span className="auth-choice-sub">AIBA</span>
+                      </button>
+                      <button
+                        type="button"
+                        className={`auth-choice auth-choice--stack ${formData.major_code === 'DS' ? 'is-selected' : ''}`}
+                        role="radio"
+                        aria-checked={formData.major_code === 'DS'}
+                        onClick={() => setField('major_code', 'DS')}
+                      >
+                        <span className="auth-choice-title">MSc in Data Science</span>
+                        <span className="auth-choice-sub">DS</span>
+                      </button>
+                      <button
+                        type="button"
+                        className={`auth-choice auth-choice--stack ${formData.major_code === 'ADS' ? 'is-selected' : ''}`}
+                        role="radio"
+                        aria-checked={formData.major_code === 'ADS'}
+                        onClick={() => setField('major_code', 'ADS')}
+                      >
+                        <span className="auth-choice-title">MSc in Applied Data Science</span>
+                        <span className="auth-choice-sub">ADS</span>
+                      </button>
+                    </div>
                 </Form.Group>
               )}
             </>
@@ -208,13 +227,47 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onHide, onLoginSuccess }) =
             <Button
               variant="primary"
               type="submit"
-              className="avant-garde-btn py-2 text-uppercase fw-bold"
+              className="auth-submit py-2 text-uppercase fw-bold"
               disabled={loading}
             >
               {loading ? <Spinner size="sm" animation="border" /> : (mode === 'login' ? 'Sign In' : 'Create Account')}
             </Button>
           </div>
         </Form>
+
+        <div className="auth-switch">
+          {mode === 'login' ? (
+            <span>
+              Don&apos;t have an account?{' '}
+              <Button
+                type="button"
+                variant="link"
+                className="auth-link"
+                onClick={() => {
+                  setMode('register');
+                  setError(null);
+                }}
+              >
+                Sign up
+              </Button>
+            </span>
+          ) : (
+            <span>
+              Already have an account?{' '}
+              <Button
+                type="button"
+                variant="link"
+                className="auth-link"
+                onClick={() => {
+                  setMode('login');
+                  setError(null);
+                }}
+              >
+                Sign in
+              </Button>
+            </span>
+          )}
+        </div>
       </Modal.Body>
     </Modal>
   );
