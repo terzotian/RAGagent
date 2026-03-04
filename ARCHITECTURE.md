@@ -1,212 +1,212 @@
-# AgenticRAG 当前架构（以代码为准）
+# AgenticRAG Current Architecture (Code is the Source of Truth)
 
-本文件是对仓库当前实现的“架构与逻辑”同步说明，目标是避免文档与代码脱节。
+This document synchronizes the "architecture and logic" of the current repository implementation to avoid discrepancies between documentation and code.
 
-更新时间：2026-02-28（基于当前仓库内容）
-
----
-
-## 1. 项目当前在做什么（功能视图）
-
-这是一个“大学政策/课程/作业”的 Retrieval-Augmented Generation（RAG）系统：
-
-- 前端（web/）：React + TypeScript + Vite，通过 HTTP 调后端 API。
-- 后端（code/backend/）：FastAPI 提供用户/文件/问答流式接口。
-- 检索：混合检索（pgvector 语义向量检索 + TF-IDF 关键词检索）并用 RRF 融合。
-- 生成：优先 Google Vertex AI（Gemini + text-embedding-004），无凭据则回退本地 Ollama。
-- 持久化：PostgreSQL（含 pgvector 扩展）保存元数据与向量；文件与切片保存在本地数据目录 `.local_data/`（可配置）。
+Update Time: 2026-02-28 (Based on current repository content)
 
 ---
 
-## 2. 仓库结构（代码/运行时数据）
+## 1. What the Project Currently Does (Functional View)
 
-### 2.1 代码目录
+This is a Retrieval-Augmented Generation (RAG) system for "university policies/courses/assignments":
+
+- Frontend (web/): React + TypeScript + Vite, calls backend API via HTTP.
+- Backend (code/backend/): FastAPI provides user/file/Q&A streaming interfaces.
+- Retrieval: Hybrid retrieval (pgvector semantic vector retrieval + TF-IDF keyword retrieval) fused with RRF.
+- Generation: Prioritizes Google Vertex AI (Gemini + text-embedding-004), falls back to local Ollama if no credentials.
+- Persistence: PostgreSQL (with pgvector extension) stores metadata and vectors; files and pieces are saved in the local data directory `.local_data/` (configurable).
+
+---
+
+## 2. Repository Structure (Code/Runtime Data)
+
+### 2.1 Code Directories
 
 - web/
-    - Vite React 前端，axios 调用后端，React Router 路由。
+    - Vite React frontend, uses axios to call backend, React Router for routing.
 - code/backend/
-    - main.py：FastAPI 入口与全部路由。
-    - model/：RAG 核心逻辑（规划、检索、索引、流式生成、LLM/Embedding）。
-    - database/：SQLAlchemy 连接与 ORM 模型（PostgreSQL + pgvector）。
-    - schemas/：Pydantic 请求/响应 schema。
+    - main.py: FastAPI entry point and all routes.
+    - model/: RAG core logic (planning, retrieval, indexing, streaming generation, LLM/Embedding).
+    - database/: SQLAlchemy connections and ORM models (PostgreSQL + pgvector).
+    - schemas/: Pydantic request/response schemas.
 - scripts/
-    - 迁移/校验脚本（例如 DBFile 路径迁移、reindex、verify）。
+    - Migration/validation scripts (e.g., DBFile path migration, reindex, verify).
 
-### 2.2 运行时数据目录（重点）
+### 2.2 Runtime Data Directories (Key Focus)
 
-运行时数据不再写入 code/backend/ 下，而是默认写入仓库根目录的 `.local_data/`。
+Runtime data is no longer written under code/backend/, but defaults to the repository root's `.local_data/`.
 
-由 code/backend/root_path.py 统一定义：
+Defined uniformly by code/backend/root_path.py:
 
-- DATA_ROOT = `${LOCAL_DATA_DIR}` 或 `<repo>/.local_data`
+- DATA_ROOT = `${LOCAL_DATA_DIR}` or `<repo>/.local_data`
 - KB_ROOT = `${DATA_ROOT}/knowledge_base`
 - UPLOADS_ROOT = `${DATA_ROOT}/uploads`
 - AVATARS_ROOT = `${DATA_ROOT}/avatars`
 
-典型布局（以“base”为一级目录）：
+Typical layout (with "base" as the first-level directory):
 
 ```text
 .local_data/
     knowledge_base/
         public/
-            policies/   # 原始政策文件
-            pieces/     # policies/ 切片后的 .txt（供 TF-IDF）
+            policies/   # Original policy files
+            pieces/     # Sliced .txt from policies/ (for TF-IDF)
         course_CDS524/
-            files/      # 课程文件
-            pieces/     # 课程切片 .txt
+            files/      # Course files
+            pieces/     # Course sliced .txt
         user_123_private/
             assignments/
             pieces/
     uploads/
-        temp_uploads/  # 临时上传（问答时带文件）
+        temp_uploads/  # Temporary uploads (with files for Q&A context)
     avatars/
 ```
 
-注意：DBFile.file_path 可能存在历史路径，后端通过 resolve_storage_path() 做兼容映射。
+Note: DBFile.file_path may have historical paths; backend uses resolve_storage_path() for compatibility mapping.
 
 ---
 
-## 3. 后端核心组件（模块视图）
+## 3. Backend Core Components (Module View)
 
-### 3.1 API 入口（FastAPI）
+### 3.1 API Entry (FastAPI)
 
-代码位置：code/backend/main.py
+Code Location: code/backend/main.py
 
-主要路由（按用途分组）：
+Main Routes (Grouped by Purpose):
 
-- 用户与鉴权
+- Users and Authentication
     - GET/PUT /api/v1/users/{user_id}
     - PUT /api/v1/users/{user_id}/password
     - POST /api/v1/auth/register
     - POST /api/v1/auth/login
     - POST /api/v1/users/{user_id}/avatar
     - GET /api/v1/avatars/{filename}
-- 问答（SSE 流式）
-    - POST /api/v1/chat/upload_temp（临时文件上传，仅用于本次提问上下文）
-    - GET /api/v1/questions/stream（SSE：逐 token 推送 + references + [DONE]）
-- 文件上传与列表
+- Q&A (SSE Streaming)
+    - POST /api/v1/chat/upload_temp (Temporary file upload, only for this question's context)
+    - GET /api/v1/questions/stream (SSE: Push token by token + references + [DONE])
+- File Upload and Listing
     - GET /api/v1/public/policies
     - GET /api/v1/courses /api/v1/courses/{code}/files
-    - POST /api/v1/admin/policies（管理员上传 policy）
-    - POST /api/v1/courses/{code}/files（老师/管理员上传课程资料）
-    - POST /api/v1/my/assignments（学生上传作业）
-- 文件预览与删除（含一致性清理）
+    - POST /api/v1/admin/policies (Admin uploads policy)
+    - POST /api/v1/courses/{code}/files (Teacher/admin uploads course materials)
+    - POST /api/v1/my/assignments (Student uploads assignments)
+- File Preview and Deletion (With Consistency Cleanup)
     - GET /api/v1/files/preview
-    - DELETE /api/v1/files/{file_id}（权威删除：磁盘文件 + pieces + pgvector items + DBFile）
-    - DELETE /api/v1/files（legacy：按 base+file_name 删除，内部转到 delete-by-id）
-- 会话与反馈
+    - DELETE /api/v1/files/{file_id} (Authoritative deletion: Disk file + pieces + pgvector items + DBFile)
+    - DELETE /api/v1/files (Legacy: Delete by base+file_name, internally redirects to delete-by-id)
+- Sessions and Feedback
     - POST /api/v1/feedback
     - GET /api/v1/users/{user_id}/sessions
     - GET /api/v1/sessions/{session_id}/messages
     - DELETE /api/v1/sessions/{session_id}
 
-### 3.2 LLM/Embedding 服务（Vertex 优先，Ollama 回退）
+### 3.2 LLM/Embedding Services (Vertex Priority, Ollama Fallback)
 
-代码位置：code/backend/model/llm_service.py、code/backend/model/embedding.py
+Code Location: code/backend/model/llm_service.py, code/backend/model/embedding.py
 
-- Embedding：默认使用 Vertex `text-embedding-004`（768 维）；失败时回退 Ollama `/api/embeddings`（默认 nomic-embed-text）。
-- LLM：
-    - task_type=fast：Gemini `gemini-2.0-flash-001`
-    - task_type=complex：Gemini `gemini-2.5-pro`
-    - Vertex 不可用或失败则回退 Ollama `/api/generate`（模型由 OLLAMA_GEN_MODEL 控制）。
+- Embedding: Defaults to Vertex `text-embedding-004` (768 dimensions); falls back to Ollama `/api/embeddings` (default nomic-embed-text) on failure.
+- LLM:
+    - task_type=fast: Gemini `gemini-2.0-flash-001`
+    - task_type=complex: Gemini `gemini-2.5-pro`
+    - Falls back to Ollama `/api/generate` (model controlled by OLLAMA_GEN_MODEL) if Vertex unavailable or fails.
 
-### 3.3 检索控制面（Agent Orchestrator）
+### 3.3 Retrieval Control Plane (Agent Orchestrator)
 
-代码位置：code/backend/model/agent_router.py
+Code Location: code/backend/model/agent_router.py
 
-对每个问题的处理流程（简化版）：
+Processing Flow for Each Question (Simplified):
 
-1. Master Planner（_planner_agent）
-     - 产出 intent（chat / rag_query）和 search_scope（collections）
-2. 若 intent=chat：直接生成（可带最近对话上下文）
-3. Query Rewrite（_rewrite_query）
-     - 把追问改写成可独立检索的 query（消解指代）
-4. Hybrid Retrieval：
-     - 向量检索：pgvector items 表（按 collection 过滤）
-     - TF-IDF：读取 pieces 目录下分段文件做关键词检索
-5. RRF 融合（_rrf_fusion）得到 Top 5 references
-6. stream_answer：将 references 编入 prompt，调用 LLM 流式输出
+1. Master Planner (_planner_agent)
+     - Produces intent (chat / rag_query) and search_scope (collections)
+2. If intent=chat: Generate directly (can include recent conversation context)
+3. Query Rewrite (_rewrite_query)
+     - Rewrites follow-up into a standalone retrievable query (resolves references)
+4. Hybrid Retrieval:
+     - Vector retrieval: pgvector items table (filtered by collection)
+     - TF-IDF: Reads segmented files in pieces directory for keyword retrieval
+5. RRF Fusion (_rrf_fusion) gets Top 5 references
+6. stream_answer: Incorporates references into prompt, calls LLM for streaming output
 
-### 3.4 数据面（Retrieval Engine）
+### 3.4 Data Plane (Retrieval Engine)
 
-- TF-IDF：code/backend/model/doc_search.py
-    - pieces 文件格式必须包含 `--- Segment N ---` 分隔标记。
-- 向量库：code/backend/model/vector_store.py
-    - 存储在 PostgreSQL 的 items 表（DBItem），embedding 为 Vector(768)。
-    - metadata_ 中包含 collection_name、original_file/source 等。
-    - 查询使用 pgvector 距离算子 `<=>`。
+- TF-IDF: code/backend/model/doc_search.py
+    - Pieces file format must include `--- Segment N ---` separator markers.
+- Vector Store: code/backend/model/vector_store.py
+    - Stored in PostgreSQL's items table (DBItem), embedding as Vector(768).
+    - metadata_ includes collection_name, original_file/source, etc.
+    - Query uses pgvector distance operator `<=>`.
 
-### 3.5 索引（Indexing）
+### 3.5 Indexing
 
-代码位置：code/backend/model/rag_indexer.py
+Code Location: code/backend/model/rag_indexer.py
 
-当上传 policy/course/assignment 时，会触发 ingest_file(base, file_path)：
+When uploading policy/course/assignment, triggers ingest_file(base, file_path):
 
-1. 读取原文件（doc_analysis.read_file）
-2. 句子切分并做滑窗 chunk（chunk_size=10, overlap=2），写入 `${KB_ROOT}/{base}/pieces/{original_filename}.txt`
-3. 对每个 chunk 生成 embedding，并 upsert 到 items 表
-     - id：`{original_filename}_chunk_{i}`
-     - metadata_：包含 source（pieces 文件名）与 original_file（原始文件名）与 collection_name
-
----
-
-## 4. 端到端数据流（按请求路径）
-
-### 4.1 上传 → 索引
-
-以 /api/v1/admin/policies 为例：
-
-1. 保存原文件到 `${KB_ROOT}/public/policies/`
-2. 写 DBFile（files 表）记录 file_name/file_path/base/access_level 等
-3. 调用 ingest_file("public", file_path)
-4. 生成 pieces（供 TF-IDF）与 items 向量（供 pgvector 检索）
-
-### 4.2 提问 → 检索 → 生成（SSE）
-
-入口：/api/v1/questions/stream
-
-1. 计算用户可访问 bases（public + course_XXX + user_ID_private，取决于角色/专业/课程）
-2. 从 questions 表读取最近 3 轮对话，构造 conversation_history
-3. route_stream 执行 Planner/Rewrite/Hybrid Retrieval/RRF
-4. 返回 StreamingResponse：逐 token 输出，同时最终输出 references 并把本轮问答写入 questions 表
-
-### 4.3 删除一致性（磁盘 + pieces + 向量 + DB）
-
-入口：DELETE /api/v1/files/{file_id}
-
-1. 权限检查（admin 全部；teacher 课程资料；student 仅自己作业）
-2. 删除原文件（resolve_storage_path 兼容旧路径）
-3. 删除 pieces：`${KB_ROOT}/{base}/pieces/{file_name}.txt`
-4. 删除向量：items 表中匹配 collection_name + (original_file/source/id 前缀)
-5. 删除 DBFile（files 表）记录
+1. Read original file (doc_analysis.read_file)
+2. Sentence segmentation with sliding window chunk (chunk_size=10, overlap=2), write to `${KB_ROOT}/{base}/pieces/{original_filename}.txt`
+3. Generate embedding for each chunk, upsert to items table
+     - id: `{original_filename}_chunk_{i}`
+     - metadata_: Includes source (pieces filename) and original_file (original filename) and collection_name
 
 ---
 
-## 5. 数据库（PostgreSQL + pgvector）
+## 4. End-to-End Data Flow (By Request Path)
 
-### 5.1 表
+### 4.1 Upload → Index
 
-ORM 定义位置：code/backend/database/models.py
+Example with /api/v1/admin/policies:
 
-- users：用户与角色
-- sessions / questions：会话与消息（问答历史）
-- majors / courses：专业与课程
-- files：上传文件元数据（含 file_path/base/file_type/access_level 等）
-- items：向量与文档 chunk（embedding Vector(768) + metadata_ JSON）
+1. Save original file to `${KB_ROOT}/public/policies/`
+2. Write DBFile (files table) record with file_name/file_path/base/access_level, etc.
+3. Call ingest_file("public", file_path)
+4. Generate pieces (for TF-IDF) and items vectors (for pgvector retrieval)
 
-### 5.2 pgvector 扩展
+### 4.2 Question → Retrieval → Generation (SSE)
 
-本地 docker-compose 会在初始化时执行 init.sql：
+Entry: /api/v1/questions/stream
+
+1. Calculate user-accessible bases (public + course_XXX + user_ID_private, depending on role/major/course)
+2. Read last 3 rounds of conversation from questions table, construct conversation_history
+3. route_stream executes Planner/Rewrite/Hybrid Retrieval/RRF
+4. Return StreamingResponse: Output token by token, finally output references and write this round's Q&A to questions table
+
+### 4.3 Deletion Consistency (Disk + Pieces + Vectors + DB)
+
+Entry: DELETE /api/v1/files/{file_id}
+
+1. Permission check (admin all; teacher course materials; student only own assignments)
+2. Delete original file (resolve_storage_path compatible with old paths)
+3. Delete pieces: `${KB_ROOT}/{base}/pieces/{file_name}.txt`
+4. Delete vectors: items table matching collection_name + (original_file/source/id prefix)
+5. Delete DBFile (files table) record
+
+---
+
+## 5. Database (PostgreSQL + pgvector)
+
+### 5.1 Tables
+
+ORM Definition Location: code/backend/database/models.py
+
+- users: Users and roles
+- sessions / questions: Sessions and messages (Q&A history)
+- majors / courses: Majors and courses
+- files: Uploaded file metadata (including file_path/base/file_type/access_level, etc.)
+- items: Vectors and document chunks (embedding Vector(768) + metadata_ JSON)
+
+### 5.2 pgvector Extension
+
+Local docker-compose executes init.sql during initialization:
 
 ```sql
 CREATE EXTENSION IF NOT EXISTS vector;
 ```
 
-如果你用 Cloud SQL/自建 Postgres，需要确保同样启用 `vector` 扩展，否则建表会失败（Vector 类型不存在）。
+If using Cloud SQL/self-built Postgres, ensure the `vector` extension is enabled, otherwise table creation will fail (Vector type does not exist).
 
 ---
 
-## 6. 一张图（当前实现的真实链路）
+## 6. One Diagram (Current Implemented Real Chain)
 
 ```mermaid
 graph TB
@@ -249,20 +249,20 @@ graph TB
 
 ---
 
-## 7. 运行参数（环境变量）
+## 7. Runtime Parameters (Environment Variables)
 
-- DATABASE_URL：PostgreSQL 连接串（必需）
-- LOCAL_DATA_DIR：覆盖 `.local_data` 位置（可选）
-- GOOGLE_APPLICATION_CREDENTIALS / VERTEX_PROJECT_ID / VERTEX_LOCATION：Vertex 配置（可选，有则优先使用）
-- OLLAMA_BASE_URL / OLLAMA_GEN_MODEL：本地 Ollama 回退配置
-- AUTO_CREATE_TABLES：默认 1；为 0/false/no 时不在启动时 create_all（用于仅 import/smoke）
-- DISABLE_LOCAL_LIBS：默认未设置时会运行 env_setup（仅用于本地开发环境）
+- DATABASE_URL: PostgreSQL connection string (required)
+- LOCAL_DATA_DIR: Override `.local_data` location (optional)
+- GOOGLE_APPLICATION_CREDENTIALS / VERTEX_PROJECT_ID / VERTEX_LOCATION: Vertex configuration (optional, prioritized if present)
+- OLLAMA_BASE_URL / OLLAMA_GEN_MODEL: Local Ollama fallback configuration
+- AUTO_CREATE_TABLES: Default 1; set to 0/false/no to not create_all on startup (for import/smoke only)
+- DISABLE_LOCAL_LIBS: Default unset, runs env_setup (for local development only)
 
 ---
 
-## 8. 与旧文档的关键差异（避免“越改越幻觉”）
+## 8. Key Differences from Old Documentation (Avoid "Increasing Hallucinations")
 
-- 向量库不再是 ChromaDB：当前是 PostgreSQL + pgvector（items 表）。
-- “Intent Classifier/Domain Router/Prompt Engineer”旧分层已被更统一的 Master Planner + Query Rewrite 替代。
-- 运行时知识库与上传文件默认不在 code/backend/ 下：当前统一落在仓库根 `.local_data/`。
-- README.md 中关于 MySQL、env.zip 的描述已过期（不代表当前实现）。
+- Vector store is no longer ChromaDB: Currently PostgreSQL + pgvector (items table).
+- Old layering of "Intent Classifier/Domain Router/Prompt Engineer" has been replaced by a more unified Master Planner + Query Rewrite.
+- Runtime knowledge base and uploaded files no longer under code/backend/: Currently unified under repository root `.local_data/`.
+- Descriptions in README.md about MySQL, env.zip are outdated (do not represent current implementation).
