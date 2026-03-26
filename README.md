@@ -19,44 +19,7 @@ The system uses a front-end and back-end separated architecture:
 
 ### Architecture Diagram
 
-```mermaid
-graph TB
-    Client[Web Frontend<br/>React + Vite] -->|HTTP| API[FastAPI<br/>code/backend/main.py]
-
-    subgraph Control[Control Plane<br/>Agent Orchestrator]
-        Planner[Master Planner<br/>intent + scope] --> Rewrite[Query Rewrite<br/>standalone query]
-    end
-
-    subgraph Retrieval[Data Plane<br/>Hybrid Retrieval]
-        Vec[pgvector search<br/>items table] --> Fusion[RRF Fusion<br/>Top 5 refs]
-        Tfidf[TF-IDF search<br/>pieces/*.txt] --> Fusion
-    end
-
-    API -->|SSE /questions/stream| Planner
-    Rewrite --> Vec
-    Rewrite --> Tfidf
-    Fusion --> Prompt[Prompt Builder<br/>rag_stream.build_prompt]
-
-    subgraph LLM[LLM/Embedding]
-        Vertex[Vertex AI<br/>Gemini + text-embedding-004]
-        Ollama[Ollama Fallback]
-    end
-
-    Prompt --> Vertex
-    Vertex -->|fallback| Ollama
-    Ollama -->|stream tokens| API
-    Vertex -->|stream tokens| API
-
-    subgraph Store[Persistence]
-        PG[(PostgreSQL<br/>users/files/sessions/questions/items)]
-        FS[(.local_data<br/>knowledge_base/uploads/avatars)]
-    end
-
-    API --> PG
-    API --> FS
-    Vec --> PG
-    Tfidf --> FS
-```
+![AgenticRAG: dual-agent iterative RAG architecture](docs/AgenticRAG_Architecture_v2.png)
 
 ## Features
 
