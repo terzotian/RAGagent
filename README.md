@@ -26,7 +26,7 @@ The system uses a front-end and back-end separated architecture:
 - **Home Page**: Dynamic images and a homepage designed in line with Lingnan University.
 ![Home Page](docs/home.png)
 - **User Profile**: View and update personal information, including password.
-![User Profile](docs/person page.png)
+![User Profile](docs/person.png)
 - **File Management**: Upload policies, course materials, and assignments, with automatic indexing and consistent deletion.
 ![File Management](docs/file.png)
 - **Intelligent Q&A**: Streaming generation based on retrieval, supporting conversation context and temporary file uploads.
